@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../SafeCity.Domain/SafeCity.Domain/SafeCity.Domain.csproj" />
+  <Project Path="SafeCity/SafeCity.csproj" />
+</Solution>
