@@ -1,11 +1,17 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using SafeCity.Domain.Entity;
+using SafeCity.Domain.Enum;
 
 namespace SafeCity.Domain.Data
 {
     public class SafeCityDbContext : DbContext
     {
-        public SafeCityDbContext() { }
+        // private readonly IConfiguration _configuration;
+        // public SafeCityDbContext(IConfiguration configuration)
+        // {
+        //     _configuration = configuration;
+        // }
 
         public SafeCityDbContext(DbContextOptions<SafeCityDbContext> options)
             : base(options)
@@ -26,14 +32,14 @@ namespace SafeCity.Domain.Data
         public virtual DbSet<Audit> Audits { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Data Source=LTIN718874\\SQLEXPRESS;Initial Catalog=SafeCityDB;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30")
-                              .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
-            }
-        }
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // {
+        //     if (!optionsBuilder.IsConfigured)
+        //     {
+        //         optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"))
+        //                       .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+        //     }
+        // }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -56,6 +62,15 @@ namespace SafeCity.Domain.Data
                 .WithMany()
                 .HasForeignKey(d => d.ResourceID)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole { RoleID = 1, RoleName = UserRoleOption.Citizen },
+                new UserRole { RoleID = 2, RoleName = UserRoleOption.Police },
+                new UserRole { RoleID = 3, RoleName = UserRoleOption.Fire_Fighter },
+                new UserRole { RoleID = 4, RoleName = UserRoleOption.Emergency_Dispatcher },
+                new UserRole { RoleID = 5, RoleName = UserRoleOption.Compliance_Officer },
+                new UserRole { RoleID = 6, RoleName = UserRoleOption.City_Administrator }
+            );
         }
     }
 }

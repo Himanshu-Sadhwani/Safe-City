@@ -8,8 +8,9 @@ namespace SafeCity.Domain.Entity
     public class UserRole
     {
         [Key]
-        public int RoleID {  get; set; }
-        [Required(ErrorMessage ="Role Name is Required")]
-        public UserRoleOption RoleName {  get; set; }
+        public int RoleID { get; set; }
+
+        [Required]
+        public UserRoleOption RoleName { get; set; }
     }
 }
