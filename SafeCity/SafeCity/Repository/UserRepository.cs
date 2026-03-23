@@ -1,19 +1,23 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SafeCity.Domain.Data;
 using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
-
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 namespace SafeCity.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly SafeCityDbContext _context;
-
-        public UserRepository(SafeCityDbContext context)
+        private readonly IConfiguration _config;
+        public UserRepository(SafeCityDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<UserResponseDto> CreateUser(UserRequestDto userRequestDto)
@@ -118,7 +122,24 @@ namespace SafeCity.Repository
 
         private string GenerateJwtToken(User user)
         {
-            throw new NotImplementedException();
+            //claims and token generation logic goes here
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role,user.UserRole.RoleName.ToString()) 
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: _config["Issuer"],
+                audience: _config["Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
