@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
+using SafeCity.Domain.Enum;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SafeCity.Domain.Enum;
 namespace SafeCity.Domain.Entity;
 
 [Table("User")]
@@ -35,10 +33,10 @@ public class User
     [Column(TypeName = "VARCHAR(20)")]
     public UserStatus Status { get; set; }
 
-    
+
     [ForeignKey("RoleID")]
     public virtual UserRole UserRole { get; set; }
 
- 
+
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 }
