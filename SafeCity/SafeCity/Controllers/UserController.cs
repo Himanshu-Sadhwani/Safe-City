@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SafeCity.Controllers
@@ -7,5 +6,6 @@ namespace SafeCity.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+
     }
 }
