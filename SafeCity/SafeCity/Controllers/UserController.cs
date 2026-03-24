@@ -6,5 +6,6 @@ namespace SafeCity.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+
     }
 }
