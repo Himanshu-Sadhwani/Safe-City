@@ -1,9 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Enum;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace SafeCity.Domain.Entity;
 
-[Table("User")]
+[Index(nameof(Email), IsUnique = true)]
 public class User
 {
     [Key]
