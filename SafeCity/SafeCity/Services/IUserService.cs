@@ -1,0 +1,10 @@
+﻿using SafeCity.DTOs;
+
+namespace SafeCity.Services
+{
+    public interface IUserService
+    {
+        public Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request);
+
+    }
+}
