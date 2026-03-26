@@ -48,8 +48,10 @@ namespace SafeCity.Controllers
 
             catch (Exception ex)
             {
+                //Throwing Exception
                 return StatusCode(StatusCodes.Status500InternalServerError,ErrorMessageUpdate.User.InternalError);
             }
+            
         }
     }
 }
