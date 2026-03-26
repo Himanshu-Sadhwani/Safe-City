@@ -1,5 +1,5 @@
+using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
-
 namespace SafeCity.DTOs
 {
     public class UserUpdateByAdminRequestDto

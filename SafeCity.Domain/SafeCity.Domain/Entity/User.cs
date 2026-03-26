@@ -40,9 +40,4 @@ public class User
 
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
-
-    public SafeCity.DTOs.UserUpdateResponseDto ToUserUpdateResponse()
-    {
-        throw new NotImplementedException();
-    }
 }
