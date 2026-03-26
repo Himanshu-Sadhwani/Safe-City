@@ -1,62 +1,99 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using SafeCity.Domain.Entity;
 using SafeCity.DTOs;
 using SafeCity.Repository;
+using SafeCity.Domain.Entity;
+using SafeCity.Domain.Data;
+using Microsoft.EntityFrameworkCore;
 namespace SafeCity.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly SafeCityDbContext _context;
+    private readonly IConfiguration _config;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(SafeCityDbContext context, IConfiguration config)
     {
-        _userRepository = userRepository;
-    }
-    public Task<UserResponseDto> CreateUser(UserRequestDto userRequestDto)
-    {
-        var response= _userRepository.CreateUser(userRequestDto);
-        return response;
+        _context = context;
+        _config = config;
     }
 
-    public Task<bool> DeleteUser(int id)
+    public async Task<LoginResponseDto?> LoginUser(LoginRequestDto dto)
     {
-        var response = _userRepository.DeleteUser(id);
-        return response;
-    }
-    
-    public Task<IEnumerable<UserResponseDto>> GetAllUsers()
-    {
-        var response = _userRepository.GetAllUsers();
-        return response;
+        var user = await _context.Users
+            .Include(u => u.UserRole)
+            .FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (user == null)
+            return null;
+
+        var result = new PasswordHasher<User>()
+            .VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+
+        if (result == PasswordVerificationResult.Failed)
+            return null;
+
+        var accessToken = GenerateJwtToken(user);
+        var refreshToken = GenerateRefreshToken();
+
+        await SaveAuditLog(user.UserID, "Login");
+
+        return new LoginResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            Expires = DateTime.UtcNow.AddHours(1)
+        };
     }
 
-    public Task<UserResponseDto> GetUserById(int id)
+    public string GenerateJwtToken(User user)
     {
-        var response = _userRepository.GetUserById(id);
-        return response;
-    }
-    
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.UserRole.RoleName.ToString())
+        };
 
-    public Task<LoginResponseDto> LoginUser(LoginRequestDto loginRequestDto)
-    {
-        var response = _userRepository.LoginUser(loginRequestDto);
-        return response;
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+        );
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public Task<IEnumerable<UserResponseDto>> SearchUsers(string searchTerm)
+    public string GenerateRefreshToken()
     {
-        var response = _userRepository.SearchUsers(searchTerm);
-        return response;
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
-    public Task<UserResponseDto> UpdateUser(int id, UserRequestDto userRequestDto)
+    public async Task SaveAuditLog(int userId, string action)
     {
-        var response = _userRepository.UpdateUser(id, userRequestDto);
-        return response;
-    }
+        var audit = new AuditLog
+        {
+            UserID = userId,
+            Action = action,
+            Resource = "Auth/Login",
+            Timestamp = DateTime.UtcNow
+        };
 
-    public Task<bool> UpdateUserStatus(int id, bool isActive)
-    {
-        var response = _userRepository.UpdateUserStatus(id, isActive);
-        return response;
+        _context.AuditLogs.Add(audit);
+        await _context.SaveChangesAsync();
     }
 }
