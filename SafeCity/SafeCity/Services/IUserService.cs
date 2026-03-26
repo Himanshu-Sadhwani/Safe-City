@@ -4,7 +4,6 @@ namespace SafeCity.Services
 {
     public interface IUserService
     {
-        public Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request);
         public Task<UserUpdateByAdminResponseDto> UpdateUserByAdmin(UserUpdateByAdminRequestDto request);
 
     }

@@ -71,3 +71,7 @@ Desktop.ini
 
 appsettings.json
 appsettings.Development.json
+#DTO's
+DTOs/UserRegisterRequestDto.cs
+DTOs/UserRegisterResponseDto.cs
+

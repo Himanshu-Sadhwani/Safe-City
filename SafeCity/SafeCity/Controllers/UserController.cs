@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
 using SafeCity.Services;
+using SafeCity.Utility;
 namespace SafeCity.Controllers
 {
     [Route("api/v1/[controller]")]
@@ -13,30 +14,6 @@ namespace SafeCity.Controllers
         {
             _userService = userService;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser(UserRegisterRequestDto user)
-        {
-            try
-            {
-                // Validate Model State
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var response = await _userService.RegisterUser(user);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
         
         /// <summary>
         /// Updates user details by an administrator.
@@ -46,7 +23,10 @@ namespace SafeCity.Controllers
         /// <response code="200">User updated successfully</response>
         /// <response code="400">Invalid request or validation error</response>
         /// <response code="500">Server error</response>
-        [HttpPut("admin/update")]
+        [HttpPut("admin/update")]       
+        [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUserByAdmin(
             [FromBody] UserUpdateByAdminRequestDto user)
         {
@@ -58,13 +38,17 @@ namespace SafeCity.Controllers
                 var response = await _userService.UpdateUserByAdmin(user);
                 return Ok(response);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentNullException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    error = ErrorMessageUpdate.UserUpdate.RequestNull
+                });
             }
+
             catch (Exception ex)
             {
-                return StatusCode(500,$"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,ErrorMessageUpdate.User.InternalError);
             }
         }
     }
