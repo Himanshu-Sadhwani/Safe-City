@@ -28,5 +28,18 @@ namespace SafeCity.Repository
             var response = UserResigterResponseExtension.ToUserRegisterResponse(userDetails);
             return response;
         }
+
+        public async Task<UserUpdateByAdminResponseDto> UpdateUserByAdmin(UserUpdateByAdminRequestDto request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
+            if (user == null)
+                throw new Exception("User not found");
+            user.Name = request.Name;
+            user.Phone = request.Phone;
+            user.RoleID = request.RoleID;
+            user.Status = request.Status;
+            await _context.SaveChangesAsync();
+            return user.ToUserUpdateByAdminResponse();
+        }
     }
 }

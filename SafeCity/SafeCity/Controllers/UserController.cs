@@ -37,6 +37,26 @@ namespace SafeCity.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpPut("admin/update")]
+        public async Task<IActionResult> UpdateUserByAdmin(
+            [FromBody] UserUpdateByAdminRequestDto user)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
+                var response = await _userService.UpdateUserByAdmin(user);
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,$"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

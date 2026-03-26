@@ -38,4 +38,24 @@ public class UserService : IUserService
 
         return response;
     }
+
+    public async Task<UserUpdateByAdminResponseDto> UpdateUserByAdmin(UserUpdateByAdminRequestDto request)
+    {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
+        if (request.UserID <= 0)
+            throw new ArgumentException("Invalid UserID.");
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+            throw new ArgumentException("Name is required.");
+
+        if (string.IsNullOrWhiteSpace(request.Phone))
+            throw new ArgumentException("Phone is required.");
+
+        if (request.RoleID <= 0)
+            throw new ArgumentException("Invalid RoleID.");
+        return await _userRepository.UpdateUserByAdmin(request);
+
+    }
 }

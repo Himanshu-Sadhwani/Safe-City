@@ -68,3 +68,6 @@ efcore.design.*
 # Others
 Thumbs.db
 Desktop.ini
+
+#migration
+Migrations
