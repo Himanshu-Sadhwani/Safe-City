@@ -22,26 +22,33 @@ namespace SafeCity.Repository
         /// <exception cref="Exception">Thrown when a user with the provided email already exists.</exception>
         public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request)
         {
-            if (request == null)
+            try
             {
-                throw new ArgumentNullException(ErrorMessages.User.RequestNull);
+                if (request == null)
+                {
+                    throw new ArgumentNullException(ErrorMessages.User.RequestNull);
+                }
+
+                // Map DTO to Domain Entity
+                var userDetails = request.ToUserRegisterRequest();
+
+                var existingUser = await _context.Users.FirstOrDefaultAsync(temp => temp.Email == request.Email);
+                if (existingUser != null)
+                {
+                    throw new Exception(ErrorMessages.User.EmailExists);
+                }
+
+                await _context.Users.AddAsync(userDetails);
+                await _context.SaveChangesAsync();
+
+                // Map Domain Entity back to Response DTO
+                var response = UserResigterResponseExtension.ToUserRegisterResponse(userDetails);
+                return response;
             }
-
-            // Map DTO to Domain Entity
-            var userDetails = request.ToUserRegisterRequest();
-
-            var existingUser = await _context.Users.FirstOrDefaultAsync(temp => temp.Email == request.Email);
-            if (existingUser != null)
+            catch (Exception)
             {
-                throw new Exception(ErrorMessages.User.EmailExists);
+                throw new Exception(ErrorMessages.Database.SaveFailed);
             }
-
-            await _context.Users.AddAsync(userDetails);
-            await _context.SaveChangesAsync();
-
-            // Map Domain Entity back to Response DTO
-            var response = UserResigterResponseExtension.ToUserRegisterResponse(userDetails);
-            return response;
         }
     }
 }
