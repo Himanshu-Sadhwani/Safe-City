@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
 using SafeCity.Services;
+using SafeCity.Utility;
 
 namespace SafeCity.Controllers
 {
@@ -37,8 +38,9 @@ namespace SafeCity.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, ErrorMessages.Database.SaveFailed);
             }
         }
+
     }
 }

@@ -26,33 +26,36 @@ public class UserService : IUserService
         // Check if the request exists
         if (request == null)
         {
-            throw new ArgumentNullException(nameof(request));
+            throw new ArgumentNullException(ErrorMessages.User.RequestNull);
         }
 
+
         // Make sure all required information is filled in
-        if (request.PasswordHash == null || request.Email == null ||
-            request.Name == null || request.Phone == null || request.RoleID == null)
+        if (string.IsNullOrWhiteSpace(request.PasswordHash) ||
+            string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Name) ||
+            string.IsNullOrWhiteSpace(request.Phone) ||
+            request.RoleID <= 0)
         {
-            throw new ArgumentException("Required fields are missing.");
+            throw new ArgumentException(ErrorMessages.User.RequiredFields);
         }
 
         // Validate that the email format is correct
         var emailResult = EmailHelper.ValidateEmail(request.Email);
         if (!emailResult.IsValid)
         {
-            throw new Exception(emailResult.Message);
+            throw new Exception(ErrorMessages.Validation.InvalidEmailFormat);
         }
 
         // Validate that the password meets security rules
         var passwordResult = PasswordHelper.ValidatePassword(request.PasswordHash);
         if (!passwordResult.IsValid)
         {
-            throw new Exception(passwordResult.Message);
+            throw new Exception(ErrorMessages.Validation.WeakPassword);
         }
 
         // Hash the password to keep it safe in the database
         request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
-
         // Pass the data to the repository to be saved
         var response = await _userRepository.RegisterUser(request);
 

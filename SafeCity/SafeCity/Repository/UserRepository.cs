@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
 using SafeCity.DTOs;
+using SafeCity.Utility;
 
 namespace SafeCity.Repository
 {
@@ -23,7 +24,7 @@ namespace SafeCity.Repository
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new ArgumentNullException(ErrorMessages.User.RequestNull);
             }
 
             // Map DTO to Domain Entity
@@ -32,7 +33,7 @@ namespace SafeCity.Repository
             var existingUser = await _context.Users.FirstOrDefaultAsync(temp => temp.Email == request.Email);
             if (existingUser != null)
             {
-                throw new Exception("Email Already Exist");
+                throw new Exception(ErrorMessages.User.EmailExists);
             }
 
             await _context.Users.AddAsync(userDetails);
