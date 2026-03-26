@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
 using SafeCity.DTOs;
+
 namespace SafeCity.Repository
 {
     public class UserRepository : IUserRepository
@@ -10,12 +11,22 @@ namespace SafeCity.Repository
         {
             _context = context;
         }
+
+        /// <summary>
+        /// Handles the database logic for registering a user, including email uniqueness checks and persistence.
+        /// </summary>
+        /// <param name="request">The registration request containing user details.</param>
+        /// <returns>A response DTO containing the mapped details of the newly created user.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
+        /// <exception cref="Exception">Thrown when a user with the provided email already exists.</exception>
         public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
+
+            // Map DTO to Domain Entity
             var userDetails = request.ToUserRegisterRequest();
 
             var existingUser = await _context.Users.FirstOrDefaultAsync(temp => temp.Email == request.Email);
@@ -23,8 +34,11 @@ namespace SafeCity.Repository
             {
                 throw new Exception("Email Already Exist");
             }
+
             await _context.Users.AddAsync(userDetails);
             await _context.SaveChangesAsync();
+
+            // Map Domain Entity back to Response DTO
             var response = UserResigterResponseExtension.ToUserRegisterResponse(userDetails);
             return response;
         }
