@@ -1,4 +1,4 @@
-﻿namespace SafeCity.DTOs
+namespace SafeCity.DTOs
 {
     public class LoginRequestDto
     {

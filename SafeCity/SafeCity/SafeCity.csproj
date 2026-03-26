@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+<<<<<<< HEAD
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
@@ -23,6 +24,15 @@
     <Folder Include="Services\" />
     <Folder Include="Utility\" />
   </ItemGroup>
+=======
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0-preview.1.25120.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0-preview.1.25120.3" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.0-preview.1.25120.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.5" />
+	</ItemGroup>
+>>>>>>> 497000d3a9c4eb50a35bbdf1bc6e99bd73aba3c7
 
   <ItemGroup>
     <ProjectReference Include="..\..\SafeCity.Domain\SafeCity.Domain\SafeCity.Domain.csproj" />

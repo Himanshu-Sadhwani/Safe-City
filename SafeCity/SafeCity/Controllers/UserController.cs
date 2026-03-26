@@ -1,17 +1,15 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
 
 namespace SafeCity.Controllers
 {
-
-    [Route("api/v1/auth")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
 
-        public AuthController(IUserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }

@@ -1,20 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using SafeCity.Domain.Entity;
-using SafeCity.Domain.Enum;
 
 namespace SafeCity.Domain.Data
 {
     public class SafeCityDbContext : DbContext
     {
-        // private readonly IConfiguration _configuration;
-        // public SafeCityDbContext(IConfiguration configuration)
-        // {
-        //     _configuration = configuration;
-        // }
 
         public SafeCityDbContext(DbContextOptions<SafeCityDbContext> options)
-            : base(options)
+                  : base(options)
         { }
 
         public virtual DbSet<User> Users { get; set; }
@@ -31,16 +24,6 @@ namespace SafeCity.Domain.Data
         public virtual DbSet<ComplianceRecord> ComplianceRecords { get; set; }
         public virtual DbSet<Audit> Audits { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
-
-        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        // {
-        //     if (!optionsBuilder.IsConfigured)
-        //     {
-        //         optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"))
-        //                       .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
-        //     }
-        // }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
