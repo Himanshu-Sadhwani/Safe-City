@@ -1,14 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
+	  <UserSecretsId>1c22e1d9-c030-4a74-bd2b-e96bff1b4ecc</UserSecretsId>
+  </PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
+		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0-preview.1.25120.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0-preview.1.25120.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.0-preview.1.25120.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.5" />
@@ -16,10 +20,6 @@
 
 	<ItemGroup>
 		<Folder Include="Controllers\" />
-		<Folder Include="DTOs\" />
-		<Folder Include="Repository\" />
-		<Folder Include="Services\" />
-		<Folder Include="Utility\" />
 	</ItemGroup>
 
 	<ItemGroup>
