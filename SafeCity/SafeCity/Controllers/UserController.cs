@@ -37,6 +37,15 @@ namespace SafeCity.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        
+        /// <summary>
+        /// Updates user details by an administrator.
+        /// </summary>
+        /// <param name="user">User details to be updated by admin</param>
+        /// <returns>Returns updated user information</returns>
+        /// <response code="200">User updated successfully</response>
+        /// <response code="400">Invalid request or validation error</response>
+        /// <response code="500">Server error</response>
         [HttpPut("admin/update")]
         public async Task<IActionResult> UpdateUserByAdmin(
             [FromBody] UserUpdateByAdminRequestDto user)
