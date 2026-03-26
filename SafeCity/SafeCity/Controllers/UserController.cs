@@ -14,6 +14,7 @@ namespace SafeCity.Controllers
         {
             _userService = userService;
         }
+
         /// <summary>
         /// Registers a new user into the SafeCity system.
         /// </summary>
@@ -80,4 +81,5 @@ namespace SafeCity.Controllers
             
         }
     }
+    
 }
