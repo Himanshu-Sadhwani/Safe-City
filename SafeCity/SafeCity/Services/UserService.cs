@@ -77,7 +77,7 @@ public class UserService : IUserService
     /// <param name="user">The user entity for whom the token is being created.</param>
     /// <returns>A signed JWT token string containing user claims.</returns>
 
-    public string GenerateJwtToken(User user)
+    private string GenerateJwtToken(User user)
     {
         var claims = new List<Claim>
         {
