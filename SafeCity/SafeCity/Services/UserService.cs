@@ -108,7 +108,7 @@ public class UserService : IUserService
     /// </summary>
     /// <returns>A Base64 encoded secure refresh token string.</returns>
 
-    public string GenerateRefreshToken()
+    private string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
