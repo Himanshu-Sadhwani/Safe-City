@@ -59,7 +59,7 @@ namespace SafeCity.Repository
         /// <exception cref="Exception"> Thrown when the user with the specified ID is not found. </exception>
         /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
 
-        public async Task<UserUpdateByAdminResponseDto> UpdateUserByAdmin(UserUpdateByAdminRequestDto request)
+        public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
         {
             try
             {

@@ -94,7 +94,7 @@ public class UserService : IUserService
             throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.InvalidRoleId);;
 
         // Delegate persistence and data update logic to the repository layer
-        return await _userRepository.UpdateUserByAdmin(request);
+        return await _userRepository.UpdateUser(request);
 
     }
 }
