@@ -78,7 +78,63 @@ public class UserService : IUserService
             throw new Exception(ex.Message);
         }
     }
+    public async Task<ViewOneUserResponseDto> GetUserByIdAsync(int userId)
+    {
+        try
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
 
+            if (user == null)
+            {
+                Console.WriteLine(ErrorMessages.User.UserNotFound);
+                return null;
+            }
+
+            return new ViewOneUserResponseDto
+            {
+                UserId = user.UserID,
+                UserName = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Status = user.Status.ToString(),
+                RoleName = user.UserRole.RoleName.ToString()
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ErrorMessages.User.InternalError} - {ex.Message}");
+            return null;
+        }
+    }
+    public async Task<List<ViewAllUsersResponseDto>> GetAllUsersAsync()
+    {
+        try
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+
+            if (users == null || users.Count == 0)
+            {
+                Console.WriteLine(ErrorMessages.User.NoUsersFound);
+                return new List<ViewAllUsersResponseDto>();
+            }
+
+            return users.Select(user => new ViewAllUsersResponseDto
+            {
+                UserId = user.UserID,
+                UserName = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Status = user.Status.ToString(),
+                RoleName = user.UserRole.RoleName.ToString()
+
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ErrorMessages.User.InternalError} - {ex.Message}");
+            return new List<ViewAllUsersResponseDto>();
+        }
+    }
     /// <summary>
     /// Handles the forgot password operation by validating user input, hashing the new password,
     /// updating it in the database.
@@ -125,6 +181,7 @@ public class UserService : IUserService
         // Update password in database
         return await _userRepository.ForgotPassword(request);
     }
+    
     
     /// <summary>
     /// Validates and updates user details by an administrator.

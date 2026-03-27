@@ -5,11 +5,9 @@ namespace SafeCity.Domain.Data
 {
     public class SafeCityDbContext : DbContext
     {
-
-        public SafeCityDbContext(DbContextOptions<SafeCityDbContext> options)
-                  : base(options)
-        { }
-
+        public SafeCityDbContext(DbContextOptions<SafeCityDbContext> options) : base(options)
+        {
+        }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<AuditLog> AuditLogs { get; set; }
         public virtual DbSet<Incident> Incidents { get; set; }
@@ -24,9 +22,7 @@ namespace SafeCity.Domain.Data
         public virtual DbSet<ComplianceRecord> ComplianceRecords { get; set; }
         public virtual DbSet<Audit> Audits { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
-
-
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

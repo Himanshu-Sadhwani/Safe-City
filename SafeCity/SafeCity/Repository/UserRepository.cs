@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
-using SafeCity.Domain.Enum;
+using SafeCity.Domain.Entity;
 using SafeCity.DTOs;
 using SafeCity.Utility;
 
@@ -53,7 +53,46 @@ namespace SafeCity.Repository
                 throw new Exception(ErrorMessages.Database.SaveFailed);
             }
         }
+
         /// <summary>
+        /// Fetches a user by the given ID, including the associated role.
+        /// </summary>
+        /// <param name="userId">The unique ID of the user.</param>
+        /// <returns>The matching <see cref="User"/> entity, or null if not found.</returns>
+        /// <exception cref="Exception">Thrown when a database error occurs.</exception>
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                return await _context.Users
+                    .Include(u => u.UserRole)
+                    .FirstOrDefaultAsync(u => u.UserID == userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching user by Id", ex);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all users from the database along with their roles.
+        /// </summary>
+        /// <returns>A list of all <see cref="User"/> entities.</returns>
+        /// <exception cref="Exception">Thrown when a database retrieval error occurs.</exception>
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                return await _context.Users
+                    .Include(u => u.UserRole)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching all users", ex);
+            }
+        }
+    /// <summary>
         /// Updates user details by an administrator in the database.
         /// </summary>
         /// <param name="request"> The request DTO containing user ID and updated fields such as name,
@@ -107,6 +146,11 @@ namespace SafeCity.Repository
             }
 
 
+        }
+
+        public Task<ForgotPasswordResponseDto> ForgotPassword(ForgotPasswordRequestDto request)
+        {
+            throw new NotImplementedException();
         }
     }
 }
