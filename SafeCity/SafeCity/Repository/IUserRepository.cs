@@ -1,9 +1,9 @@
-using SafeCity.Domain.Entity;
 using SafeCity.DTOs;
 
-namespace SafeCity.Repository;
-
-public interface IUserRepository
+namespace SafeCity.Repository
 {
-    
+    public interface IUserRepository
+    {
+        public Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request);
+    }
 }
