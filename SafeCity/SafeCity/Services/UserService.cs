@@ -120,7 +120,7 @@ public class UserService : IUserService
     /// <param name="action">The description of the action performed.</param>
     /// <returns>A task representing the asynchronous logging operation.</returns>
 
-    public async Task SaveAuditLog(int userId, string action)
+    private async Task SaveAuditLog(int userId, string action)
     {
         var audit = new AuditLog
         {
