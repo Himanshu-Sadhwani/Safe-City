@@ -4,9 +4,6 @@ using SafeCity.Utility;
 
 namespace SafeCity.Services;
 
-/// <summary>
-/// This service handles the logic for user registration, like validation and security.
-/// </summary>
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -16,49 +13,69 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    /// <summary>
-    /// Checks the user's data, hashes the password, and saves the user to the database.
-    /// </summary>
-    /// <param name="request">The data provided for registration.</param>
-    /// <returns>The result of the registration process.</returns>
     public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request)
     {
-        // Check if the request exists
+        //Initial Null Check
         if (request == null)
         {
-            throw new ArgumentNullException(ErrorMessages.User.RequestNull);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.User.RequestNull);
         }
 
+        var errorList = new List<string>();
+        var fields = ErrorMessages.User.Field;
 
-        // Make sure all required information is filled in
-        if (string.IsNullOrWhiteSpace(request.PasswordHash) ||
-            string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.Name) ||
-            string.IsNullOrWhiteSpace(request.Phone) ||
-            request.RoleID <= 0)
+        // Required Field Validations
+        var nameError = ValidationHelper.CheckNullOrWhiteSpace(request.Name, nameof(request.Name), fields);
+        if (nameError != null) errorList.Add(nameError);
+
+        var emailError = ValidationHelper.CheckNullOrWhiteSpace(request.Email, nameof(request.Email), fields);
+        if (emailError != null) errorList.Add(emailError);
+
+        var passwordError = ValidationHelper.CheckNullOrWhiteSpace(request.PasswordHash, nameof(request.PasswordHash), fields);
+        if (passwordError != null) errorList.Add(passwordError);
+
+        var phoneError = ValidationHelper.CheckNullOrWhiteSpace(request.Phone, nameof(request.Phone), fields);
+        if (phoneError != null) errorList.Add(phoneError);
+
+        //Logic-based Validations (Roles/Formats)
+        if (request.RoleID <= 0)
         {
-            throw new ArgumentException(ErrorMessages.User.RequiredFields);
+            errorList.Add(fields.GetValueOrDefault(nameof(request.RoleID), "Invalid Role."));
         }
 
-        // Validate that the email format is correct
-        var emailResult = EmailHelper.ValidateEmail(request.Email);
-        if (!emailResult.IsValid)
+        // Validate format ONLY if the field wasn't already flagged as missing
+        if (emailError == null)
         {
-            throw new Exception(ErrorMessages.Validation.InvalidEmailFormat);
+            var emailCheck = EmailHelper.ValidateEmail(request.Email);
+            if (!emailCheck.IsValid) errorList.Add(emailCheck.Message);
         }
 
-        // Validate that the password meets security rules
-        var passwordResult = PasswordHelper.ValidatePassword(request.PasswordHash);
-        if (!passwordResult.IsValid)
+        if (passwordError == null)
         {
-            throw new Exception(ErrorMessages.Validation.WeakPassword);
+            var passwordCheck = PasswordHelper.ValidatePassword(request.PasswordHash);
+            if (!passwordCheck.IsValid) errorList.Add(passwordCheck.Message);
         }
 
-        // Hash the password to keep it safe in the database
-        request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
-        // Pass the data to the repository to be saved
-        var response = await _userRepository.RegisterUser(request);
+        // Handle accumulated errors
+        if (errorList.Any())
+        {
+            throw new ArgumentException(string.Join(" | ", errorList));
+        }
 
-        return response;
+        try
+        {
+            // Hash the password
+            request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
+
+            // Handles the EmailExists check
+            var response = await _userRepository.RegisterUser(request);
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
     }
 }

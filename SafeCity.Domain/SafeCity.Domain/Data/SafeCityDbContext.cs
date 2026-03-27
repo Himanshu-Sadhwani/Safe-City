@@ -24,6 +24,9 @@ namespace SafeCity.Domain.Data
         public virtual DbSet<ComplianceRecord> ComplianceRecords { get; set; }
         public virtual DbSet<Audit> Audits { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
