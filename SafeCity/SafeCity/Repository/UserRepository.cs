@@ -65,7 +65,7 @@ namespace SafeCity.Repository
             {
                 if (request == null)
                 {
-                    throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.RequestNull);
+                    throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
                 }
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
@@ -88,7 +88,7 @@ namespace SafeCity.Repository
             }
            catch (ArgumentNullException ex)
             {
-                throw new ApplicationException(ErrorMessages.UserUpdate.RequestNull,ex);
+                throw new ApplicationException(ErrorMessages.UserUpdate.UpdateUserRequest,ex);
             }
             catch (InvalidOperationException ex)
             {
