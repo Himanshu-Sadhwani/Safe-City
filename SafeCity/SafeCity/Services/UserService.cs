@@ -4,9 +4,6 @@ using SafeCity.Utility;
 
 namespace SafeCity.Services;
 
-/// <summary>
-/// This service handles the logic for user registration, like validation and security.
-/// </summary>
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -16,50 +13,117 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    /// <summary>
-    /// Checks the user's data, hashes the password, and saves the user to the database.
-    /// </summary>
-    /// <param name="request">The data provided for registration.</param>
-    /// <returns>The result of the registration process.</returns>
     public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request)
+    {
+        //Initial Null Check
+        if (request == null)
+        {
+            throw new ArgumentNullException(nameof(request), ErrorMessages.User.RequestNull);
+        }
+
+        var errorList = new List<string>();
+        var fields = ErrorMessages.User.Field;
+
+        // Required Field Validations
+        var nameError = ValidationHelper.CheckNullOrWhiteSpace(request.Name, nameof(request.Name), fields);
+        if (nameError != null) errorList.Add(nameError);
+
+        var emailError = ValidationHelper.CheckNullOrWhiteSpace(request.Email, nameof(request.Email), fields);
+        if (emailError != null) errorList.Add(emailError);
+
+        var passwordError = ValidationHelper.CheckNullOrWhiteSpace(request.PasswordHash, nameof(request.PasswordHash), fields);
+        if (passwordError != null) errorList.Add(passwordError);
+
+        var phoneError = ValidationHelper.CheckNullOrWhiteSpace(request.Phone, nameof(request.Phone), fields);
+        if (phoneError != null) errorList.Add(phoneError);
+
+        //Logic-based Validations (Roles/Formats)
+        if (request.RoleID <= 0)
+        {
+            errorList.Add(fields.GetValueOrDefault(nameof(request.RoleID), "Invalid Role."));
+        }
+
+        // Validate format ONLY if the field wasn't already flagged as missing
+        if (emailError == null)
+        {
+            var emailCheck = EmailHelper.ValidateEmail(request.Email);
+            if (!emailCheck.IsValid) errorList.Add(emailCheck.Message);
+        }
+
+        if (passwordError == null)
+        {
+            var passwordCheck = PasswordHelper.ValidatePassword(request.PasswordHash);
+            if (!passwordCheck.IsValid) errorList.Add(passwordCheck.Message);
+        }
+
+        // Handle accumulated errors
+        if (errorList.Any())
+        {
+            throw new ArgumentException(string.Join(" | ", errorList));
+        }
+
+        try
+        {
+            // Hash the password
+            request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
+
+            // Handles the EmailExists check
+            var response = await _userRepository.RegisterUser(request);
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Handles the forgot password operation by validating user input, hashing the new password,
+    /// updating it in the database.
+    /// </summary>
+    /// <param name="request"> The forgot password request containing user email and the new password.</param>
+    /// <returns> A response DTO confirming the password update.</returns>
+    public async Task<ForgotPasswordResponseDto> ForgotPassword(
+        ForgotPasswordRequestDto request)
     {
         // Check if the request exists
         if (request == null)
         {
-            throw new ArgumentNullException(ErrorMessages.User.RequestNull);
+            throw new ArgumentNullException(
+                ErrorMessages.User.RequestNull);
         }
 
-
-        // Make sure all required information is filled in
-        if (string.IsNullOrWhiteSpace(request.PasswordHash) ||
-            string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.Name) ||
-            string.IsNullOrWhiteSpace(request.Phone) ||
-            request.RoleID <= 0)
+        // Validate required fields
+        if (string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.PasswordHash))
         {
-            throw new ArgumentException(ErrorMessages.User.RequiredFields);
+            throw new ArgumentException(
+                ErrorMessages.User.RequiredFields);
         }
 
-        // Validate that the email format is correct
+        // Validate email format
         var emailResult = EmailHelper.ValidateEmail(request.Email);
         if (!emailResult.IsValid)
         {
-            throw new Exception(ErrorMessages.Validation.InvalidEmailFormat);
+            throw new Exception(
+                ErrorMessages.Validation.InvalidEmailFormat);
         }
 
-        // Validate that the password meets security rules
-        var passwordResult = PasswordHelper.ValidatePassword(request.PasswordHash);
+        // Validate password strength
+        var passwordResult =
+            PasswordHelper.ValidatePassword(request.PasswordHash);
         if (!passwordResult.IsValid)
         {
-            throw new Exception(ErrorMessages.Validation.WeakPassword);
+            throw new Exception(
+                ErrorMessages.Validation.WeakPassword);
         }
 
-        // Hash the password to keep it safe in the database
+        // Hash the new password
         request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
-        // Pass the data to the repository to be saved
-        var response = await _userRepository.RegisterUser(request);
-
-        return response;
+        // Update password in database
+        return await _userRepository.ForgotPassword(request);
     }
     
     /// <summary>

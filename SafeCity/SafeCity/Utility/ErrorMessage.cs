@@ -8,6 +8,25 @@
             public const string RequiredFields = "Required fields are missing or invalid.";
             public const string EmailExists = "A user with this email already exists.";
             public const string InternalError = "An internal server error occurred.";
+
+            public static readonly Dictionary<string, string> Field = new()
+        {
+            { "request", "The entire request object is missing or invalid." },
+            { "Name", "Full Name is required and cannot be empty." },
+            { "Email", "A valid Email address is required." },
+            { "PasswordHash", "Password is required." },
+            { "PasswordSalt", "Security salt is missing." },
+            { "Phone", "Phone number is required for contact." },
+            { "RoleID", "A valid User Role must be selected." }
+        };
+
+        }
+
+        public static class ForgotPassword
+        {
+            public const string UserNotFound = "No user found with the provided email address.";
+            public const string ProcessingFailed = "An error occurred while processing the forgot password request.";
+            public const string SameAsOldPassword = "The new password must be different from the old password.";
         }
         public static class UserUpdate
         {
@@ -19,6 +38,7 @@
             public const string InvalidRoleId = "Invalid RoleID.";
             public const string UpdateFailed = "User update failed.";
         }
+
 
         public static class Validation
         {
