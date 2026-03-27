@@ -9,7 +9,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("SafeCity")
+        b => b.MigrationsAssembly("SafeCity.Domain")
     )
 );
 builder.Services.AddEndpointsApiExplorer();
