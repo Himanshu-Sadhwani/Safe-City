@@ -64,18 +64,16 @@ namespace SafeCity.Repository
 
         public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
         {
-            try
-            {
                 if (request == null)
                 {
                     throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
                 }
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
-
+                
                 if (user == null)
                 {
-                    throw new InvalidOperationException(ErrorMessages.UserUpdate.UserNotFound);
+                    throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
                 }
 
                 // Update allowed fields
@@ -88,23 +86,7 @@ namespace SafeCity.Repository
 
                 // Map Domain Entity to Response DTO
                 return user.ToUserUpdateByAdminResponse();
-            }
-           catch (ArgumentNullException ex)
-            {
-                throw new ApplicationException(ErrorMessages.UserUpdate.UpdateUserRequest,ex);
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new ApplicationException(ErrorMessages.UserUpdate.UserNotFound,ex);
-            }
-            catch (DbUpdateException ex)
-            {
-            throw new DbUpdateException(ErrorMessages.Database.UpdateFailed,ex);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException(ErrorMessages.User.InternalError,ex);
-            }
+           
         }
         /// <summary>
         /// Handles the database logic for updating a user's password based on the provided email address.

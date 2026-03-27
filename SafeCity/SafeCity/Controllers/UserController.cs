@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SafeCity.DTOs;
 using SafeCity.Services;
 using SafeCity.Utility;
@@ -51,8 +52,8 @@ namespace SafeCity.Controllers
         /// <response code="200">User updated successfully</response>
         /// <response code="400">Invalid request or validation error</response>
         /// <response code="500">Server error</response> 
-         [Authorize(Roles = "Admin")]  
-         [HttpPut("update")]   
+        // [Authorize(Roles = "Admin")]  
+         [HttpPut("admin/update")]   
         [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -67,20 +68,29 @@ namespace SafeCity.Controllers
                 var response = await _userService.UpdateUser(user);
                 return Ok(response);
             }
-            catch (ArgumentNullException)
+            
+            catch (ArgumentException ex)
             {
-                return BadRequest(new
-                {
-                    error = ErrorMessages.UserUpdate.UpdateUserRequest
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new {
+                    error = ErrorMessages.Database.UpdateFailed
                 });
             }
-
-            catch (Exception ex)
+            catch (Exception)
             {
-                //Throwing Exception
-                return StatusCode(StatusCodes.Status500InternalServerError,ErrorMessages.User.InternalError);
-            } 
+                return StatusCode(500, new {
+                    error = ErrorMessages.User.InternalError
+                });
+            }
         }
+
         
         /// <summary>
         /// Initiates the forgot password process for a user.
