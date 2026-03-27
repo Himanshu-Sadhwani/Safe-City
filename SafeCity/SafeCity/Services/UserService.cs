@@ -18,7 +18,6 @@ namespace SafeCity.Services;
 
 public class UserService : IUserService
 {
-    private readonly SafeCityDbContext _context;
     private readonly IConfiguration _config;
     private readonly IUserRepository _userRepository;
 
@@ -28,10 +27,8 @@ public class UserService : IUserService
     /// <param name="context">The database context for accessing user and audit log data.</param>
     /// <param name="config">The application configuration used for JWT settings.</param>
     /// <param name="userRepository">The user repository for handling user data operations.</param>
-
-    public UserService(SafeCityDbContext context, IConfiguration config, IUserRepository userRepository)
+    public UserService(IConfiguration config, IUserRepository userRepository)
     {
-        _context = context;
         _config = config;
         _userRepository = userRepository;
     }
@@ -44,15 +41,12 @@ public class UserService : IUserService
     /// A <see cref="LoginResponseDto"/> containing the access token, refresh token, 
     /// and expiration details if successful; otherwise, null.
     /// </returns>
-
     public async Task<LoginResponseDto> LoginUser(LoginRequest dto)
     {
-        var user = await _context.Users
-            .Include(u => u.UserRole)
-            .FirstOrDefaultAsync(u =>
-                u.Email == dto.Email &&
-                u.Status == UserStatus.Active
-            );
+        var user = await _userRepository.GetUserByEmailAndStatusAsync(
+            dto.Email,
+            UserStatus.Active
+        );
 
         if (user == null)
             throw new Exception(ErrorMessages.User.UserNotFound);
@@ -64,7 +58,7 @@ public class UserService : IUserService
         var accessToken = GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
 
-        await SaveAuditLog(user.UserID, "Login");
+        await _userRepository.SaveAuditLogAsync(user.UserID, "Login");
 
         return new LoginResponseDto
         {
@@ -79,7 +73,6 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="user">The user entity for whom the token is being created.</param>
     /// <returns>A signed JWT token string containing user claims.</returns>
-
     private string GenerateJwtToken(User user)
     {
         var claims = new List<Claim>
@@ -110,31 +103,9 @@ public class UserService : IUserService
     /// Generates a secure random refresh token for long-lived authentication.
     /// </summary>
     /// <returns>A Base64 encoded secure refresh token string.</returns>
-
     private string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-    }
-
-    /// <summary>
-    /// Saves an audit log entry for user actions such as login.
-    /// </summary>
-    /// <param name="userId">The ID of the user performing the action.</param>
-    /// <param name="action">The description of the action performed.</param>
-    /// <returns>A task representing the asynchronous logging operation.</returns>
-
-    private async Task SaveAuditLog(int userId, string action)
-    {
-        var audit = new AuditLog
-        {
-            UserID = userId,
-            Action = action,
-            Resource = "Auth/Login",
-            Timestamp = DateTime.UtcNow
-        };
-
-        _context.AuditLogs.Add(audit);
-        await _context.SaveChangesAsync();
     }
 
     /// <summary>
@@ -263,7 +234,6 @@ public class UserService : IUserService
     /// <returns> A response DTO containing the updated user information. </returns>
     /// <exception cref="ArgumentNullException"> Thrown when the request object is null. </exception>
     /// <exception cref="ArgumentException"> Thrown when provided data is invalid (e.g., invalid IDs or missing fields). </exception>
-
     public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
     {
         // Check if the request exists
