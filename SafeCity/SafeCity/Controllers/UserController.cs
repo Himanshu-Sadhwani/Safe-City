@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
 using SafeCity.Services;
-using SafeCity.Utility;
 
 namespace SafeCity.Controllers
 {
@@ -33,12 +32,13 @@ namespace SafeCity.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+
                 var response = await _userService.RegisterUser(user);
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessages.Database.SaveFailed);
+                return StatusCode(500, ex.Message);
             }
         }
 

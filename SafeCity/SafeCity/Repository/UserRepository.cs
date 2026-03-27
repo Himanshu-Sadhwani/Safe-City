@@ -22,21 +22,22 @@ namespace SafeCity.Repository
         /// <exception cref="Exception">Thrown when a user with the provided email already exists.</exception>
         public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(ErrorMessages.User.RequestNull);
+            }
+
+            // Check if email already exists BEFORE the try block so the catch doesn't overwrite it
+            var existingUser = await _context.Users.FirstOrDefaultAsync(temp => temp.Email == request.Email);
+            if (existingUser != null)
+            {
+                throw new Exception(ErrorMessages.User.EmailExists);
+            }
+
             try
             {
-                if (request == null)
-                {
-                    throw new ArgumentNullException(ErrorMessages.User.RequestNull);
-                }
-
                 // Map DTO to Domain Entity
                 var userDetails = request.ToUserRegisterRequest();
-
-                var existingUser = await _context.Users.FirstOrDefaultAsync(temp => temp.Email == request.Email);
-                if (existingUser != null)
-                {
-                    throw new Exception(ErrorMessages.User.EmailExists);
-                }
 
                 await _context.Users.AddAsync(userDetails);
                 await _context.SaveChangesAsync();
@@ -47,6 +48,7 @@ namespace SafeCity.Repository
             }
             catch (Exception)
             {
+                // This will now only catch real database failures (like connection or length issues)
                 throw new Exception(ErrorMessages.Database.SaveFailed);
             }
         }
