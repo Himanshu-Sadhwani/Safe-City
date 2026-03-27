@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
+using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Utility;
 
@@ -70,7 +71,7 @@ namespace SafeCity.Repository
                 }
 
                 var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+                    .FirstOrDefaultAsync(u => u.Email == request.Email && u.Status == UserStatus.Active);
 
                 if (user == null)
                 {

@@ -42,7 +42,7 @@ namespace SafeCity.Controllers
             }
         }
 
-        [HttpPost("forgotpassword")]
+        [HttpPut("forgotpassword")]
         [ProducesResponseType(typeof(ForgotPasswordResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]

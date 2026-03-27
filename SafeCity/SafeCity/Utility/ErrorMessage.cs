@@ -15,7 +15,6 @@
             public const string UserNotFound = "No user found with the provided email address.";
             public const string ProcessingFailed = "An error occurred while processing the forgot password request.";
             public const string SameAsOldPassword = "The new password must be different from the old password.";
-
         }
 
 
