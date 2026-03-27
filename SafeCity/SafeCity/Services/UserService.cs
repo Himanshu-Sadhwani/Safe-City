@@ -12,6 +12,7 @@ using SafeCity.Domain.Entity;
 using SafeCity.Domain.Data;
 using Microsoft.EntityFrameworkCore;
 using SafeCity.Utility;
+using SafeCity.Domain.Enum;
 namespace SafeCity.Services;
 
 public class UserService : IUserService
@@ -47,16 +48,19 @@ public class UserService : IUserService
     {
         var user = await _context.Users
             .Include(u => u.UserRole)
-            .FirstOrDefaultAsync(u => u.Email == dto.Email);
+            .FirstOrDefaultAsync(u =>
+                u.Email == dto.Email &&
+                u.Status == UserStatus.Active
+            );
 
         if (user == null)
-            return null;
+            throw new Exception(ErrorMessages.User.UserNotFound);
 
         var result = new PasswordHasher<User>()
             .VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
         if (result == PasswordVerificationResult.Failed)
-            return null;
+            throw new Exception(ErrorMessages.User.InvalidCredentials);
 
         var accessToken = GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
@@ -77,7 +81,7 @@ public class UserService : IUserService
     /// <param name="user">The user entity for whom the token is being created.</param>
     /// <returns>A signed JWT token string containing user claims.</returns>
 
-    public string GenerateJwtToken(User user)
+    private string GenerateJwtToken(User user)
     {
         var claims = new List<Claim>
         {
@@ -108,7 +112,7 @@ public class UserService : IUserService
     /// </summary>
     /// <returns>A Base64 encoded secure refresh token string.</returns>
 
-    public string GenerateRefreshToken()
+    private string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
@@ -120,7 +124,7 @@ public class UserService : IUserService
     /// <param name="action">The description of the action performed.</param>
     /// <returns>A task representing the asynchronous logging operation.</returns>
 
-    public async Task SaveAuditLog(int userId, string action)
+    private async Task SaveAuditLog(int userId, string action)
     {
         var audit = new AuditLog
         {
