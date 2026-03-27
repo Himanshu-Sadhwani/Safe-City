@@ -44,7 +44,7 @@ public class UserService : IUserService
     /// and expiration details if successful; otherwise, null.
     /// </returns>
 
-    public async Task<LoginResponseDto?> LoginUser(LoginRequestDto dto)
+    public async Task<LoginResponseDto> LoginUser(LoginRequestDto dto)
     {
         var user = await _context.Users
             .Include(u => u.UserRole)
