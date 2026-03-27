@@ -82,14 +82,15 @@ public class UserService : IUserService
     {
         try
         {
+            // Fetch user entity from repository 
             var user = await _userRepository.GetUserByIdAsync(userId);
-
+            // Return null if the user ID does not exist in the database
             if (user == null)
             {
                 Console.WriteLine(ErrorMessages.User.UserNotFound);
                 return null;
             }
-
+            // Map database entity to response DTO for client consumption
             return new ViewOneUserResponseDto
             {
                 UserId = user.UserID,
@@ -110,14 +111,17 @@ public class UserService : IUserService
     {
         try
         {
+            // Retrieve all users including associated roles
             var users = await _userRepository.GetAllUsersAsync();
 
+            // Handle case where no users exist in the database
             if (users == null || users.Count == 0)
             {
                 Console.WriteLine(ErrorMessages.User.NoUsersFound);
                 return new List<ViewAllUsersResponseDto>();
             }
 
+            // Convert user entities into response DTO list
             return users.Select(user => new ViewAllUsersResponseDto
             {
                 UserId = user.UserID,

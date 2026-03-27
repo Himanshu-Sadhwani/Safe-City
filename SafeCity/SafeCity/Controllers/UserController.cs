@@ -43,6 +43,7 @@ namespace SafeCity.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         /// <summary>
         /// Retrieves a specific user's details based on the provided unique user ID.
         /// </summary>
@@ -51,6 +52,7 @@ namespace SafeCity.Controllers
         /// An IActionResult containing the user's details if found, 
         /// or an appropriate error message if the user does not exist or an error occurs.
         /// </returns>
+        
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ViewOneUserResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -79,6 +81,7 @@ namespace SafeCity.Controllers
         /// An IActionResult containing a list of user details if users exist, 
         /// or an appropriate error message if no users are found or an unexpected error occurs.
         /// </returns>
+        
         [HttpGet]
         [ProducesResponseType(typeof(List<ViewAllUsersResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]

@@ -60,6 +60,7 @@ namespace SafeCity.Repository
         /// <param name="userId">The unique ID of the user.</param>
         /// <returns>The matching <see cref="User"/> entity, or null if not found.</returns>
         /// <exception cref="Exception">Thrown when a database error occurs.</exception>
+        
         public async Task<User> GetUserByIdAsync(int userId)
         {
             try
@@ -79,6 +80,7 @@ namespace SafeCity.Repository
         /// </summary>
         /// <returns>A list of all <see cref="User"/> entities.</returns>
         /// <exception cref="Exception">Thrown when a database retrieval error occurs.</exception>
+        
         public async Task<List<User>> GetAllUsersAsync()
         {
             try
