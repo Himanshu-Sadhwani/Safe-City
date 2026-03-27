@@ -71,11 +71,11 @@ public class UserService : IUserService
     /// <exception cref="ArgumentNullException"> Thrown when the request object is null. </exception>
     /// <exception cref="ArgumentException"> Thrown when provided data is invalid (e.g., invalid IDs or missing fields). </exception>
 
-    public async Task<UserUpdateByAdminResponseDto> UpdateUserByAdmin(UserUpdateByAdminRequestDto request)
+    public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
     {
         // Check if the request exists
         if (request == null)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.RequestNull);
+            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
 
         // Validate that the UserID is a positive number
         if (request.UserID <= 0)

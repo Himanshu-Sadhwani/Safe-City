@@ -11,7 +11,7 @@
         }
         public static class UserUpdate
         {
-            public const string RequestNull = "Update request cannot be null.";
+            public const string UpdateUserRequest = "Update request cannot be null.";
             public const string InvalidUserId = "Invalid UserID.";
             public const string UserNotFound = "User not found.";
             public const string NameRequired = "Name is required.";
