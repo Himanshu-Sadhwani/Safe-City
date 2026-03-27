@@ -24,7 +24,6 @@ namespace SafeCity.DTOs
                 Name = user.Name,
                 RoleID = user.RoleID,
                 RoleName = ((UserRoleOption)user.RoleID).ToString(),
-                Email = user.Email,
                 Phone = user.Phone,
                 Status = user.Status,
                 CurrentStatus = ((UserStatus)user.Status).ToString()
