@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
+using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Utility;
 
@@ -51,6 +52,61 @@ namespace SafeCity.Repository
                 // This will now only catch real database failures (like connection or length issues)
                 throw new Exception(ErrorMessages.Database.SaveFailed);
             }
+        }
+        /// <summary>
+        /// Updates user details by an administrator in the database.
+        /// </summary>
+        /// <param name="request"> The request DTO containing user ID and updated fields such as name,
+        /// phone, role, and status. </param>
+        /// <returns> A response DTO containing the updated user information. </returns>
+        /// <exception cref="Exception"> Thrown when the user with the specified ID is not found. </exception>
+        /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
+
+        public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
+                }
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
+
+                if (user == null)
+                {
+                    throw new InvalidOperationException(ErrorMessages.UserUpdate.UserNotFound);
+                }
+
+                // Update allowed fields
+                user.Name = request.Name;
+                user.Phone = request.Phone;
+                user.RoleID = request.RoleID;
+                user.Status = request.Status;
+
+                await _context.SaveChangesAsync();
+
+                // Map Domain Entity to Response DTO
+                return user.ToUserUpdateByAdminResponse();
+            }
+           catch (ArgumentNullException ex)
+            {
+                throw new ApplicationException(ErrorMessages.UserUpdate.UpdateUserRequest,ex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new ApplicationException(ErrorMessages.UserUpdate.UserNotFound,ex);
+            }
+            catch (DbUpdateException ex)
+            {
+            throw new DbUpdateException(ErrorMessages.Database.UpdateFailed,ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException(ErrorMessages.User.InternalError,ex);
+            }
+
+
         }
     }
 }

@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("SafeCity")
+        b => b.MigrationsAssembly("SafeCity.Domain")
     )
 );
 

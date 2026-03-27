@@ -23,6 +23,24 @@
             };
         }
 
+        public static class ForgotPassword
+        {
+            public const string UserNotFound = "No user found with the provided email address.";
+            public const string ProcessingFailed = "An error occurred while processing the forgot password request.";
+            public const string SameAsOldPassword = "The new password must be different from the old password.";
+        }
+        public static class UserUpdate
+        {
+            public const string UpdateUserRequest = "Update request cannot be null.";
+            public const string InvalidUserId = "Invalid UserID.";
+            public const string UserNotFound = "User not found.";
+            public const string NameRequired = "Name is required.";
+            public const string PhoneRequired = "Phone number is required.";
+            public const string InvalidRoleId = "Invalid RoleID.";
+            public const string UpdateFailed = "User update failed.";
+        }
+
+
         public static class Validation
         {
             public const string InvalidEmailFormat = "The email address provided is not in a valid format.";
@@ -32,6 +50,7 @@
         public static class Database
         {
             public const string SaveFailed = "An error occurred while saving the user to the database.";
+            public const string UpdateFailed = "An error occurred while updating the user in the database.";
         }
     }
 }

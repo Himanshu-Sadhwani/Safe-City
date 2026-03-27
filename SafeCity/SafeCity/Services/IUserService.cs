@@ -6,5 +6,7 @@ namespace SafeCity.Services
     {
         public Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request);
         Task<LoginResponseDto?> LoginUser(LoginRequestDto loginRequestDto);
+        public Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request);
+        public Task<ForgotPasswordResponseDto> ForgotPassword(ForgotPasswordRequestDto request);
     }
 }
