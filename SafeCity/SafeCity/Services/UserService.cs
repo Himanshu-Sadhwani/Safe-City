@@ -51,7 +51,7 @@ public class UserService : IUserService
             errorList.Add(ErrorMessages.User.Field.GetValueOrDefault(nameof(request.RoleID), "Invalid Role."));
 
         // Validate that the email format is correct (only if email was provided)
-        if (!string.IsNullOrWhiteSpace(request.Email) && !EmailHelper.ValidateEmail(request.Email).IsValid)
+        if (!string.IsNullOrWhiteSpace(request.Email) && EmailHelper.ValidateEmail(request.Email).IsValid)
         {
             var message = EmailHelper.ValidateEmail(request.Email);
             errorList.Add(message.Message);
