@@ -17,7 +17,7 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
 );
 
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
-builder.Services.AddScoped<SafeCity.Services.UserService, SafeCity.Services.UserService>();
+builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -46,7 +46,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authentication using Beare scheme"
+        Description = "JWT Authentication using Bearer scheme"
     });
     options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
     {
@@ -60,8 +60,6 @@ app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.UseSwagger();
     app.UseSwaggerUI();
 }

@@ -13,6 +13,7 @@ using SafeCity.Domain.Data;
 using Microsoft.EntityFrameworkCore;
 using SafeCity.Utility;
 using SafeCity.Domain.Enum;
+using Microsoft.AspNetCore.Identity.Data;
 namespace SafeCity.Services;
 
 public class UserService : IUserService
@@ -44,7 +45,7 @@ public class UserService : IUserService
     /// and expiration details if successful; otherwise, null.
     /// </returns>
 
-    public async Task<LoginResponseDto> LoginUser(LoginRequestDto dto)
+    public async Task<LoginResponseDto> LoginUser(LoginRequest dto)
     {
         var user = await _context.Users
             .Include(u => u.UserRole)
@@ -56,10 +57,8 @@ public class UserService : IUserService
         if (user == null)
             throw new Exception(ErrorMessages.User.UserNotFound);
 
-        var result = new PasswordHasher<User>()
-            .VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-
-        if (result == PasswordVerificationResult.Failed)
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+        if (!isPasswordValid)
             throw new Exception(ErrorMessages.User.InvalidCredentials);
 
         var accessToken = GenerateJwtToken(user);
@@ -255,7 +254,7 @@ public class UserService : IUserService
         // Update password in database
         return await _userRepository.ForgotPassword(request);
     }
-    
+
     /// <summary>
     /// Validates and updates user details by an administrator.
     /// </summary>
@@ -269,23 +268,23 @@ public class UserService : IUserService
     {
         // Check if the request exists
         if (request == null)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
 
         // Validate that the UserID is a positive number
         if (request.UserID <= 0)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.InvalidUserId);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidUserId);
 
         // Validate that the user's name is provided
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.NameRequired);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.NameRequired);
 
         // Validate that the phone number is provided
         if (string.IsNullOrWhiteSpace(request.Phone))
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.PhoneRequired);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.PhoneRequired);
 
         // Validate that the RoleID is valid
         if (request.RoleID <= 0)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.InvalidRoleId);;
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidRoleId); ;
 
         // Delegate persistence and data update logic to the repository layer
         return await _userRepository.UpdateUser(request);

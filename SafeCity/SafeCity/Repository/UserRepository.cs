@@ -14,6 +14,11 @@ namespace SafeCity.Repository
             _context = context;
         }
 
+        public Task<ForgotPasswordResponseDto> ForgotPassword(ForgotPasswordRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Handles the database logic for registering a user, including email uniqueness checks and persistence.
         /// </summary>
