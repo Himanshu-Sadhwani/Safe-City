@@ -61,4 +61,52 @@ public class UserService : IUserService
 
         return response;
     }
+
+    /// <summary>
+    /// Handles the forgot password operation by validating user input, hashing the new password,
+    /// updating it in the database.
+    /// </summary>
+    /// <param name="request"> The forgot password request containing user email and the new password.</param>
+    /// <returns> A response DTO confirming the password update.</returns>
+    public async Task<ForgotPasswordResponseDto> ForgotPassword(
+        ForgotPasswordRequestDto request)
+    {
+        // Check if the request exists
+        if (request == null)
+        {
+            throw new ArgumentNullException(
+                ErrorMessages.User.RequestNull);
+        }
+
+        // Validate required fields
+        if (string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.PasswordHash))
+        {
+            throw new ArgumentException(
+                ErrorMessages.User.RequiredFields);
+        }
+
+        // Validate email format
+        var emailResult = EmailHelper.ValidateEmail(request.Email);
+        if (!emailResult.IsValid)
+        {
+            throw new Exception(
+                ErrorMessages.Validation.InvalidEmailFormat);
+        }
+
+        // Validate password strength
+        var passwordResult =
+            PasswordHelper.ValidatePassword(request.PasswordHash);
+        if (!passwordResult.IsValid)
+        {
+            throw new Exception(
+                ErrorMessages.Validation.WeakPassword);
+        }
+
+        // Hash the new password
+        request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
+        // Update password in database
+        return await _userRepository.ForgotPassword(request);
+    }
+
 }

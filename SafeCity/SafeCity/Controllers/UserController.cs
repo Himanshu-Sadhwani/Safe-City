@@ -42,5 +42,30 @@ namespace SafeCity.Controllers
             }
         }
 
+        [HttpPost("forgotpassword")]
+        [ProducesResponseType(typeof(ForgotPasswordResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ErrorMessages.User.RequiredFields);
+                }
+
+                var response = await _userService.ForgotPassword(request);
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, ErrorMessages.Database.ForgotPasswordFailed);
+            }
+        }
     }
 }
