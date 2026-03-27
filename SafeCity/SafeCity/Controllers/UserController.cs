@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
 using SafeCity.Services;
-
+using SafeCity.Utility;
 namespace SafeCity.Controllers
 {
     [Route("api/v1/[controller]")]
@@ -41,31 +42,44 @@ namespace SafeCity.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-        [HttpPut("forgotpassword")]
-        [ProducesResponseType(typeof(ForgotPasswordResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto request)
+        
+        /// <summary>
+        /// Updates user details by an administrator.
+        /// </summary>
+        /// <param name="user">User details to be updated by admin</param>
+        /// <returns>Returns updated user information</returns>
+        /// <response code="200">User updated successfully</response>
+        /// <response code="400">Invalid request or validation error</response>
+        /// <response code="500">Server error</response> 
+         [Authorize(Roles = "Admin")]  
+         [HttpPut("update")]   
+        [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUserByAdmin(
+            [FromBody] UserUpdateByAdminRequestDto user)
         {
             try
             {
                 if (!ModelState.IsValid)
-                {
-                    return BadRequest(ErrorMessages.User.RequiredFields);
-                }
+                    return BadRequest(ModelState);
 
-                var response = await _userService.ForgotPassword(request);
+                var response = await _userService.UpdateUser(user);
                 return Ok(response);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentNullException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    error = ErrorMessages.UserUpdate.UpdateUserRequest
+                });
             }
-            catch (Exception)
+
+            catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessages.Database.ForgotPasswordFailed);
-            }
+                //Throwing Exception
+                return StatusCode(StatusCodes.Status500InternalServerError,ErrorMessages.User.InternalError);
+            } 
         }
     }
 }

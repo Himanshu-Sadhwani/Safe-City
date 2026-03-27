@@ -53,46 +53,60 @@ namespace SafeCity.Repository
                 throw new Exception(ErrorMessages.Database.SaveFailed);
             }
         }
-
         /// <summary>
-        /// Handles the database logic for updating a user's password based on the provided email address.
+        /// Updates user details by an administrator in the database.
         /// </summary>
-        /// <param name="request"> The forgot password request containing email and hashed password.</param>
-        /// <returns> A response DTO confirming password update operation.</returns>
-        /// <exception cref="ArgumentNullException"> Thrown when the request object is null.</exception>
-        /// <exception cref="Exception"> Thrown when the user does not exist or when saving to the database fails.</exception>
-        public async Task<ForgotPasswordResponseDto> ForgotPassword(
-            ForgotPasswordRequestDto request)
+        /// <param name="request"> The request DTO containing user ID and updated fields such as name,
+        /// phone, role, and status. </param>
+        /// <returns> A response DTO containing the updated user information. </returns>
+        /// <exception cref="Exception"> Thrown when the user with the specified ID is not found. </exception>
+        /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
+
+        public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
         {
             try
             {
                 if (request == null)
                 {
-                    throw new ArgumentNullException(
-                        ErrorMessages.User.RequestNull);
+                    throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
                 }
 
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Email == request.Email && u.Status == UserStatus.Active);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
 
                 if (user == null)
                 {
-                    throw new Exception(ErrorMessages.User.EmailExists);
+                    throw new InvalidOperationException(ErrorMessages.UserUpdate.UserNotFound);
                 }
 
-                // Update password using request DTO logic
-                request.UpdateUserPassword(user);
+                // Update allowed fields
+                user.Name = request.Name;
+                user.Phone = request.Phone;
+                user.RoleID = request.RoleID;
+                user.Status = request.Status;
 
-                _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                // Map updated entity to response DTO
-                return user.ToForgotPasswordResponse();
+                // Map Domain Entity to Response DTO
+                return user.ToUserUpdateByAdminResponse();
             }
-            catch
+           catch (ArgumentNullException ex)
             {
-                throw new Exception(ErrorMessages.Database.ForgotPasswordFailed);
+                throw new ApplicationException(ErrorMessages.UserUpdate.UpdateUserRequest,ex);
             }
+            catch (InvalidOperationException ex)
+            {
+                throw new ApplicationException(ErrorMessages.UserUpdate.UserNotFound,ex);
+            }
+            catch (DbUpdateException ex)
+            {
+            throw new DbUpdateException(ErrorMessages.Database.UpdateFailed,ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException(ErrorMessages.User.InternalError,ex);
+            }
+
+
         }
     }
 }
