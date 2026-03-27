@@ -65,14 +65,14 @@ namespace SafeCity.Repository
             {
                 if (request == null)
                 {
-                    throw new ArgumentNullException(nameof(request),ErrorMessageUpdate.UserUpdate.RequestNull);
+                    throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.RequestNull);
                 }
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
 
                 if (user == null)
                 {
-                    throw new InvalidOperationException(ErrorMessageUpdate.UserUpdate.UserNotFound);
+                    throw new InvalidOperationException(ErrorMessages.UserUpdate.UserNotFound);
                 }
 
                 // Update allowed fields
@@ -88,19 +88,19 @@ namespace SafeCity.Repository
             }
            catch (ArgumentNullException ex)
             {
-                throw new ApplicationException(ErrorMessageUpdate.UserUpdate.RequestNull,ex);
+                throw new ApplicationException(ErrorMessages.UserUpdate.RequestNull,ex);
             }
             catch (InvalidOperationException ex)
             {
-                throw new ApplicationException(ErrorMessageUpdate.UserUpdate.UserNotFound,ex);
+                throw new ApplicationException(ErrorMessages.UserUpdate.UserNotFound,ex);
             }
             catch (DbUpdateException ex)
             {
-            throw new DbUpdateException(ErrorMessageUpdate.Database.UpdateFailed,ex);
+            throw new DbUpdateException(ErrorMessages.Database.UpdateFailed,ex);
             }
             catch (Exception ex)
             {
-                throw new ApplicationException(ErrorMessageUpdate.User.InternalError,ex);
+                throw new ApplicationException(ErrorMessages.User.InternalError,ex);
             }
 
 

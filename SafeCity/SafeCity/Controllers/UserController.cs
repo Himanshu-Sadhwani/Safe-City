@@ -69,17 +69,16 @@ namespace SafeCity.Controllers
             {
                 return BadRequest(new
                 {
-                    error = ErrorMessageUpdate.UserUpdate.RequestNull
+                    error = ErrorMessages.UserUpdate.RequestNull
                 });
             }
 
             catch (Exception ex)
             {
                 //Throwing Exception
-                return StatusCode(StatusCodes.Status500InternalServerError,ErrorMessageUpdate.User.InternalError);
+                return StatusCode(StatusCodes.Status500InternalServerError,ErrorMessages.User.InternalError);
             }
             
         }
     }
-    
 }
