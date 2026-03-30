@@ -198,25 +198,28 @@ public class UserService : IUserService
 
     public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
     {
+        var errorList = new List<string>();
         // Check if the request exists
         if (request == null)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
+            errorList.Add(ErrorMessages.UserUpdate.UpdateUserRequest);
 
         // Validate that the UserID is a positive number
         if (request.UserID <= 0)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.InvalidUserId);
+            errorList.Add(ErrorMessages.UserUpdate.InvalidUserId);
 
         // Validate that the user's name is provided
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.NameRequired);
+           errorList.Add(ErrorMessages.UserUpdate.NameRequired);
 
         // Validate that the phone number is provided
         if (string.IsNullOrWhiteSpace(request.Phone))
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.PhoneRequired);
-
+            errorList.Add(ErrorMessages.UserUpdate.PhoneRequired);
         // Validate that the RoleID is valid
-        if (request.RoleID <= 0)
-            throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.InvalidRoleId);;
+        if (request.RoleID <= 0)        
+            errorList.Add(ErrorMessages.UserUpdate.InvalidRoleId);
+
+        if (errorList.Any())
+            throw new ArgumentException(string.Join(" | ", errorList));
 
         // Delegate persistence and data update logic to the repository layer
         return await _userRepository.UpdateUser(request);
