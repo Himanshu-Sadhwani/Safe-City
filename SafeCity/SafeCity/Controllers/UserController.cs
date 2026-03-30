@@ -52,8 +52,8 @@ namespace SafeCity.Controllers
         /// <response code="200">User updated successfully</response>
         /// <response code="400">Invalid request or validation error</response>
         /// <response code="500">Server error</response> 
-         [Authorize(Roles = "Admin")]  
-         [HttpPut("update")]   
+        [Authorize(Roles = "Admin")]  
+        [HttpPut("update")]   
         [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
