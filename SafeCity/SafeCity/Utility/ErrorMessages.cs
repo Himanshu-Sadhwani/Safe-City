@@ -10,7 +10,7 @@
             public const string InternalError = "An internal server error occurred.";
             public const string UserNotFound = "User does not exist or is inactive.";
             public const string InvalidCredentials = "Invalid email or password.";
-
+            public const string NoUsersFound = "No users found.";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "request", "The entire request object is missing or invalid." },
@@ -51,6 +51,7 @@
         {
             public const string SaveFailed = "An error occurred while saving the user to the database.";
             public const string UpdateFailed = "An error occurred while updating the user in the database.";
+            public const string ForgotPasswordFailed = "An error occured while processing the passwrod request.";
         }
     }
 }

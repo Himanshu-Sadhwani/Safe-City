@@ -15,11 +15,6 @@ namespace SafeCity.Repository
             _context = context;
         }
 
-        public Task<ForgotPasswordResponseDto> ForgotPassword(ForgotPasswordRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Handles the database logic for registering a user, including email uniqueness checks and persistence.
         /// </summary>
@@ -59,7 +54,48 @@ namespace SafeCity.Repository
                 throw new Exception(ErrorMessages.Database.SaveFailed);
             }
         }
+
         /// <summary>
+        /// Fetches a user by the given ID, including the associated role.
+        /// </summary>
+        /// <param name="userId">The unique ID of the user.</param>
+        /// <returns>The matching <see cref="User"/> entity, or null if not found.</returns>
+        /// <exception cref="Exception">Thrown when a database error occurs.</exception>
+        
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                return await _context.Users
+                    .Include(u => u.UserRole)
+                    .FirstOrDefaultAsync(u => u.UserID == userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching user by Id", ex);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all users from the database along with their roles.
+        /// </summary>
+        /// <returns>A list of all <see cref="User"/> entities.</returns>
+        /// <exception cref="Exception">Thrown when a database retrieval error occurs.</exception>
+        
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                return await _context.Users
+                    .Include(u => u.UserRole)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching all users", ex);
+            }
+        }
+    /// <summary>
         /// Updates user details by an administrator in the database.
         /// </summary>
         /// <param name="request"> The request DTO containing user ID and updated fields such as name,
@@ -70,18 +106,16 @@ namespace SafeCity.Repository
 
         public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
         {
-            try
-            {
                 if (request == null)
                 {
                     throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
                 }
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
-
+                
                 if (user == null)
                 {
-                    throw new InvalidOperationException(ErrorMessages.UserUpdate.UserNotFound);
+                    throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
                 }
 
                 // Update allowed fields
@@ -94,25 +128,47 @@ namespace SafeCity.Repository
 
                 // Map Domain Entity to Response DTO
                 return user.ToUserUpdateByAdminResponse();
-            }
-            catch (ArgumentNullException ex)
+           
+        }
+        /// <summary>
+        /// Handles the database logic for updating a user's password based on the provided email address.
+        /// </summary>
+        /// <param name="request"> The forgot password request containing email and hashed password.</param>
+        /// <returns> A response DTO confirming password update operation.</returns>
+        /// <exception cref="ArgumentNullException"> Thrown when the request object is null.</exception>
+        /// <exception cref="Exception"> Thrown when the user does not exist or when saving to the database fails.</exception>
+        public async Task<ForgotPasswordResponseDto> ForgotPassword(
+            ForgotPasswordRequestDto request)
+        {
+            try
             {
-                throw new ApplicationException(ErrorMessages.UserUpdate.UpdateUserRequest, ex);
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new ApplicationException(ErrorMessages.UserUpdate.UserNotFound, ex);
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new DbUpdateException(ErrorMessages.Database.UpdateFailed, ex);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException(ErrorMessages.User.InternalError, ex);
-            }
+                if (request == null)
+                {
+                    throw new ArgumentNullException(
+                        ErrorMessages.User.RequestNull);
+                }
 
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == request.Email && u.Status == UserStatus.Active);
 
+                if (user == null)
+                {
+                    throw new Exception(ErrorMessages.User.EmailExists);
+                }
+
+                // Update password using request DTO logic
+                request.UpdateUserPassword(user);
+
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+                // Map updated entity to response DTO
+                return user.ToForgotPasswordResponse();
+            }
+            catch
+            {
+                throw new Exception(ErrorMessages.Database.ForgotPasswordFailed);
+            }
         }
 
         public async Task<User?> GetUserByEmailAndStatusAsync(string email, UserStatus status)

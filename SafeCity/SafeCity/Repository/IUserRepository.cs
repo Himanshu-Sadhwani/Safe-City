@@ -1,5 +1,6 @@
 using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
+using SafeCity.Domain.Entity;
 using SafeCity.DTOs;
 
 namespace SafeCity.Repository
@@ -11,5 +12,7 @@ namespace SafeCity.Repository
         Task<User?> GetUserByEmailAndStatusAsync(string email, UserStatus status);
         Task SaveAuditLogAsync(int userId, string action);
         public Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request);
+        public Task<User> GetUserByIdAsync(int userId);
+        public Task<List<User>> GetAllUsersAsync();
     }
 }
