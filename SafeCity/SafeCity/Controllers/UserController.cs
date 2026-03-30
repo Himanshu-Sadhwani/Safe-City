@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SafeCity.DTOs;
 using SafeCity.Services;
 using SafeCity.Utility;
+
 namespace SafeCity.Controllers
 {
     [Route("api/v1/[controller]")]
@@ -41,6 +42,65 @@ namespace SafeCity.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a specific user's details based on the provided unique user ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user whose information is being requested.</param>
+        /// <returns>
+        /// An IActionResult containing the user's details if found, 
+        /// or an appropriate error message if the user does not exist or an error occurs.
+        /// </returns>
+        
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ViewOneUserResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            try
+            {
+                var result = await _userService.GetUserByIdAsync(id);
+
+                if (result == null)
+                    return NotFound(ErrorMessages.User.UserNotFound);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{ErrorMessages.User.InternalError}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a complete list of all registered users in the SafeCity system.
+        /// </summary>
+        /// <returns>
+        /// An IActionResult containing a list of user details if users exist, 
+        /// or an appropriate error message if no users are found or an unexpected error occurs.
+        /// </returns>
+        
+        [HttpGet]
+        [ProducesResponseType(typeof(List<ViewAllUsersResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var result = await _userService.GetAllUsersAsync();
+
+                if (result == null || !result.Any())
+                    return NotFound(ErrorMessages.User.NoUsersFound);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{ErrorMessages.User.InternalError}: {ex.Message}");
             }
         }
         
@@ -126,4 +186,5 @@ namespace SafeCity.Controllers
             }
         }
     }
-}
+
+    }

@@ -78,7 +78,67 @@ public class UserService : IUserService
             throw new Exception(ex.Message);
         }
     }
+    public async Task<ViewOneUserResponseDto> GetUserByIdAsync(int userId)
+    {
+        try
+        {
+            // Fetch user entity from repository 
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            // Return null if the user ID does not exist in the database
+            if (user == null)
+            {
+                Console.WriteLine(ErrorMessages.User.UserNotFound);
+                return null;
+            }
+            // Map database entity to response DTO for client consumption
+            return new ViewOneUserResponseDto
+            {
+                UserId = user.UserID,
+                UserName = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Status = user.Status.ToString(),
+                RoleName = user.UserRole.RoleName.ToString()
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ErrorMessages.User.InternalError} - {ex.Message}");
+            return null;
+        }
+    }
+    public async Task<List<ViewAllUsersResponseDto>> GetAllUsersAsync()
+    {
+        try
+        {
+            // Retrieve all users including associated roles
+            var users = await _userRepository.GetAllUsersAsync();
 
+            // Handle case where no users exist in the database
+            if (users == null || users.Count == 0)
+            {
+                Console.WriteLine(ErrorMessages.User.NoUsersFound);
+                return new List<ViewAllUsersResponseDto>();
+            }
+
+            // Convert user entities into response DTO list
+            return users.Select(user => new ViewAllUsersResponseDto
+            {
+                UserId = user.UserID,
+                UserName = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Status = user.Status.ToString(),
+                RoleName = user.UserRole.RoleName.ToString()
+
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ErrorMessages.User.InternalError} - {ex.Message}");
+            return new List<ViewAllUsersResponseDto>();
+        }
+    }
     /// <summary>
     /// Handles the forgot password operation by validating user input, hashing the new password,
     /// updating it in the database.
@@ -125,6 +185,7 @@ public class UserService : IUserService
         // Update password in database
         return await _userRepository.ForgotPassword(request);
     }
+    
     
     /// <summary>
     /// Validates and updates user details by an administrator.
