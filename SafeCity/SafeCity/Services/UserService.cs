@@ -24,7 +24,6 @@ public class UserService : IUserService
     /// <summary>
     /// Initializes a new instance of the <see cref="UserService"/> class.
     /// </summary>
-    /// <param name="context">The database context for accessing user and audit log data.</param>
     /// <param name="config">The application configuration used for JWT settings.</param>
     /// <param name="userRepository">The user repository for handling user data operations.</param>
     public UserService(IConfiguration config, IUserRepository userRepository)
