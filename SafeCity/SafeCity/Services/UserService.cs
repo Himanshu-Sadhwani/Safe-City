@@ -1,18 +1,117 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using SafeCity.Domain.Entity;
 using SafeCity.DTOs;
 using SafeCity.Repository;
+using SafeCity.Domain.Entity;
+using SafeCity.Domain.Data;
+using Microsoft.EntityFrameworkCore;
 using SafeCity.Utility;
-
+using SafeCity.Domain.Enum;
+using Microsoft.AspNetCore.Identity.Data;
 namespace SafeCity.Services;
 
 public class UserService : IUserService
 {
+    private readonly IConfiguration _config;
     private readonly IUserRepository _userRepository;
 
-    public UserService(IUserRepository userRepository)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UserService"/> class.
+    /// </summary>
+    /// <param name="config">The application configuration used for JWT settings.</param>
+    /// <param name="userRepository">The user repository for handling user data operations.</param>
+    public UserService(IConfiguration config, IUserRepository userRepository)
     {
+        _config = config;
         _userRepository = userRepository;
     }
 
+    /// <summary>
+    /// Authenticates a user by validating credentials and generating auth tokens.
+    /// </summary>
+    /// <param name="dto">The login request DTO containing email and password.</param>
+    /// <returns>
+    /// A <see cref="LoginResponseDto"/> containing the access token, refresh token, 
+    /// and expiration details if successful; otherwise, null.
+    /// </returns>
+    public async Task<LoginResponseDto> LoginUser(LoginRequest dto)
+    {
+        var user = await _userRepository.GetUserByEmailAndStatusAsync(
+            dto.Email,
+            UserStatus.Active
+        );
+
+        if (user == null)
+            throw new Exception(ErrorMessages.User.UserNotFound);
+
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+        if (!isPasswordValid)
+            throw new Exception(ErrorMessages.User.InvalidCredentials);
+
+        var accessToken = GenerateJwtToken(user);
+        var refreshToken = GenerateRefreshToken();
+
+        await _userRepository.SaveAuditLogAsync(user.UserID, "Login");
+
+        return new LoginResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            Expires = DateTime.UtcNow.AddHours(1)
+        };
+    }
+
+    /// <summary>
+    /// Generates a JWT access token for the authenticated user.
+    /// </summary>
+    /// <param name="user">The user entity for whom the token is being created.</param>
+    /// <returns>A signed JWT token string containing user claims.</returns>
+    private string GenerateJwtToken(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.UserRole.RoleName.ToString())
+        };
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+        );
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    /// <summary>
+    /// Generates a secure random refresh token for long-lived authentication.
+    /// </summary>
+    /// <returns>A Base64 encoded secure refresh token string.</returns>
+    private string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    }
+
+    /// <summary>
+    /// Checks the user's data, hashes the password, and saves the user to the database.
+    /// </summary>
+    /// <param name="request">The data provided for registration.</param>
+    /// <returns>The result of the registration process.</returns>
     public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request)
     {
         //Initial Null Check
@@ -186,7 +285,6 @@ public class UserService : IUserService
         return await _userRepository.ForgotPassword(request);
     }
     
-    
     /// <summary>
     /// Validates and updates user details by an administrator.
     /// </summary>
@@ -195,31 +293,28 @@ public class UserService : IUserService
     /// <returns> A response DTO containing the updated user information. </returns>
     /// <exception cref="ArgumentNullException"> Thrown when the request object is null. </exception>
     /// <exception cref="ArgumentException"> Thrown when provided data is invalid (e.g., invalid IDs or missing fields). </exception>
-
     public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
     {
         var errorList = new List<string>();
         // Check if the request exists
         if (request == null)
-            errorList.Add(ErrorMessages.UserUpdate.UpdateUserRequest);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
 
         // Validate that the UserID is a positive number
         if (request.UserID <= 0)
-            errorList.Add(ErrorMessages.UserUpdate.InvalidUserId);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidUserId);
 
         // Validate that the user's name is provided
         if (string.IsNullOrWhiteSpace(request.Name))
-           errorList.Add(ErrorMessages.UserUpdate.NameRequired);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.NameRequired);
 
         // Validate that the phone number is provided
         if (string.IsNullOrWhiteSpace(request.Phone))
-            errorList.Add(ErrorMessages.UserUpdate.PhoneRequired);
-        // Validate that the RoleID is valid
-        if (request.RoleID <= 0)        
-            errorList.Add(ErrorMessages.UserUpdate.InvalidRoleId);
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.PhoneRequired);
 
-        if (errorList.Any())
-            throw new ArgumentException(string.Join(" | ", errorList));
+        // Validate that the RoleID is valid
+        if (request.RoleID <= 0)
+            throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidRoleId); ;
 
         // Delegate persistence and data update logic to the repository layer
         return await _userRepository.UpdateUser(request);

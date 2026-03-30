@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
 using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
@@ -108,7 +108,7 @@ namespace SafeCity.Repository
         {
                 if (request == null)
                 {
-                    throw new ArgumentNullException(nameof(request),ErrorMessages.UserUpdate.UpdateUserRequest);
+                    throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
                 }
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
@@ -170,5 +170,37 @@ namespace SafeCity.Repository
                 throw new Exception(ErrorMessages.Database.ForgotPasswordFailed);
             }
         }
+
+        public async Task<User?> GetUserByEmailAndStatusAsync(string email, UserStatus status)
+        {
+            return await _context.Users
+                .Include(u => u.UserRole)
+                .FirstOrDefaultAsync(u =>
+                    u.Email == email &&
+                    u.Status == status
+                );
+        }
+
+        /// <summary>
+        /// Saves an audit log entry for user actions such as login.
+        /// </summary>
+        /// <param name="userId">The ID of the user performing the action.</param>
+        /// <param name="action">The description of the action performed.</param>
+        /// <returns>A task representing the asynchronous logging operation.</returns>
+        public async Task SaveAuditLogAsync(int userId, string action)
+        {
+            var audit = new AuditLog
+            {
+                UserID = userId,
+                Action = action,
+                Resource = "Auth/Login",
+                Timestamp = DateTime.UtcNow
+            };
+
+            _context.AuditLogs.Add(audit);
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }
