@@ -112,8 +112,9 @@ namespace SafeCity.Controllers
         /// <response code="200">User updated successfully</response>
         /// <response code="400">Invalid request or validation error</response>
         /// <response code="500">Server error</response> 
-        [Authorize(Roles = "Admin")]  
-        [HttpPut("update")]   
+        
+        [Authorize(Roles = "City_Administrator")]  
+        [HttpPut("update")]  
         [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -124,11 +125,11 @@ namespace SafeCity.Controllers
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
-
+ 
                 var response = await _userService.UpdateUser(user);
                 return Ok(response);
             }
-            
+           
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
@@ -151,7 +152,6 @@ namespace SafeCity.Controllers
             }
         }
 
-        
         /// <summary>
         /// Initiates the forgot password process for a user.
         /// </summary>
