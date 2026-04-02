@@ -9,7 +9,7 @@ namespace SafeCity.DTOs
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
+
         public User ToUserRegisterRequest()
         {
             return new User()
@@ -19,8 +19,7 @@ namespace SafeCity.DTOs
                 RoleID = RoleID,
                 Email = Email,
                 Phone = Phone,
-                PasswordHash = Password,
-                PasswordSalt = ConfirmPassword
+                Password = Password
             };
         }
     }

@@ -45,7 +45,7 @@ public class UserService : IUserService
         if (user == null)
             throw new Exception(ErrorMessages.User.UserNotFound);
 
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
         if (!isPasswordValid)
             throw new Exception(ErrorMessages.User.InvalidCredentials);
 
@@ -127,16 +127,7 @@ public class UserService : IUserService
 
         var passwordError = ValidationHelper.CheckNullOrWhiteSpace(request.Password, nameof(request.Password), fields);
         if (passwordError != null) errorList.Add(passwordError);
-        var passwordSaltError = ValidationHelper.CheckNullOrWhiteSpace(request.ConfirmPassword, nameof(request.ConfirmPassword), fields);
 
-        if (passwordSaltError != null)
-        {
-            errorList.Add(passwordSaltError);
-        }
-        if (request.Password != request.ConfirmPassword)
-        {
-            errorList.Add(ErrorMessages.User.PasswordMismatch);
-        }
         var phoneError = ValidationHelper.CheckNullOrWhiteSpace(request.Phone, nameof(request.Phone), fields);
         if (phoneError != null) errorList.Add(phoneError);
 
