@@ -17,7 +17,6 @@
                 { "Name", "Full Name is required and cannot be empty." },
                 { "Email", "A valid Email address is required." },
                 { "PasswordHash", "Password is required." },
-                { "PasswordSalt", "Security salt is missing." },
                 { "Phone", "Phone number is required for contact." },
                 { "RoleID", "A valid User Role must be selected." }
             };
