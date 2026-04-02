@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
-using SafeCity.Services;
+using SafeCity.Services.Auth;
 
 namespace SafeCity.Controllers
 {
@@ -10,10 +10,10 @@ namespace SafeCity.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public AuthController(IUserService userService)
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
-            _userService = userService;
+            _authService = authService;
         }
 
         /// <summary>
@@ -26,14 +26,24 @@ namespace SafeCity.Controllers
         /// </returns>
     
         [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
-            var result = await _userService.LoginUser(dto);
+            try 
+            {
+                var result = await _authService.LoginUser(dto);
 
-            if (result == null)
-                return Unauthorized(new { message = "Invalid email or password" });
+                if (result == null)
+                return Unauthorized(new { message = "Unauthenticated User" });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while processing the login request." , error = ex.Message });
+            }
         }
     }
 }
