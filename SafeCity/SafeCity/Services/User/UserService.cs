@@ -1,19 +1,14 @@
-using System;
+using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.IdentityModel.Tokens;
+using SafeCity.Domain.Entity;
+using SafeCity.Domain.Enum;
+using SafeCity.DTOs;
+using SafeCity.Repository;
+using SafeCity.Utility;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using SafeCity.Domain.Entity;
-using SafeCity.DTOs;
-using SafeCity.Repository;
-using SafeCity.Domain.Entity;
-using SafeCity.Domain.Data;
-using Microsoft.EntityFrameworkCore;
-using SafeCity.Utility;
-using SafeCity.Domain.Enum;
-using Microsoft.AspNetCore.Identity.Data;
 namespace SafeCity.Services;
 
 public class UserService : IUserService
@@ -132,9 +127,15 @@ public class UserService : IUserService
 
         var passwordError = ValidationHelper.CheckNullOrWhiteSpace(request.PasswordHash, nameof(request.PasswordHash), fields);
         if (passwordError != null) errorList.Add(passwordError);
+        var passwordSaltError = ValidationHelper.CheckNullOrWhiteSpace(request.PasswordSalt, nameof(request.PasswordSalt), fields);
 
+        if (passwordSaltError != null)
+        {
+            errorList.Add(passwordSaltError);
+        }
         var phoneError = ValidationHelper.CheckNullOrWhiteSpace(request.Phone, nameof(request.Phone), fields);
         if (phoneError != null) errorList.Add(phoneError);
+
 
         //Logic-based Validations (Roles/Formats)
         if (request.RoleID <= 0)
@@ -153,6 +154,14 @@ public class UserService : IUserService
         {
             var passwordCheck = PasswordHelper.ValidatePassword(request.PasswordHash);
             if (!passwordCheck.IsValid) errorList.Add(passwordCheck.Message);
+        }
+
+        if (phoneError == null)
+        {
+            if (!PhoneNumberHelper.IsValidPhoneNumber(request.Phone))
+            {
+                errorList.Add("Invalid Phone Number.");
+            }
         }
 
         // Handle accumulated errors
@@ -284,7 +293,7 @@ public class UserService : IUserService
         // Update password in database
         return await _userRepository.ForgotPassword(request);
     }
-    
+
     /// <summary>
     /// Validates and updates user details by an administrator.
     /// </summary>
@@ -293,39 +302,39 @@ public class UserService : IUserService
     /// <returns> A response DTO containing the updated user information. </returns>
     /// <exception cref="ArgumentNullException"> Thrown when the request object is null. </exception>
     /// <exception cref="ArgumentException"> Thrown when provided data is invalid (e.g., invalid IDs or missing fields). </exception>
-    public async Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request)
+    public async Task<UserUpdateByAdminResponseDto> UpdateUser(int id, UserUpdateByAdminRequestDto request)
     {
         var errorList = new List<string>();
-        var user=await _userRepository.GetUserByIdAsync(id);
-        if(user==null)
+        var user = await _userRepository.GetUserByIdAsync(id);
+        if (user == null)
         {
             throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
         }
         // Check if the request exists
         if (request == null)
             errorList.Add(ErrorMessages.UserUpdate.UpdateUserRequest);
- 
+
         // Validate that the UserID is a positive number
         if (id <= 0)
             errorList.Add(ErrorMessages.UserUpdate.InvalidUserId);
-        
- 
+
+
         // Validate that the user's name is provided
         if (string.IsNullOrWhiteSpace(request.Name))
-           errorList.Add(ErrorMessages.UserUpdate.NameRequired);
- 
+            errorList.Add(ErrorMessages.UserUpdate.NameRequired);
+
         // Validate that the phone number is provided
         if (string.IsNullOrWhiteSpace(request.Phone))
             errorList.Add(ErrorMessages.UserUpdate.PhoneRequired);
         // Validate that the RoleID is valid
-        if (request.RoleID <= 0 || request.RoleID > Enum.GetValues(typeof(UserRoleOption)).Length)        
+        if (request.RoleID <= 0 || request.RoleID > Enum.GetValues(typeof(UserRoleOption)).Length)
             errorList.Add(ErrorMessages.UserUpdate.InvalidRoleId);
- 
+
         if (errorList.Any())
             throw new ArgumentException(string.Join(" | ", errorList));
- 
+
         // Delegate persistence and data update logic to the repository layer
-        return await _userRepository.UpdateUser(id,request);
+        return await _userRepository.UpdateUser(id, request);
 
     }
 }
