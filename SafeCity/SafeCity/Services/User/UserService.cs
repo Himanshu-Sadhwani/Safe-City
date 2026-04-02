@@ -133,6 +133,10 @@ public class UserService : IUserService
         {
             errorList.Add(passwordSaltError);
         }
+        if (request.PasswordSalt != request.PasswordHash)
+        {
+            errorList.Add(ErrorMessages.User.PasswordMismatch);
+        }
         var phoneError = ValidationHelper.CheckNullOrWhiteSpace(request.Phone, nameof(request.Phone), fields);
         if (phoneError != null) errorList.Add(phoneError);
 
