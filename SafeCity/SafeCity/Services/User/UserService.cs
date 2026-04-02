@@ -125,15 +125,15 @@ public class UserService : IUserService
         var emailError = ValidationHelper.CheckNullOrWhiteSpace(request.Email, nameof(request.Email), fields);
         if (emailError != null) errorList.Add(emailError);
 
-        var passwordError = ValidationHelper.CheckNullOrWhiteSpace(request.PasswordHash, nameof(request.PasswordHash), fields);
+        var passwordError = ValidationHelper.CheckNullOrWhiteSpace(request.Password, nameof(request.Password), fields);
         if (passwordError != null) errorList.Add(passwordError);
-        var passwordSaltError = ValidationHelper.CheckNullOrWhiteSpace(request.PasswordSalt, nameof(request.PasswordSalt), fields);
+        var passwordSaltError = ValidationHelper.CheckNullOrWhiteSpace(request.ConfirmPassword, nameof(request.ConfirmPassword), fields);
 
         if (passwordSaltError != null)
         {
             errorList.Add(passwordSaltError);
         }
-        if (request.PasswordSalt != request.PasswordHash)
+        if (request.Password != request.ConfirmPassword)
         {
             errorList.Add(ErrorMessages.User.PasswordMismatch);
         }
@@ -156,7 +156,7 @@ public class UserService : IUserService
 
         if (passwordError == null)
         {
-            var passwordCheck = PasswordHelper.ValidatePassword(request.PasswordHash);
+            var passwordCheck = PasswordHelper.ValidatePassword(request.Password);
             if (!passwordCheck.IsValid) errorList.Add(passwordCheck.Message);
         }
 
@@ -177,7 +177,7 @@ public class UserService : IUserService
         try
         {
             // Hash the password
-            request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
+            request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             // Handles the EmailExists check
             var response = await _userRepository.RegisterUser(request);

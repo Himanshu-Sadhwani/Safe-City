@@ -11,7 +11,7 @@
             public const string UserNotFound = "User does not exist or is inactive.";
             public const string InvalidCredentials = "Invalid email or password.";
             public const string NoUsersFound = "No users found.";
-            public const string PasswordMismatch = "PasswordHash and PasswordSalt is not matched";
+            public const string PasswordMismatch = "Password and ConfirmPassword is not matched";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "request", "The entire request object is missing or invalid." },

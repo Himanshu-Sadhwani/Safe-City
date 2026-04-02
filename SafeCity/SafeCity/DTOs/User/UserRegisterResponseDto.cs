@@ -5,8 +5,6 @@ namespace SafeCity.DTOs
     public class UserRegisterResponseDto
     {
         public int UserID { get; set; }
-        public string PasswordHash { get; set; }
-        public string PasswordSalt { get; set; }
         public string Name { get; set; }
         public int RoleID { get; set; }
         public string RoleName { get; set; }
@@ -23,8 +21,6 @@ namespace SafeCity.DTOs
             return new UserRegisterResponseDto()
             {
                 UserID = response.UserID,
-                PasswordHash = response.PasswordHash,
-                PasswordSalt = response.PasswordSalt,
                 Name = response.Name,
                 RoleID = response.RoleID,
                 RoleName = ((UserRoleOption)response.RoleID).ToString(),
