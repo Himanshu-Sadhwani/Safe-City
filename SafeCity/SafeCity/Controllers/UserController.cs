@@ -54,6 +54,7 @@ namespace SafeCity.Controllers
         /// or an appropriate error message if the user does not exist or an error occurs.
         /// </returns>
         
+        [Authorize(Roles = "City_Administrator")] 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ViewOneUserResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -83,6 +84,7 @@ namespace SafeCity.Controllers
         /// or an appropriate error message if no users are found or an unexpected error occurs.
         /// </returns>
         
+        [Authorize(Roles = "City_Administrator")] 
         [HttpGet]
         [ProducesResponseType(typeof(List<ViewAllUsersResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -190,5 +192,4 @@ namespace SafeCity.Controllers
             }
         }
     }
-
-    }
+}
