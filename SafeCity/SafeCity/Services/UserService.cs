@@ -40,7 +40,7 @@ public class UserService : IUserService
     /// A <see cref="LoginResponseDto"/> containing the access token, refresh token, 
     /// and expiration details if successful; otherwise, null.
     /// </returns>
-    public async Task<LoginResponseDto> LoginUser(LoginRequest dto)
+    public async Task<LoginResponseDto> LoginUser(LoginRequestDto dto)
     {
         var user = await _userRepository.GetUserByEmailAndStatusAsync(
             dto.Email,

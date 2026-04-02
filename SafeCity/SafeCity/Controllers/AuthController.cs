@@ -26,7 +26,7 @@ namespace SafeCity.Controllers
         /// </returns>
     
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest dto)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
             var result = await _userService.LoginUser(dto);
 
