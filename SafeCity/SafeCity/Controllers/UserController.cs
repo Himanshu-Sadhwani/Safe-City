@@ -114,11 +114,12 @@ namespace SafeCity.Controllers
         /// <response code="500">Server error</response> 
         
         [Authorize(Roles = "City_Administrator")]  
-        [HttpPut("update")]  
+        [HttpPut("update/{id}")]  
         [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUserByAdmin(
+            [FromRoute] int id,
             [FromBody] UserUpdateByAdminRequestDto user)
         {
             try
@@ -126,8 +127,11 @@ namespace SafeCity.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
  
-                var response = await _userService.UpdateUser(user);
-                return Ok(response);
+                var response = await _userService.UpdateUser(id,user);
+                return Ok(new {
+                    message = "Successfully updated",
+                    data = response
+                });
             }
            
             catch (ArgumentException ex)

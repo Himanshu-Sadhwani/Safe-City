@@ -293,16 +293,22 @@ public class UserService : IUserService
     /// <returns> A response DTO containing the updated user information. </returns>
     /// <exception cref="ArgumentNullException"> Thrown when the request object is null. </exception>
     /// <exception cref="ArgumentException"> Thrown when provided data is invalid (e.g., invalid IDs or missing fields). </exception>
-    public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
+    public async Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request)
     {
         var errorList = new List<string>();
+        var user=await _userRepository.GetUserByIdAsync(id);
+        if(user==null)
+        {
+            throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
+        }
         // Check if the request exists
         if (request == null)
             errorList.Add(ErrorMessages.UserUpdate.UpdateUserRequest);
  
         // Validate that the UserID is a positive number
-        if (request.UserID <= 0)
+        if (id <= 0)
             errorList.Add(ErrorMessages.UserUpdate.InvalidUserId);
+        
  
         // Validate that the user's name is provided
         if (string.IsNullOrWhiteSpace(request.Name))
@@ -312,14 +318,14 @@ public class UserService : IUserService
         if (string.IsNullOrWhiteSpace(request.Phone))
             errorList.Add(ErrorMessages.UserUpdate.PhoneRequired);
         // Validate that the RoleID is valid
-        if (request.RoleID <= 0)        
+        if (request.RoleID <= 0 || request.RoleID > Enum.GetValues(typeof(UserRoleOption)).Length)        
             errorList.Add(ErrorMessages.UserUpdate.InvalidRoleId);
  
         if (errorList.Any())
             throw new ArgumentException(string.Join(" | ", errorList));
  
         // Delegate persistence and data update logic to the repository layer
-        return await _userRepository.UpdateUser(request);
+        return await _userRepository.UpdateUser(id,request);
 
     }
 }

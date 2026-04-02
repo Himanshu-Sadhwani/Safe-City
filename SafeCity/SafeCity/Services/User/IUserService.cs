@@ -9,7 +9,7 @@ namespace SafeCity.Services
         Task<LoginResponseDto?> LoginUser(LoginRequest loginRequestDto);
         public Task<ViewOneUserResponseDto> GetUserByIdAsync(int userId);
         public Task<List<ViewAllUsersResponseDto>> GetAllUsersAsync();
-        public Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request);
+        public Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request);
         public Task<ForgotPasswordResponseDto> ForgotPassword(ForgotPasswordRequestDto request);
 
     }

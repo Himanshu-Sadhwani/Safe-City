@@ -77,6 +77,17 @@ namespace SafeCity.Repository
         }
 
         /// <summary>
+        /// Fetches a user by the given ID for update purposes, including the associated role.
+        /// </summary>
+        /// <param name="userId">The unique ID of the user.</param>
+        /// <returns>The user data mapped to update response DTO, or null if not found.</returns>
+        public async Task<UserUpdateByAdminResponseDto?> GetUserForUpdateAsync(int userId)
+        {
+            var user = await GetUserByIdAsync(userId);
+            return user?.ToUserUpdateByAdminResponse();
+        }
+
+        /// <summary>
         /// Retrieves all users from the database along with their roles.
         /// </summary>
         /// <returns>A list of all <see cref="User"/> entities.</returns>
@@ -104,25 +115,44 @@ namespace SafeCity.Repository
         /// <exception cref="Exception"> Thrown when the user with the specified ID is not found. </exception>
         /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
 
-        public async Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request)
+        public async Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request)
         {
                 if (request == null)
                 {
                     throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
                 }
 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == request.UserID);
+                var user = await GetUserByIdAsync(id);
                 
                 if (user == null)
                 {
                     throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
                 }
-
-                // Update allowed fields
-                user.Name = request.Name;
-                user.Phone = request.Phone;
-                user.RoleID = request.RoleID;
-                user.Status = request.Status;
+                // Update allowed fields only if provided
+                if (!string.IsNullOrWhiteSpace(request.Name))
+                {
+                    user.Name = request.Name;
+                }
+                if (!string.IsNullOrWhiteSpace(request.Phone))
+                {
+                    if (!PhoneNumberHelper.IsValidPhoneNumber(request.Phone))
+                    {
+                        throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidPhoneNo);
+                    }
+                    user.Phone = request.Phone;
+                }
+                if (request.RoleID != 0)
+                {
+                    user.RoleID = request.RoleID;
+                }
+                if (request.Status != 0)
+                {
+                    if (request.Status != UserStatus.Inactive)
+                    {
+                        throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidStatus);
+                    }
+                    user.Status = request.Status;
+                }
 
                 await _context.SaveChangesAsync();
 
