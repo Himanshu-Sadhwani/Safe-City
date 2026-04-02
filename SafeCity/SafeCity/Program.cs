@@ -6,6 +6,7 @@ using SafeCity.Repository;
 using SafeCity.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SafeCity.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
 
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
