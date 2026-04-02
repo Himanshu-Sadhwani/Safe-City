@@ -34,10 +34,12 @@
             public const string UpdateUserRequest = "Update request cannot be null.";
             public const string InvalidUserId = "Invalid UserID.";
             public const string UserNotFound = "User not found.";
+            public const string InvalidStatus = "Invalid user status.";
             public const string NameRequired = "Name is required.";
             public const string PhoneRequired = "Phone number is required.";
             public const string InvalidRoleId = "Invalid RoleID.";
             public const string UpdateFailed = "User update failed.";
+            public const string InvalidPhoneNo = "Invalid Phone Number";
         }
 
 
