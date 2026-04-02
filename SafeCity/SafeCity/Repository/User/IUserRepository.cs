@@ -11,7 +11,7 @@ namespace SafeCity.Repository
         public Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto request);
         Task<User?> GetUserByEmailAndStatusAsync(string email, UserStatus status);
         Task SaveAuditLogAsync(int userId, string action);
-        public Task<UserUpdateByAdminResponseDto> UpdateUser(UserUpdateByAdminRequestDto request);
+        public Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request);
         public Task<User> GetUserByIdAsync(int userId);
         public Task<List<User>> GetAllUsersAsync();
     }

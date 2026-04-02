@@ -4,7 +4,6 @@ namespace SafeCity.DTOs
 {
     public class UserUpdateByAdminResponseDto
     {
-        public int UserID { get; init; }
         public string Name { get; set; }
         public int RoleID { get; set; }
         public string RoleName { get; set; }
