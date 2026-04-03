@@ -19,7 +19,7 @@ namespace SafeCity.DTOs
         {
             return new  UserUpdateByAdminResponseDto
             {
-               Name = user.Name,
+                Name = user.Name,
                 RoleID = user.RoleID,
                 RoleName = ((UserRoleOption)user.RoleID).ToString(),
                 Phone = user.Phone,

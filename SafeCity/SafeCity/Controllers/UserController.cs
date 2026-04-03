@@ -44,6 +44,7 @@ namespace SafeCity.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
         /// <summary>
         /// Retrieves a specific user's details based on the provided unique user ID.
         /// </summary>
