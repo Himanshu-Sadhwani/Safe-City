@@ -55,5 +55,11 @@
             public const string UpdateFailed = "An error occurred while updating the user in the database.";
             public const string ForgotPasswordFailed = "An error occured while processing the passwrod request.";
         }
+
+        public static class Login
+        {
+            public const string EmailRequired = "Email address is required.";
+            public const string PasswordRequired = "Password is required.";
+        }
     }
 }
