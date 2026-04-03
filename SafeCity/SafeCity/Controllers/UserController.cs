@@ -23,7 +23,7 @@ namespace SafeCity.Controllers
         /// <param name="user">The user registration data transfer object containing credentials and profile info.</param>
         /// <returns>An IActionResult containing the registration response or an error message.</returns>
         [HttpPost("register")]
-        [ProducesResponseType(typeof(UserRegisterResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserRegisterResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> RegisterUser(UserRegisterRequestDto user)
@@ -37,7 +37,7 @@ namespace SafeCity.Controllers
                 }
 
                 var response = await _userService.RegisterUser(user);
-                return Ok(response);
+                return Created("", new { message = response });
             }
             catch (Exception ex)
             {
@@ -53,8 +53,8 @@ namespace SafeCity.Controllers
         /// An IActionResult containing the user's details if found, 
         /// or an appropriate error message if the user does not exist or an error occurs.
         /// </returns>
-        
-        [Authorize(Roles = "City_Administrator")] 
+
+        [Authorize(Roles = "City_Administrator")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ViewOneUserResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -83,8 +83,8 @@ namespace SafeCity.Controllers
         /// An IActionResult containing a list of user details if users exist, 
         /// or an appropriate error message if no users are found or an unexpected error occurs.
         /// </returns>
-        
-        [Authorize(Roles = "City_Administrator")] 
+
+        [Authorize(Roles = "City_Administrator")]
         [HttpGet]
         [ProducesResponseType(typeof(List<ViewAllUsersResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -105,7 +105,7 @@ namespace SafeCity.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"{ErrorMessages.User.InternalError}: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// Updates user details by an administrator.
         /// </summary>
@@ -114,9 +114,9 @@ namespace SafeCity.Controllers
         /// <response code="200">User updated successfully</response>
         /// <response code="400">Invalid request or validation error</response>
         /// <response code="500">Server error</response> 
-        
-        [Authorize(Roles = "City_Administrator")]  
-        [HttpPut("update/{id}")]  
+
+        [Authorize(Roles = "City_Administrator")]
+        [HttpPut("update/{id}")]
         [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -128,14 +128,15 @@ namespace SafeCity.Controllers
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
- 
-                var response = await _userService.UpdateUser(id,user);
-                return Ok(new {
+
+                var response = await _userService.UpdateUser(id, user);
+                return Ok(new
+                {
                     message = "Successfully updated",
                     data = response
                 });
             }
-           
+
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
@@ -146,13 +147,15 @@ namespace SafeCity.Controllers
             }
             catch (DbUpdateException)
             {
-                return StatusCode(500, new {
+                return StatusCode(500, new
+                {
                     error = ErrorMessages.Database.UpdateFailed
                 });
             }
             catch (Exception)
             {
-                return StatusCode(500, new {
+                return StatusCode(500, new
+                {
                     error = ErrorMessages.User.InternalError
                 });
             }

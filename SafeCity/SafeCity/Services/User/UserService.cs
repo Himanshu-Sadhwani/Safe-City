@@ -133,7 +133,7 @@ public class UserService : IUserService
 
 
         //Logic-based Validations (Roles/Formats)
-        if (request.RoleID <= 0)
+        if (request.RoleID <= 0 || request.RoleID > 6)
         {
             errorList.Add(fields.GetValueOrDefault(nameof(request.RoleID), "Invalid Role."));
         }
