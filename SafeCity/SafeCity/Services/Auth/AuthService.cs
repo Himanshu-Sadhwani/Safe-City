@@ -1,14 +1,13 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Repository;
 using SafeCity.Utility;
-using SafeCity.Domain.Entity;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SafeCity.Services.Auth;
 
@@ -56,7 +55,7 @@ public class AuthService : IAuthService
         if (user == null)
             throw new UnauthorizedAccessException(ErrorMessages.User.InvalidCredentials);
 
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
         if (!isPasswordValid)
             throw new UnauthorizedAccessException(ErrorMessages.User.InvalidCredentials);
 

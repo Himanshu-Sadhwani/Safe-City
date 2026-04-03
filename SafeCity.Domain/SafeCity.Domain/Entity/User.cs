@@ -11,10 +11,7 @@ public class User
     public int UserID { get; set; }
 
     [Column(TypeName = "VARCHAR(MAX)")]
-    public string PasswordHash { get; set; } = default!;
-
-    [Column(TypeName = "VARCHAR(MAX)")]
-    public string PasswordSalt { get; set; } = default!;
+    public string Password { get; set; } = default!;
 
     [Required]
     [Column(TypeName = "VARCHAR(100)")]
