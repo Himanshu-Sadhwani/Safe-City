@@ -172,16 +172,12 @@ namespace SafeCity.Controllers
         [HttpPut("forgotpassword")]
         [ProducesResponseType(typeof(ForgotPasswordResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto request)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ErrorMessages.User.RequiredFields);
-                }
-
                 var response = await _userService.ForgotPassword(request);
                 return Ok(response);
             }
@@ -189,9 +185,16 @@ namespace SafeCity.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception)
             {
-                return StatusCode(500, ErrorMessages.Database.ForgotPasswordFailed);
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ErrorMessages.ForgotPassword.ProcessingFailed
+                );
             }
         }
     }
