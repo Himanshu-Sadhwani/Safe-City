@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs;
 using SafeCity.Services.Auth;
+using SafeCity.Utility;
 
 namespace SafeCity.Controllers
 {
@@ -24,25 +25,37 @@ namespace SafeCity.Controllers
         /// An <see cref="IActionResult"/> containing authentication tokens when successful,
         /// otherwise an Unauthorized error message.
         /// </returns>
-    
+
         [HttpPost("login")]
         [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
-            try 
+            try
             {
+                if (dto == null)
+                    return BadRequest(new { message = ErrorMessages.User.RequestNull });
+
                 var result = await _authService.LoginUser(dto);
-
-                if (result == null)
-                return Unauthorized(new { message = "Unauthenticated User" });
-
                 return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while processing the login request." , error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = ErrorMessages.User.InternalError,
+                    error = ex.Message
+                });
             }
         }
     }
