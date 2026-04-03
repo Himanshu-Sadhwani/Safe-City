@@ -37,7 +37,7 @@ namespace SafeCity.Controllers
                 }
 
                 var response = await _userService.RegisterUser(user);
-                return Created("", new { message = "User registered successfully", data = response });
+                return Created("", new { message = "User registered successfully" });
             }
             catch (Exception ex)
             {
