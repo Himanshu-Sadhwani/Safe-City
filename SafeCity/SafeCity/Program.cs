@@ -1,12 +1,9 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using SafeCity.Domain.Data;
-using SafeCity.Repository;
-using SafeCity.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SafeCity.Services.Auth;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("SafeCity.Domain")
+        b => b.MigrationsAssembly("SafeCity")
     )
 );
 

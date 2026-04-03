@@ -6,10 +6,10 @@ namespace SafeCity.DTOs
     {
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        
+
         public void UpdateUserPassword(User user)
         {
-            user.PasswordHash = PasswordHash;
+            user.Password = PasswordHash;
         }
     }
 }
