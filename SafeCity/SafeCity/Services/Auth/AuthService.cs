@@ -4,7 +4,6 @@ using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Repository;
 using SafeCity.Utility;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -46,7 +45,7 @@ public class AuthService : IAuthService
         if (user == null)
             throw new Exception(ErrorMessages.User.UserNotFound);
 
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
         if (!isPasswordValid)
             throw new Exception(ErrorMessages.User.InvalidCredentials);
 
