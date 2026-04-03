@@ -22,7 +22,7 @@ namespace SafeCity.Domain.Data
         public virtual DbSet<ComplianceRecord> ComplianceRecords { get; set; }
         public virtual DbSet<Audit> Audits { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -51,7 +51,7 @@ namespace SafeCity.Domain.Data
                 new UserRole { RoleID = 3, RoleName = UserRoleOption.Fire_Fighter },
                 new UserRole { RoleID = 4, RoleName = UserRoleOption.Emergency_Dispatcher },
                 new UserRole { RoleID = 5, RoleName = UserRoleOption.Compliance_Officer },
-                new UserRole { RoleID = 6, RoleName = UserRoleOption.City_Administrator }
+                new UserRole { RoleID = 6, RoleName = UserRoleOption.Admin }
             );
         }
     }

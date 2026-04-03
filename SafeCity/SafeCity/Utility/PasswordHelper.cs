@@ -1,4 +1,4 @@
-﻿namespace SafeCity.Utility
+﻿    namespace SafeCity.Utility
 {
     /// <summary>
     /// Utility class for validating password complexity and security requirements.

@@ -10,7 +10,6 @@ namespace SafeCity.DTOs
         public string RoleName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public UserStatus Status { get; set; }
         public string CurrentStatus { get; set; }
     }
 
@@ -26,7 +25,6 @@ namespace SafeCity.DTOs
                 RoleName = ((UserRoleOption)response.RoleID).ToString(),
                 Email = response.Email,
                 Phone = response.Phone,
-                Status = response.Status,
                 CurrentStatus = ((UserStatus)response.Status).ToString(),
             };
         }

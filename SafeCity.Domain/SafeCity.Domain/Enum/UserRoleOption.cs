@@ -18,5 +18,5 @@ public enum UserRoleOption
     Compliance_Officer = 5,
 
     [Display(Name = "City Administrator")]
-    City_Administrator = 6
+    Admin = 6
 }
