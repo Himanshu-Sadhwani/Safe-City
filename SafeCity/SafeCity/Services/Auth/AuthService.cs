@@ -57,7 +57,7 @@ public class AuthService : IAuthService
 
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
         if (!isPasswordValid)
-            throw new UnauthorizedAccessException(ErrorMessages.User.InvalidCredentials);
+            throw new UnauthorizedAccessException(ErrorMessages.User.InvalidPassword);
 
         var accessToken = GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
