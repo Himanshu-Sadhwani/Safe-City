@@ -54,7 +54,7 @@ namespace SafeCity.Controllers
         /// or an appropriate error message if the user does not exist or an error occurs.
         /// </returns>
 
-        [Authorize(Roles = "City_Administrator")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ViewOneUserResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -84,7 +84,7 @@ namespace SafeCity.Controllers
         /// or an appropriate error message if no users are found or an unexpected error occurs.
         /// </returns>
 
-        [Authorize(Roles = "City_Administrator")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [ProducesResponseType(typeof(List<ViewAllUsersResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -115,7 +115,7 @@ namespace SafeCity.Controllers
         /// <response code="400">Invalid request or validation error</response>
         /// <response code="500">Server error</response> 
 
-        [Authorize(Roles = "City_Administrator")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("update/{id}")]
         [ProducesResponseType(typeof(UserUpdateByAdminResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
