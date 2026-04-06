@@ -5,7 +5,7 @@ using SafeCity.Services.IncidentService;
 
 namespace SafeCity.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class IncidentController : ControllerBase
     {
