@@ -61,5 +61,13 @@
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
         }
+
+        public static class UserDelete
+        {
+            public const string InvalidUserId = "User ID must be a positive number.";
+            public const string UserNotFound = "No active user found with the provided ID.";
+            public const string DeleteSuccess = "User has been successfully deleted.";
+            public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
+        }
     }
 }

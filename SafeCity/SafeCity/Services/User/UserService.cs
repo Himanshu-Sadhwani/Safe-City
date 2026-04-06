@@ -255,6 +255,25 @@ public class UserService : IUserService
 
         // Delegate persistence and data update logic to the repository layer
         return await _userRepository.UpdateUser(id, request);
+    }
 
+    /// <summary>
+    /// Validates the user ID and delegates deletion to the repository layer.
+    /// </summary>
+    /// <param name="id">The unique ID of the user to delete.</param>
+    /// <returns>A confirmation string upon successful deletion.</returns>
+    /// <exception cref="ArgumentException">Thrown when the ID is invalid.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the user is not found.</exception>
+    public async Task<string> DeleteUser(int id)
+    {
+        var errorList = new List<string>();
+
+        if (id <= 0)
+            errorList.Add(ErrorMessages.UserDelete.InvalidUserId);
+
+        if (errorList.Any())
+            throw new ArgumentException(string.Join(" | ", errorList));
+
+        return await _userRepository.DeleteUser(id);
     }
 }
