@@ -5,7 +5,7 @@ namespace SafeCity.DTOs
     {
 
         public string Name { get; set; }
-        public int RoleID { get; set; }
+        public int RoleID { get; set; } = 1;
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Password { get; set; }

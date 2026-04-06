@@ -16,7 +16,7 @@
             {
                 { "request", "The entire request object is missing or invalid." },
                 { "Name", "Full Name is required and cannot be empty." },
-                { "Email", "A valid Email address is required." },
+                { "Email", "Email Address is Empty." },
                 { "PasswordHash", "Password is required." },
                 { "Phone", "Phone number is required for contact." },
                 { "RoleID", "A valid User Role must be selected." }
