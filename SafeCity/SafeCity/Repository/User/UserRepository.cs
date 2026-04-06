@@ -242,6 +242,38 @@ namespace SafeCity.Repository
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Soft-deletes a user by setting their status to Inactive.
+        /// </summary>
+        /// <param name="userId">The unique ID of the user to delete.</param>
+        /// <returns>A confirmation string upon successful deletion.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when no active user with the given ID exists.</exception>
+        /// <exception cref="Exception">Thrown when a database error occurs during save.</exception>
+        public async Task<string> DeleteUser(int userId)
+        {
+            var user = await _context.Users
+        .Include(u => u.UserRole)
+        .FirstOrDefaultAsync(u => u.UserID == userId && u.Status == UserStatus.Active);
+
+            if (user == null)
+                throw new KeyNotFoundException(ErrorMessages.UserDelete.UserNotFound);
+
+            // Prevent deletion if the user is an Admin
+            if (user.UserRole != null && user.UserRole.RoleName == UserRoleOption.Admin)
+                throw new InvalidOperationException(ErrorMessages.UserDelete.AdminCannotBeDeleted);
+
+            user.Status = UserStatus.Inactive;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return ErrorMessages.UserDelete.DeleteSuccess;
+            }
+            catch (Exception)
+            {
+                throw new Exception(ErrorMessages.Database.UpdateFailed);
+            }
+        }
 
     }
 }
