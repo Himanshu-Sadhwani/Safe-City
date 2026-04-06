@@ -8,9 +8,10 @@
             public const string RequiredFields = "Required fields are missing or invalid.";
             public const string EmailExists = "A user with this email already exists.";
             public const string InternalError = "An internal server error occurred.";
-            public const string UserNotFound = "User does not exist or is inactive.";
+            public const string UserNotFound = "User does not exist.";
             public const string InvalidCredentials = "Invalid email or password.";
             public const string NoUsersFound = "No users found.";
+            public const string InvalidPassword = "Invalid password.";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "request", "The entire request object is missing or invalid." },
@@ -59,6 +60,14 @@
         {
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
+        }
+
+        public static class UserDelete
+        {
+            public const string InvalidUserId = "User ID must be a positive number.";
+            public const string UserNotFound = "No active user found with the provided ID.";
+            public const string DeleteSuccess = "User has been successfully deleted.";
+            public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
     }
 }
