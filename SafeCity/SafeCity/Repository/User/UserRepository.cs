@@ -207,7 +207,6 @@ namespace SafeCity.Repository
             }
             catch (Exception ex)
             {
-                // Real DB / system failure → 500
                 throw new Exception(
                     ErrorMessages.ForgotPassword.ProcessingFailed, ex);
             }

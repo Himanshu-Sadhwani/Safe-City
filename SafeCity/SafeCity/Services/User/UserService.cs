@@ -285,7 +285,7 @@ public class UserService : IUserService
         var emailResult = EmailHelper.ValidateEmail(request.Email);
         if (!emailResult.IsValid)
         {
-            throw new Exception(
+            throw new ArgumentException(
                 ErrorMessages.Validation.InvalidEmailFormat);
         }
 
@@ -294,7 +294,7 @@ public class UserService : IUserService
             PasswordHelper.ValidatePassword(request.Password);
         if (!passwordResult.IsValid)
         {
-            throw new Exception(
+            throw new ArgumentException(
                 ErrorMessages.Validation.WeakPassword);
         }
         request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
