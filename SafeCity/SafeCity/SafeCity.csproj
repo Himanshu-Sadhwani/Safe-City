@@ -22,7 +22,8 @@
 	<ItemGroup>
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\" />
-		<Folder Include="Repository\" />
+		<Folder Include="DTOs\Audit\" />
+		<Folder Include="Services\Audit\" />
 		<Folder Include="Utility\" />
 	</ItemGroup>
 

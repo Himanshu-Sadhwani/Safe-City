@@ -54,5 +54,13 @@
             public const string UpdateFailed = "An error occurred while updating the user in the database.";
             public const string ForgotPasswordFailed = "An error occured while processing the passwrod request.";
         }
+
+        public static class Audit
+        {
+            public const string SaveFailed = "An error occurred while saving the audit";
+            public const string RequestNull = "Request sent is null";
+            public const string InvalidOfficerID = "invalid officer id";
+            public const string FindingsRequired = "findings required";
+        }
     }
 }
