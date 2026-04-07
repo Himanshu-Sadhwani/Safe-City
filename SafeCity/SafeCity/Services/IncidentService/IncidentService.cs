@@ -34,6 +34,14 @@ namespace SafeCity.Services.IncidentService
             await _incidentRepository.SubmitIncident(request);
         }
 
+        // View Incident Service layer logic based on the admin and citizen request and filter type
+        public async Task<List<IncidentResponse>> ViewIncident(int userId, bool isAdmin, int incidentStatusType)
+        {
+            // response coming from the Repository Layer of view Incident 
+            var response = await _incidentRepository.ViewIncident(userId, isAdmin, incidentStatusType);
+            return response;
+        }
+
         // Field Validation Helper
         private List<string> ValidateRequest(IncidentCreateRequest request)
         {

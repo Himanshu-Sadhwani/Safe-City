@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs.Incidents;
 using SafeCity.Services.IncidentService;
+using System.Security.Claims;
 
 namespace SafeCity.Controllers
 {
@@ -61,6 +62,37 @@ namespace SafeCity.Controllers
             {
                 // Internal Server Error
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ViewIncident Api that takes incidentStatusOption from the query parameters and 
+        /// Extracts the user Information from the token and based on the token details it will return the list of Incident with filterable condition like Pending, InProgress, Resolved.
+        /// </summary>
+        /// <param name="incidentStatusOption">incidentStatusOption from the query parameters in integer form like 0,1,2</param>
+        /// <returns>returns a list of incident made by the citizen</returns>
+        [Authorize(Roles = "Citizen, Admin")]
+        [HttpGet("list")]
+        public async Task<IActionResult> ViewIncident([FromQuery] int incidentStatusOption = 0)
+        {
+            try
+            {
+                // Extracting the user information from the token
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                bool isAdmin = User.IsInRole("Admin");
+                var response = await _incidentService.ViewIncident(userId, isAdmin, incidentStatusOption);
+
+                if (response == null)
+                {
+                    return NotFound("No incidents found.");
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                // it will throw errors if any error is present
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
