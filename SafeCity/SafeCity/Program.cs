@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SafeCity.Repository;
 using SafeCity.Services.Auth;
+using SafeCity.Services.Dispatch;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,10 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDispatchService, DispatchService>();
+builder.Services.AddScoped<IDispatchRepository, DispatchRepository>();
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
