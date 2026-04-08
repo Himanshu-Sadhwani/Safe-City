@@ -28,81 +28,6 @@ public class UserService : IUserService
     }
 
     /// <summary>
-    /// Authenticates a user by validating credentials and generating auth tokens.
-    /// </summary>
-    /// <param name="dto">The login request DTO containing email and password.</param>
-    /// <returns>
-    /// A <see cref="LoginResponseDto"/> containing the access token, refresh token, 
-    /// and expiration details if successful; otherwise, null.
-    /// </returns>
-    public async Task<LoginResponseDto> LoginUser(LoginRequest dto)
-    {
-        var user = await _userRepository.GetUserByEmailAndStatusAsync(
-            dto.Email,
-            UserStatus.Active
-        );
-
-        if (user == null)
-            throw new Exception(ErrorMessages.User.UserNotFound);
-
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
-        if (!isPasswordValid)
-            throw new Exception(ErrorMessages.User.InvalidCredentials);
-
-        var accessToken = GenerateJwtToken(user);
-        var refreshToken = GenerateRefreshToken();
-
-        await _userRepository.SaveAuditLogAsync(user.UserID, "Login");
-
-        return new LoginResponseDto
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            Expires = DateTime.UtcNow.AddHours(1)
-        };
-    }
-
-    /// <summary>
-    /// Generates a JWT access token for the authenticated user.
-    /// </summary>
-    /// <param name="user">The user entity for whom the token is being created.</param>
-    /// <returns>A signed JWT token string containing user claims.</returns>
-    private string GenerateJwtToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.UserRole.RoleName.ToString())
-        };
-
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_config["Jwt:Key"])
-        );
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    /// <summary>
-    /// Generates a secure random refresh token for long-lived authentication.
-    /// </summary>
-    /// <returns>A Base64 encoded secure refresh token string.</returns>
-    private string GenerateRefreshToken()
-    {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-    }
-
-    /// <summary>
     /// Checks the user's data, hashes the password, and saves the user to the database.
     /// </summary>
     /// <param name="request">The data provided for registration.</param>
@@ -330,6 +255,25 @@ public class UserService : IUserService
 
         // Delegate persistence and data update logic to the repository layer
         return await _userRepository.UpdateUser(id, request);
+    }
 
+    /// <summary>
+    /// Validates the user ID and delegates deletion to the repository layer.
+    /// </summary>
+    /// <param name="id">The unique ID of the user to delete.</param>
+    /// <returns>A confirmation string upon successful deletion.</returns>
+    /// <exception cref="ArgumentException">Thrown when the ID is invalid.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the user is not found.</exception>
+    public async Task<string> DeleteUser(int id)
+    {
+        var errorList = new List<string>();
+
+        if (id <= 0)
+            errorList.Add(ErrorMessages.UserDelete.InvalidUserId);
+
+        if (errorList.Any())
+            throw new ArgumentException(string.Join(" | ", errorList));
+
+        return await _userRepository.DeleteUser(id);
     }
 }

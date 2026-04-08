@@ -37,17 +37,27 @@ public class AuthService : IAuthService
     /// </returns>
     public async Task<LoginResponseDto> LoginUser(LoginRequestDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Email))
+            throw new ArgumentException(ErrorMessages.Login.EmailRequired);
+
+        if (string.IsNullOrWhiteSpace(dto.Password))
+            throw new ArgumentException(ErrorMessages.Login.PasswordRequired);
+
+        var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        if (!emailRegex.IsMatch(dto.Email))
+            throw new ArgumentException(ErrorMessages.Validation.InvalidEmailFormat);
+
         var user = await _userRepository.GetUserByEmailAndStatusAsync(
             dto.Email,
             UserStatus.Active
         );
 
         if (user == null)
-            throw new Exception(ErrorMessages.User.UserNotFound);
+            throw new UnauthorizedAccessException(ErrorMessages.User.InvalidCredentials);
 
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
         if (!isPasswordValid)
-            throw new Exception(ErrorMessages.User.InvalidCredentials);
+            throw new UnauthorizedAccessException(ErrorMessages.User.InvalidPassword);
 
         var accessToken = GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
@@ -74,6 +84,7 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.UserRole.RoleName.ToString())
+
         };
 
         var key = new SymmetricSecurityKey(
