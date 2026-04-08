@@ -24,6 +24,8 @@
 		<Folder Include="DTOs\CrisisDtos\" />
 		<Folder Include="Repository\CrisisRepo\" />
 		<Folder Include="Services\Crisis\" />
+		<Folder Include="Repository\Patrol\" />
+		<Folder Include="Services\PatrolService\" />
 		<Folder Include="Utility\" />
 	</ItemGroup>
 
