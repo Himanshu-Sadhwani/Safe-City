@@ -256,7 +256,7 @@ namespace SafeCity.Repository
             try
             {
                 await _context.SaveChangesAsync();
-                return ErrorMessages.UserDelete.DeleteSuccess;
+                return ErrorMessages.UserDelete.DeactivateSuccess;
             }
             catch (Exception)
             {

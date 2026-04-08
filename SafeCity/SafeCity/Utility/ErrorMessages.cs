@@ -66,8 +66,8 @@
         {
             public const string InvalidUserId = "User ID must be a positive number.";
             public const string UserNotFound = "No active user found with the provided ID.";
-            public const string DeleteSuccess = "User has been successfully deleted.";
-            public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
+            public const string DeactivateSuccess = "User has been successfully deactivated.";
+            public const string AdminCannotBeDeleted = "Admin users cannot be deactivated directly. Please update the user's role, then retry.";
         }
     }
 }
