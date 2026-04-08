@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SafeCity.Repository.IncidentRepository;
+using SafeCity.Repository.Patrol;
 using SafeCity.Services.Auth;
 using SafeCity.Services.IncidentService;
+using SafeCity.Services.PatrolService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,8 @@ builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
+builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
+builder.Services.AddScoped<IPatrolService, PatrolService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {

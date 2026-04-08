@@ -81,5 +81,17 @@
             public const string DeleteSuccess = "User has been successfully deleted.";
             public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
+
+        public static class Patrol
+        {
+            public const string OfficerNotFound = "Officer not found.";
+            public const string NotPoliceOfficer = "User is not a Police Officer.";
+            public const string OfficerNotActive = "Officer is not active.";
+            public const string PastDate = "Patrol date cannot be in the past.";
+            public const string AlreadyScheduled = "Officer already has a patrol scheduled on this date.";
+            public const string InvalidDate = "Date cannot be in the past. Please provide a valid future date.";
+            public const string NoOfficersAvailable = "No officers available for the selected date.";
+        }
+
     }
 }
