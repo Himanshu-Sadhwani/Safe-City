@@ -32,16 +32,16 @@ public class AuditController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-                var response = await _service.CreateAuditAsync(request);
-                return Created($"/api/v1/audit/{response.AuditID}", new { message = "Audit recorded successfully.", data = response });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, new { error = ErrorMessages.Audit.InternalError });
-            }
+            var response = await _service.CreateAuditAsync(request);
+            return Created($"/api/v1/audit/{response.AuditID}", new { message = "Audit recorded successfully.", data = response });
         }
-    } 
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = ErrorMessages.Audit.InternalError });
+        }
+    }
+} 
