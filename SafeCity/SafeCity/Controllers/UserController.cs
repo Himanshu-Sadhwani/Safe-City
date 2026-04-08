@@ -37,7 +37,7 @@ namespace SafeCity.Controllers
                 }
 
                 var response = await _userService.RegisterUser(user);
-                return Created("", new { message = response });
+                return Created("", new { message = "User registered successfully" });
             }
             catch (Exception ex)
             {
@@ -193,5 +193,49 @@ namespace SafeCity.Controllers
                 return StatusCode(500, ErrorMessages.Database.ForgotPasswordFailed);
             }
         }
+
+        /// <summary>
+        /// Deletes a specific user by ID (Admin only).
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete.</param>
+        /// <returns>A success message or an appropriate error response.</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("delete/{id}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteUser([FromRoute] int id)
+        {
+            try
+            {
+                if (id <= 0)
+                    return BadRequest(new { error = ErrorMessages.UserDelete.InvalidUserId });
+
+                var result = await _userService.DeleteUser(id);
+                return Ok(new { message = result });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { error = ErrorMessages.Database.UpdateFailed });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { error = ErrorMessages.User.InternalError });
+            }
+        }
     }
 }
+

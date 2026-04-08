@@ -39,7 +39,7 @@ namespace SafeCity.Controllers
                     return BadRequest(new { message = ErrorMessages.User.RequestNull });
 
                 var result = await _authService.LoginUser(dto);
-                return Ok(result);
+                return Ok(new {message="User authenticated successfully.", data = result});
             }
             catch (ArgumentException ex)
             {

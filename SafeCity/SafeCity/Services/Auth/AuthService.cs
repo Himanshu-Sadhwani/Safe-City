@@ -57,7 +57,7 @@ public class AuthService : IAuthService
 
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
         if (!isPasswordValid)
-            throw new UnauthorizedAccessException(ErrorMessages.User.InvalidCredentials);
+            throw new UnauthorizedAccessException(ErrorMessages.User.InvalidPassword);
 
         var accessToken = GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
@@ -84,6 +84,7 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.UserRole.RoleName.ToString())
+
         };
 
         var key = new SymmetricSecurityKey(

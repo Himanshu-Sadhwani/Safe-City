@@ -61,7 +61,7 @@ namespace SafeCity.Repository
         /// <param name="userId">The unique ID of the user.</param>
         /// <returns>The matching <see cref="User"/> entity, or null if not found.</returns>
         /// <exception cref="Exception">Thrown when a database error occurs.</exception>
-        
+
         public async Task<User> GetUserByIdAsync(int userId)
         {
             try
@@ -92,7 +92,7 @@ namespace SafeCity.Repository
         /// </summary>
         /// <returns>A list of all <see cref="User"/> entities.</returns>
         /// <exception cref="Exception">Thrown when a database retrieval error occurs.</exception>
-        
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             try
@@ -106,7 +106,7 @@ namespace SafeCity.Repository
                 throw new Exception("Error while fetching all users", ex);
             }
         }
-    /// <summary>
+        /// <summary>
         /// Updates user details by an administrator in the database.
         /// </summary>
         /// <param name="request"> The request DTO containing user ID and updated fields such as name,
@@ -115,50 +115,50 @@ namespace SafeCity.Repository
         /// <exception cref="Exception"> Thrown when the user with the specified ID is not found. </exception>
         /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
 
-        public async Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request)
+        public async Task<UserUpdateByAdminResponseDto> UpdateUser(int id, UserUpdateByAdminRequestDto request)
         {
-                if (request == null)
-                {
-                    throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
-                }
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.UpdateUserRequest);
+            }
 
-                var user = await GetUserByIdAsync(id);
-                
-                if (user == null)
-                {
-                    throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
-                }
-                // Update allowed fields only if provided
-                if (!string.IsNullOrWhiteSpace(request.Name))
-                {
-                    user.Name = request.Name;
-                }
-                if (!string.IsNullOrWhiteSpace(request.Phone))
-                {
-                    if (!PhoneNumberHelper.IsValidPhoneNumber(request.Phone))
-                    {
-                        throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidPhoneNo);
-                    }
-                    user.Phone = request.Phone;
-                }
-                if (request.RoleID != 0)
-                {
-                    user.RoleID = request.RoleID;
-                }
-                if (request.Status != 0)
-                {
-                    if (request.Status != UserStatus.Inactive)
-                    {
-                        throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidStatus);
-                    }
-                    user.Status = request.Status;
-                }
+            var user = await GetUserByIdAsync(id);
 
-                await _context.SaveChangesAsync();
+            if (user == null)
+            {
+                throw new KeyNotFoundException(ErrorMessages.UserUpdate.UserNotFound);
+            }
+            // Update allowed fields only if provided
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                user.Name = request.Name;
+            }
+            if (!string.IsNullOrWhiteSpace(request.Phone))
+            {
+                if (!PhoneNumberHelper.IsValidPhoneNumber(request.Phone))
+                {
+                    throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidPhoneNo);
+                }
+                user.Phone = request.Phone;
+            }
+            if (request.RoleID != 0)
+            {
+                user.RoleID = request.RoleID;
+            }
+            if (request.Status != 0)
+            {
+                if (request.Status != UserStatus.Inactive)
+                {
+                    throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidStatus);
+                }
+                user.Status = request.Status;
+            }
 
-                // Map Domain Entity to Response DTO
-                return user.ToUserUpdateByAdminResponse();
-           
+            await _context.SaveChangesAsync();
+
+            // Map Domain Entity to Response DTO
+            return user.ToUserUpdateByAdminResponse();
+
         }
         /// <summary>
         /// Handles the database logic for updating a user's password based on the provided email address.
@@ -231,6 +231,38 @@ namespace SafeCity.Repository
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Soft-deletes a user by setting their status to Inactive.
+        /// </summary>
+        /// <param name="userId">The unique ID of the user to delete.</param>
+        /// <returns>A confirmation string upon successful deletion.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when no active user with the given ID exists.</exception>
+        /// <exception cref="Exception">Thrown when a database error occurs during save.</exception>
+        public async Task<string> DeleteUser(int userId)
+        {
+            var user = await _context.Users
+        .Include(u => u.UserRole)
+        .FirstOrDefaultAsync(u => u.UserID == userId && u.Status == UserStatus.Active);
+
+            if (user == null)
+                throw new KeyNotFoundException(ErrorMessages.UserDelete.UserNotFound);
+
+            // Prevent deletion if the user is an Admin
+            if (user.UserRole != null && user.UserRole.RoleName == UserRoleOption.Admin)
+                throw new InvalidOperationException(ErrorMessages.UserDelete.AdminCannotBeDeleted);
+
+            user.Status = UserStatus.Inactive;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return ErrorMessages.UserDelete.DeleteSuccess;
+            }
+            catch (Exception)
+            {
+                throw new Exception(ErrorMessages.Database.UpdateFailed);
+            }
+        }
 
     }
 }
