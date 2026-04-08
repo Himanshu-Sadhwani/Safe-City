@@ -60,5 +60,25 @@
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
         }
+        
+        public static class Dispatch
+        {
+            public const string RequestNull = "Dispatch request cannot be null.";
+            public const string InvalidIncidentId = "Invalid Incident ID provided.";
+            public const string InvalidDispatcherId = "Invalid Dispatcher ID provided.";
+            public const string IncidentNotFound = "Incident not found.";
+            public const string DispatcherNotFound = "Dispatcher not found.";
+            public const string DispatcherInactive = "Dispatcher is not active.";
+            public const string ResourceAlreadyAssigned ="This resource is already assigned to the incident.";
+            public const string IncidentAlreadyDispatched = "Incident has already been dispatched.";
+            public const string InvalidIncidentType = "Unsupported or invalid incident type.";
+            public const string NoAvailableResources = "No available resources for this incident.";
+            public const string ResourceSelectionFailed = "Failed to select a suitable resource.";
+            public const string DispatchCreationFailed = "Failed to create dispatch record.";
+            public const string ResourceUpdateFailed = "Failed to update resource availability.";
+            public const string IncidentUpdateFailed = "Failed to update incident status.";
+            public const string InternalError = "An internal error occurred while assigning the dispatch.";
+        }
+
     }
 }

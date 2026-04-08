@@ -6,6 +6,6 @@ namespace SafeCity.Repository
     public interface IDispatchRepository
     {
         Task AddAsync(Dispatch dispatch);
-        Task<bool> DispatchExistsForIncidentAsync(int incidentId);
+        Task<List<Dispatch>> GetByIncidentIdAsync(int incidentId);
     }
 }
