@@ -25,6 +25,10 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
 
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
+builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService,SafeCity.Services.Auth.AuthService>();
+builder.Services.AddScoped<SafeCity.Services.Audit.IAuditService, SafeCity.Services.Audit.AuditService>();
+builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.Repository.Audit.AuditRepository>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDispatchService, DispatchService>();
 builder.Services.AddScoped<IDispatchRepository, DispatchRepository>();

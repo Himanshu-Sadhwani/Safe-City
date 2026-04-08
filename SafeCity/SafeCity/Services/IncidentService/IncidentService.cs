@@ -33,7 +33,6 @@ namespace SafeCity.Services.IncidentService
             // calling the next Incident Repository layer to save the request to the database
             await _incidentRepository.SubmitIncident(request);
         }
-
         // Field Validation Helper
         private List<string> ValidateRequest(IncidentCreateRequest request)
         {
@@ -43,7 +42,11 @@ namespace SafeCity.Services.IncidentService
             if (request.CitizenID <= 0)
                 errorList.Add("Invalid Citizen Id");
 
-            if (!Enum.IsDefined(typeof(IncidentOption), request.Type))
+            if (request.Type == 0)
+            {
+                errorList.Add("Incident type is missing.");
+            }
+            if (request.Type != 0 && !Enum.IsDefined(typeof(IncidentOption), request.Type))
                 errorList.Add("Invalid Incident Type");
 
             if (string.IsNullOrWhiteSpace(request.Location))
