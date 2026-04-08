@@ -24,6 +24,8 @@
 		<Folder Include="DTOs\" />
 		<Folder Include="DTOs\Audit\" />
 		<Folder Include="Services\Audit\" />
+		<Folder Include="Repository\Patrol\" />
+		<Folder Include="Services\PatrolService\" />
 		<Folder Include="Utility\" />
 	</ItemGroup>
 

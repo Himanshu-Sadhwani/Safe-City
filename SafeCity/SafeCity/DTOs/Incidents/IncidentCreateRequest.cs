@@ -10,10 +10,10 @@ namespace SafeCity.DTOs.Incidents
         public int CitizenID { get; set; }
 
         [Required(ErrorMessage = "Incident type is required")]
-        public IncidentOption Type { get; set; } = default!;
+        public IncidentOption Type { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
-        public string Location { get; set; } = string.Empty;
+        public string Location { get; set; }
 
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date { get; set; } = DateTime.Now;
