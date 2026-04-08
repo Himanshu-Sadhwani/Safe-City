@@ -1,4 +1,4 @@
-namespace SafeCity.Domain.Enums
+namespace SafeCity.Domain.Enum
 {
     public enum AuditStatus
     {
