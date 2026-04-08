@@ -2,8 +2,7 @@ using System;
 using SafeCity.DTOs;
 using SafeCity.Repository.Audit;
 using SafeCity.Utility;
-// using SafeCity.Repository;
-// using SafeCity.Utility;
+using SafeCity.Domain.Enum;
 
 namespace SafeCity.Services.Audit;
 
@@ -24,9 +23,17 @@ public class AuditService : IAuditService
 
         if(request.OfficerID <= 0)
             errors.Add(ErrorMessages.Audit.InvalidOfficerID);
+        else if (!await _repo.IsValidOfficerAsync(request.OfficerID))
+            errors.Add(ErrorMessages.Audit.OfficerNotFound);
         
         if(string.IsNullOrWhiteSpace(request.Findings))
             errors.Add(ErrorMessages.Audit.FindingsRequired);
+
+        if (!Enum.IsDefined(typeof(AuditScope), request.Scope))
+            errors.Add(ErrorMessages.Audit.InvalidScope);
+
+        if (!Enum.IsDefined(typeof(AuditStatus), request.Status))
+            errors.Add(ErrorMessages.Audit.InvalidStatus);
 
         if(errors.Any())
             throw new ArgumentException(string.Join(" | ", errors));

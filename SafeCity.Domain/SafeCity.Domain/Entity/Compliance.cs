@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SafeCity.Domain.Enums;
+using SafeCity.Domain.Enum;
 
 namespace SafeCity.Domain.Entity
 {

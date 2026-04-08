@@ -9,7 +9,7 @@ namespace SafeCity.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class AuditController
+public class AuditController : ControllerBase
 {
     private readonly IAuditService _service;
     public AuditController(IAuditService service)
@@ -22,6 +22,7 @@ public class AuditController
     /// </summary>
     [Authorize(Roles = "Compliance_Officer")]
     [HttpPost]
+    [ProducesResponseType(typeof(CreateAuditResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateAudit([FromBody] CreateAuditRequestDto request)
@@ -31,8 +32,8 @@ public class AuditController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-                var response = await _auditService.CreateAuditAsync(request);
-                return Created("", new { message = "Audit recorded successfully.", data = response });
+                var response = await _service.CreateAuditAsync(request);
+                return Created($"/api/v1/audit/{response.AuditID}", new { message = "Audit recorded successfully.", data = response });
             }
             catch (ArgumentException ex)
             {
@@ -43,4 +44,4 @@ public class AuditController
                 return StatusCode(500, new { error = ErrorMessages.Audit.InternalError });
             }
         }
-    }
+    } 

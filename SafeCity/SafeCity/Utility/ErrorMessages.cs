@@ -57,10 +57,14 @@
 
         public static class Audit
         {
-            public const string SaveFailed = "An error occurred while saving the audit";
-            public const string RequestNull = "Request sent is null";
-            public const string InvalidOfficerID = "invalid officer id";
-            public const string FindingsRequired = "findings required";
+            public const string SaveFailed = "An error occurred while saving the audit record.";
+            public const string RequestNull = "Audit request cannot be null.";
+            public const string InvalidOfficerID = "Officer ID must be a valid positive number.";
+            public const string FindingsRequired = "Findings are required and cannot be empty.";
+            public const string InternalError = "An internal server error occurred.";
+            public const string InvalidScope = "The provided audit scope is not valid.";
+            public const string InvalidStatus = "The provided audit status is not valid.";
+            public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
         }
     }
 }
