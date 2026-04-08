@@ -20,6 +20,12 @@ public class AuditController : ControllerBase
     /// <summary>
     /// Records a new compliance audit submitted by a Compliance Officer.
     /// </summary>
+    /// <param name="request">The audit request containing officer ID, scope, findings, and status.</param>
+    /// <returns>
+    /// Returns <c>201 Created</c> with the audit details on success;
+    /// <c>400 Bad Request</c> if validation fails;
+    /// <c>500 Internal Server Error</c> if an unexpected error occurs.
+    /// </returns>
     [Authorize(Roles = "Compliance_Officer")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateAuditResponseDto), StatusCodes.Status201Created)]

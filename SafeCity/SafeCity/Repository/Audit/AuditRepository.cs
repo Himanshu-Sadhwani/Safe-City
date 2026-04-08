@@ -14,6 +14,13 @@ public class AuditRepository : IAuditRepository
     {
         _context = context;
     }
+
+    /// <summary>
+    /// Handles the database logic for saving a new audit record submitted by a Compliance Officer.
+    /// </summary>
+    /// <param name="request">The audit request containing officer ID, scope, findings, and status.</param>
+    /// <returns>A response DTO containing the details of the newly created audit record.</returns>
+    /// <exception cref="Exception">Thrown when a database error occurs while saving the audit.</exception>
     public async Task<CreateAuditResponseDto> CreateAuditAsync(CreateAuditRequestDto request)
     {
         try
@@ -39,6 +46,11 @@ public class AuditRepository : IAuditRepository
         }
     }
 
+    /// <summary>
+    /// Verifies that the given user exists and holds a valid field officer role (Police, Fire Fighter, or Emergency Dispatcher).
+    /// </summary>
+    /// <param name="officerId">The ID of the user to validate as a field officer.</param>
+    /// <returns><c>true</c> if the user exists and has a valid officer role; otherwise, <c>false</c>.</returns>
     public async Task<bool> IsValidOfficerAsync(int officerId)
     {
         return await _context.Users

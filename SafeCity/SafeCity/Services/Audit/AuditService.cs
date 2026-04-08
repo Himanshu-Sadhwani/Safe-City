@@ -14,6 +14,14 @@ public class AuditService : IAuditService
     {
         _repo = repo;
     }
+
+    /// <summary>
+    /// Validates the audit request and delegates the creation of a new audit record to the repository.
+    /// </summary>
+    /// <param name="request">The audit request containing officer ID, scope, findings, and status.</param>
+    /// <returns>A response DTO containing the details of the newly created audit record.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when validation fails, including invalid officer ID, missing findings, or invalid scope/status values.</exception>
     public async Task<CreateAuditResponseDto> CreateAuditAsync(CreateAuditRequestDto request)
     {
         if(request == null)
