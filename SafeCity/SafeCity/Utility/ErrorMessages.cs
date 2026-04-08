@@ -78,8 +78,8 @@
             public const string DispatchCreationFailed = "Failed to create dispatch record.";
             public const string ResourceUpdateFailed = "Failed to update resource availability.";
             public const string IncidentUpdateFailed = "Failed to update incident status.";
-            public const string InternalError = "An internal error occurred while assigning the dispatch.";
-
+            public const string InternalError = "An internal error occurred while assigning the dispatch.";        }
+            
         public static class UserDelete
         {
             public const string InvalidUserId = "User ID must be a positive number.";
@@ -87,7 +87,7 @@
             public const string DeleteSuccess = "User has been successfully deleted.";
             public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
-
+        
         public static class Patrol
         {
             public const string OfficerNotFound = "Officer not found.";
@@ -99,6 +99,5 @@
             public const string NoOfficersAvailable = "No officers available for the selected date.";
         }
 
-        }
     }
 }

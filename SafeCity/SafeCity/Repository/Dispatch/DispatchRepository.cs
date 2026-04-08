@@ -26,6 +26,7 @@ namespace SafeCity.Repository
         /// </summary>
         /// <param name="dispatch">The dispatch entity to be added.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
+        
         public async Task AddAsync(Dispatch dispatch)
         {
             await _context.Dispatches.AddAsync(dispatch);

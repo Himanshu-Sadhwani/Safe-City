@@ -1,6 +1,6 @@
 ﻿using SafeCity.Domain.Enum;
 using SafeCity.DTOs.Incidents;
-using SafeCity.Repository.IncidentRepository;
+using SafeCity.Repository;
 
 namespace SafeCity.Services.IncidentService
 {

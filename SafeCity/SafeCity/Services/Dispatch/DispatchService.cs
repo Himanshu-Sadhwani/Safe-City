@@ -43,51 +43,56 @@ namespace SafeCity.Services.Dispatch
         /// </exception>
         public async Task<DispatchResponseDto> AssignUnitAsync(DispatchRequestDto request)
         {
-            // -------------------- Request Validation --------------------
+            var errorList = new List<string>();
+
             if (request == null)
-                throw new Exception(ErrorMessages.Dispatch.RequestNull);
+                errorList.Add(ErrorMessages.Dispatch.RequestNull);
+            else
+            {
+                if (request.IncidentId <= 0)
+                    errorList.Add(ErrorMessages.Dispatch.InvalidIncidentId);
 
-            if (request.IncidentId <= 0)
-                throw new Exception(ErrorMessages.Dispatch.InvalidIncidentId);
+                if (request.DispatcherId <= 0)
+                    errorList.Add(ErrorMessages.Dispatch.InvalidDispatcherId);
+            }
 
-            if (request.DispatcherId <= 0)
-                throw new Exception(ErrorMessages.Dispatch.InvalidDispatcherId);
+            // Stop early if request itself is invalid
+            if (errorList.Any())
+                throw new ArgumentException(string.Join(" | ", errorList));
 
-            // -------------------- Incident Validation --------------------
             var incident = await _incidentRepository.GetByIdAsync(request.IncidentId);
             if (incident == null)
-                throw new Exception(ErrorMessages.Dispatch.IncidentNotFound);
+                errorList.Add(ErrorMessages.Dispatch.IncidentNotFound);
 
-            // -------------------- Dispatcher Validation --------------------
             var dispatcher = await _userRepository.GetUserByIdAsync(request.DispatcherId);
 
             if (dispatcher == null)
-                throw new Exception(ErrorMessages.Dispatch.DispatcherNotFound);
+                errorList.Add(ErrorMessages.Dispatch.DispatcherNotFound);
+            else if (dispatcher.Status != UserStatus.Active)
+                errorList.Add(ErrorMessages.Dispatch.DispatcherInactive);
 
-            if (dispatcher.Status != UserStatus.Active)
-                throw new Exception(ErrorMessages.Dispatch.DispatcherInactive);
+            // Stop if core entities are invalid
+            if (errorList.Any())
+                throw new ArgumentException(string.Join(" | ", errorList));
 
-            // -------------------- Resource Mapping --------------------
             ResourceTypeOption resourceType;
             try
             {
-                resourceType = MapIncidentToResourceType(incident.Type);
+                resourceType = MapIncidentToResourceType(incident!.Type);
             }
             catch
             {
                 throw new Exception(ErrorMessages.Dispatch.InvalidIncidentType);
             }
 
-            // -------------------- Resource Availability --------------------
             var availableResources =
                 await _resourceRepository.GetAvailableResourcesAsync(resourceType);
 
             if (!availableResources.Any())
                 throw new Exception(ErrorMessages.Dispatch.NoAvailableResources);
 
-            // -------------------- Prevent Duplicate Resource --------------------
             var existingDispatches =
-                await _dispatchRepository.GetByIncidentIdAsync(incident.IncidentID);
+                await _dispatchRepository.GetByIncidentIdAsync(incident!.IncidentID);
 
             var selectedResource = availableResources
                 .FirstOrDefault(r => !existingDispatches.Any(d => d.ResourceID == r.ResourceID));
@@ -95,11 +100,10 @@ namespace SafeCity.Services.Dispatch
             if (selectedResource == null)
                 throw new Exception(ErrorMessages.Dispatch.ResourceAlreadyAssigned);
 
-            // -------------------- Create Dispatch --------------------
             var dispatch = new Domain.Entity.Dispatch
             {
                 IncidentID = incident.IncidentID,
-                DispatcherID = dispatcher.UserID,
+                DispatcherID = dispatcher!.UserID,
                 ResourceID = selectedResource.ResourceID,
                 Status = DispatchStatusOption.Assigned,
                 Date = DateTime.UtcNow
@@ -114,7 +118,6 @@ namespace SafeCity.Services.Dispatch
                 throw new Exception(ErrorMessages.Dispatch.DispatchCreationFailed);
             }
 
-            // -------------------- Update Resource --------------------
             selectedResource.Availability = ResourceAvailabilityOption.OnTask;
 
             try
@@ -126,7 +129,6 @@ namespace SafeCity.Services.Dispatch
                 throw new Exception(ErrorMessages.Dispatch.ResourceUpdateFailed);
             }
 
-            // -------------------- Update Incident Status (Only Once) --------------------
             if (incident.Status == IncidentStatusOption.Pending)
             {
                 incident.Status = IncidentStatusOption.InProgress;
@@ -141,7 +143,6 @@ namespace SafeCity.Services.Dispatch
                 }
             }
 
-            // -------------------- Response --------------------
             return new DispatchResponseDto
             {
                 DispatchId = dispatch.DispatchID,
@@ -152,6 +153,7 @@ namespace SafeCity.Services.Dispatch
                 DispatchDateTime = dispatch.Date
             };
         }
+
 
         /// <summary>
         /// Maps an incident type to the appropriate resource type.

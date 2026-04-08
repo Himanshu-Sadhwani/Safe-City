@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
 using SafeCity.Domain.Entity;
+using SafeCity.DTOs.Incidents;
 
 namespace SafeCity.Repository
 {
@@ -21,6 +22,21 @@ namespace SafeCity.Repository
         public IncidentRepository(SafeCityDbContext context)
         {
             _context = context;
+        }
+        public async Task SubmitIncident(IncidentCreateRequest request)
+        {
+            try
+            {
+                // map dto to the entity
+                var incidentDetails = request.ToEntity();
+                await _context.Incidents.AddAsync(incidentDetails);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // throws error if any
+                throw new Exception("Database error occurred while saving the incident.", ex);
+            }
         }
 
         /// <summary>
@@ -47,5 +63,6 @@ namespace SafeCity.Repository
             _context.Incidents.Update(incident);
             await _context.SaveChangesAsync();
         }
+
     }
 }
