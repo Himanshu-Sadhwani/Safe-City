@@ -66,6 +66,8 @@
             public const string InvalidScope = "The provided audit scope is not valid.";
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
+        }
+        
         public static class Login
         {
             public const string EmailRequired = "Email address is required.";
