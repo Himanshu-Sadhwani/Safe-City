@@ -14,5 +14,6 @@ namespace SafeCity.Repository
         public Task<UserUpdateByAdminResponseDto> UpdateUser(int id,UserUpdateByAdminRequestDto request);
         public Task<User> GetUserByIdAsync(int userId);
         public Task<List<User>> GetAllUsersAsync();
+        Task<string> DeleteUser(int userId);
     }
 }
