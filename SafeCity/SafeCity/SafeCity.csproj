@@ -21,8 +21,9 @@
 
 	<ItemGroup>
 		<Folder Include="Controllers\" />
-		<Folder Include="DTOs\" />
-		<Folder Include="Repository\" />
+		<Folder Include="DTOs\CrisisDtos\" />
+		<Folder Include="Repository\CrisisRepo\" />
+		<Folder Include="Services\Crisis\" />
 		<Folder Include="Utility\" />
 	</ItemGroup>
 
