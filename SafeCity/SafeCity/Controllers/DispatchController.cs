@@ -9,7 +9,7 @@ namespace SafeCity.Controllers
     /// API controller responsible for dispatch-related operations.
     /// </summary>
     [ApiController]
-    [Route("api/v1/dispatch")]
+    [Route("api/v1/[controller]")]
     public class DispatchController : ControllerBase
     {
         private readonly IDispatchService _dispatchService;
@@ -34,7 +34,7 @@ namespace SafeCity.Controllers
         /// or <see cref="BadRequestObjectResult"/> if validation or processing fails.</returns>
         /// <response code="200">Resource successfully assigned to the incident.</response>
         /// <response code="400">Invalid request data or assignment failure.</response>
-        [Authorize(Roles = "Emergency_Dispatcher")]
+        [Authorize(Roles = "Emergency_Dispatcher , Admin")]
         [HttpPost("assign")]
         public async Task<IActionResult> AssignUnit([FromBody] DispatchRequestDto request)
         {
