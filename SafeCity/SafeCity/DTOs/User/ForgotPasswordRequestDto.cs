@@ -5,11 +5,11 @@ namespace SafeCity.DTOs
     public class ForgotPasswordRequestDto
     {
         public string Email { get; set; }
-        public string PasswordHash { get; set; }
-
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
         public void UpdateUserPassword(User user)
         {
-            user.Password = PasswordHash;
+            user.Password = Password;
         }
     }
 }
