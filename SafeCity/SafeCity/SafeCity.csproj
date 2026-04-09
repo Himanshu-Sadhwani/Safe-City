@@ -23,8 +23,11 @@
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\" />
 		<Folder Include="DTOs\Audit\" />
+		<Folder Include="DTOs\Compliance\" />
+		<Folder Include="Repository\Compliance\" />
 		<Folder Include="Services\Audit\" />
 		<Folder Include="Repository\Patrol\" />
+		<Folder Include="Services\Compliance\" />
 		<Folder Include="Services\PatrolService\" />
 		<Folder Include="Utility\" />
 	</ItemGroup>

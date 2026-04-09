@@ -26,12 +26,14 @@ builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.Use
 builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService,SafeCity.Services.Auth.AuthService>();
 builder.Services.AddScoped<SafeCity.Services.Audit.IAuditService, SafeCity.Services.Audit.AuditService>();
 builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.Repository.Audit.AuditRepository>();
-
+builder.Services.AddScoped<SafeCity.Repository.Compliance.IComplianceRepository, SafeCity.Repository.Compliance.ComplianceRepository>();
+builder.Services.AddScoped<SafeCity.Services.Compliance.IComplianceService,SafeCity.Services.Compliance.ComplianceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {

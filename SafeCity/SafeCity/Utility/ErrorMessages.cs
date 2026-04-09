@@ -67,7 +67,7 @@
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
         }
-        
+
         public static class Login
         {
             public const string EmailRequired = "Email address is required.";
@@ -93,5 +93,15 @@
             public const string NoOfficersAvailable = "No officers available for the selected date.";
         }
 
+        public static class Compliance
+        {
+            public const string SaveFailed = "An error occurred while saving the audit record.";
+            public const string InvalidEntityID = "invalid entity id entered";
+            public const string EntityNotFound = "entity not found";
+            public const string RequestNull = "Audit request cannot be null.";
+            public const string InvalidType = "invalid Type";
+            public const string InvalidResult = "invalid Result";
+            public const string InternalError = "An internal server error occurred.";
+        }
     }
 }
