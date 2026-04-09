@@ -43,5 +43,10 @@ namespace SafeCity.Repository.CrisisRepo
                 throw new Exception(ErrorMessages.Crisis.DeclarationFailed, ex);
             }
         }
+
+        public async Task<bool> IsDuplicateAsync(CreateCrisisRequestDto request)
+        {
+            return await _context.Set<Crisis>().AnyAsync(c => c.Type == request.Type && c.Location == request.Location && c.Date.Date == request.Date!.Value.Date);
+        }
     }
 }
