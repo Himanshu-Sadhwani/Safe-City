@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -27,6 +28,22 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var error = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .FirstOrDefault()?.ErrorMessage;
+ 
+        return new BadRequestObjectResult(new
+        {
+            message = error
+        });
+    };
+});
+
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
 builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService, SafeCity.Services.Auth.AuthService>();
