@@ -1,6 +1,7 @@
 ﻿using SafeCity.Domain.Enum;
 using SafeCity.DTOs.Incidents;
 using SafeCity.Repository;
+using System.ComponentModel.DataAnnotations;
 
 namespace SafeCity.Services.IncidentService
 {
@@ -27,10 +28,11 @@ namespace SafeCity.Services.IncidentService
             // throws the error if there is any error present
             if (errors.Any())
             {
-                throw new ArgumentException(string.Join(" | ", errors));
+                throw new ValidationException(string.Join(" | ", errors));
             }
 
             // calling the next Incident Repository layer to save the request to the database
+
             await _incidentRepository.SubmitIncident(request);
         }
         // Field Validation Helper
@@ -54,12 +56,32 @@ namespace SafeCity.Services.IncidentService
 
             if (request.Date > DateTime.Now)
                 errorList.Add("Incident Date cannot be in the future");
-
-            if (!Enum.IsDefined(typeof(IncidentStatusOption), request.Status))
+            if (request.Status == 0)
+            {
+                errorList.Add("Incident Status is missing.");
+            }
+            if (request.Status != 0 && !Enum.IsDefined(typeof(IncidentStatusOption), request.Status))
                 errorList.Add("Invalid Incident Status");
 
             // return the errorList i.e. null or the errorList
             return errorList;
+        }
+
+        // View Incident Service and it will perform all the filter and validation to give the required response from the database
+        public async Task<List<IncidentResponse>> ViewIncident(int userId, bool isAdmin, IncidentStatusOption? status, string? location, IncidentOption? type, DateTime? date)
+        {
+            try
+            {
+                // calling the next repository layer to handle all the filteration at the database level
+                var response = await _incidentRepository.ViewIncident(userId, isAdmin, status, location, type, date);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // throws errors if any present
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
