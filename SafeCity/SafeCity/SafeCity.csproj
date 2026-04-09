@@ -20,6 +20,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="DTOs\Dispatch\" />
+		<Folder Include="Repository\Incident\" />
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\CrisisDtos\" />
 		<Folder Include="Repository\CrisisRepo\" />

@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SafeCity.Repository;
+using SafeCity.Services.Auth;
+using SafeCity.Services.Dispatch;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Crisis;
@@ -30,6 +33,10 @@ builder.Services.AddScoped<SafeCity.Services.Audit.IAuditService, SafeCity.Servi
 builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.Repository.Audit.AuditRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDispatchService, DispatchService>();
+builder.Services.AddScoped<IDispatchRepository, DispatchRepository>();
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 builder.Services.AddScoped<ICrisisRepository, CrisisRepository>();
 builder.Services.AddScoped<ICrisisService, CrisisService>();
 builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();

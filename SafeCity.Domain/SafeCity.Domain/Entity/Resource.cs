@@ -10,11 +10,9 @@ namespace SafeCity.Domain.Entity
         public int ResourceID { get; set; }
 
         [Required(ErrorMessage = "Resource type is required")]
-        [Column(TypeName = "varchar(20)")]
         public ResourceTypeOption Type { get; set; }
 
         [Required(ErrorMessage = "Availability status is required")]
-        [Column(TypeName = "varchar(20)")]
         public ResourceAvailabilityOption Availability { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
