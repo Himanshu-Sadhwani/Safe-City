@@ -183,7 +183,7 @@ namespace SafeCity.Repository
 
                 if (user == null)
                 {
-                    throw new Exception(ErrorMessages.User.EmailExists);
+                    throw new KeyNotFoundException(ErrorMessages.ForgotPassword.UserNotFound);
                 }
 
                 // Update password using request DTO logic
@@ -195,9 +195,20 @@ namespace SafeCity.Repository
                 // Map updated entity to response DTO
                 return user.ToForgotPasswordResponse();
             }
-            catch
+            catch (ArgumentException)
             {
-                throw new Exception(ErrorMessages.Database.ForgotPasswordFailed);
+                // Validation errors → 400
+                throw;
+            }
+            catch (KeyNotFoundException)
+            {
+                // User not found → 404
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    ErrorMessages.ForgotPassword.ProcessingFailed, ex);
             }
         }
 

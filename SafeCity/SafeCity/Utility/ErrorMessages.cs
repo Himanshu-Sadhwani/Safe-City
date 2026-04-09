@@ -23,11 +23,34 @@
             };
         }
 
+        public static class Crisis
+        {
+            // General
+            public const string RequestNull = "Crisis request cannot be null.";
+            public const string CrisisNotFound = "Crisis not found.";
+            public const string DeclarationFailed = "Failed to declare crisis.";
+            public const string LocationRequired = "Crisis location is required.";
+            public const string InvalidDate = "A valid crisis date is required.";
+            public const string InvalidSeverity = "Invalid crisis severity.";
+            public const string InvalidStatus = "Invalid crisis status.";
+            public const string InvalidType = "Invalid crisis type.";
+            public static readonly Dictionary<string, string> Field = new()
+            {
+                { "Location", LocationRequired },
+                { "Date", InvalidDate },
+                { "Severity", InvalidSeverity },
+                { "Status", InvalidStatus },
+                { "Type", InvalidType }
+            };
+        }
+
         public static class ForgotPassword
         {
             public const string UserNotFound = "No user found with the provided email address.";
             public const string ProcessingFailed = "An error occurred while processing the forgot password request.";
             public const string SameAsOldPassword = "The new password must be different from the old password.";
+            public const string PasswordMismatch = "Password and Confirm Password do not match.";
+
         }
         public static class UserUpdate
         {
