@@ -49,10 +49,16 @@ namespace SafeCity.Services.Dispatch
                 errorList.Add(ErrorMessages.Dispatch.RequestNull);
             else
             {
-                if (request.IncidentId <= 0)
+                if(request.IncidentId==0)
+                    errorList.Add(ErrorMessages.Dispatch.IncidentIdRequired);
+
+                if(request.DispatcherId==0)
+                    errorList.Add(ErrorMessages.Dispatch.DispatcherIdRequired);
+
+                if (request.IncidentId <0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidIncidentId);
 
-                if (request.DispatcherId <= 0)
+                if (request.DispatcherId <0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidDispatcherId);
             }
 

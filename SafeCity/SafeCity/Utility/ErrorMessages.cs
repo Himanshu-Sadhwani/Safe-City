@@ -99,6 +99,8 @@
         
         public static class Dispatch
         {
+            public const string IncidentIdRequired = "Incident ID is required.";
+            public const string DispatcherIdRequired = "Dispatcher ID is required.";
             public const string RequestNull = "Dispatch request cannot be null.";
             public const string InvalidIncidentId = "Invalid Incident ID provided.";
             public const string InvalidDispatcherId = "Invalid Dispatcher ID provided.";

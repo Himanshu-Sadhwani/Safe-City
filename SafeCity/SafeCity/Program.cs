@@ -6,19 +6,17 @@ using SafeCity.Repository;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Dispatch;
 using SafeCity.Repository.CrisisRepo;
-using SafeCity.Services.Auth;
 using SafeCity.Services.Crisis;
-using SafeCity.Repository.IncidentRepository;
 using SafeCity.Repository.Patrol;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -31,7 +29,6 @@ builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.Use
 builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService,SafeCity.Services.Auth.AuthService>();
 builder.Services.AddScoped<SafeCity.Services.Audit.IAuditService, SafeCity.Services.Audit.AuditService>();
 builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.Repository.Audit.AuditRepository>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDispatchService, DispatchService>();
 builder.Services.AddScoped<IDispatchRepository, DispatchRepository>();
