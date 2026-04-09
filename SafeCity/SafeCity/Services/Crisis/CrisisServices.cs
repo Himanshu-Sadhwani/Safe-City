@@ -32,17 +32,29 @@ namespace SafeCity.Services.Crisis
             if (string.IsNullOrWhiteSpace(request.Location))
                 throw new Exception(ErrorMessages.Crisis.LocationRequired);
 
-            if (request.Date == default)
-                throw new Exception(ErrorMessages.Crisis.InvalidDate);
+            if (request.Type == null)
+                throw new Exception(ErrorMessages.Crisis.TypeRequired);
 
             if (!Enum.IsDefined(typeof(CrisisType), request.Type))
                 throw new Exception(ErrorMessages.Crisis.InvalidType);
 
+            if (request.Severity == null)
+                throw new Exception(ErrorMessages.Crisis.SeverityRequired);
+
             if (!Enum.IsDefined(typeof(CrisisSeverity), request.Severity))
                 throw new Exception(ErrorMessages.Crisis.InvalidSeverity);
 
-            if (!Enum.IsDefined(typeof(CrisisStatus), request.Status))
+            if (request.Date == null)
+                throw new Exception(ErrorMessages.Crisis.DateRequired);
+
+            if (request.Date.Value.Date < DateTime.UtcNow.Date)
+                throw new Exception(ErrorMessages.Crisis.InvalidDate);
+
+            if (request.Status != null && !Enum.IsDefined(typeof(CrisisStatus), request.Status))
                 throw new Exception(ErrorMessages.Crisis.InvalidStatus);
+
+            if (await _crisisRepository.IsDuplicateAsync(request))
+                throw new Exception(ErrorMessages.Crisis.Duplicate);
 
             return await _crisisRepository.DeclareCrisis(request);
         }

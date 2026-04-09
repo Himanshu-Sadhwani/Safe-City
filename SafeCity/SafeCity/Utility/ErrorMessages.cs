@@ -28,12 +28,16 @@
             // General
             public const string RequestNull = "Crisis request cannot be null.";
             public const string CrisisNotFound = "Crisis not found.";
+            public const string DateRequired = " Date is required";
+            public const string InvalidType = "Invalid crisis type";
+            public const string TypeRequired = "Crisis type is required";
+            public const string SeverityRequired = "Crisis severity is required";
             public const string DeclarationFailed = "Failed to declare crisis.";
             public const string LocationRequired = "Crisis location is required.";
             public const string InvalidDate = "A valid crisis date is required.";
             public const string InvalidSeverity = "Invalid crisis severity.";
             public const string InvalidStatus = "Invalid crisis status.";
-            public const string InvalidType = "Invalid crisis type.";
+            public const string Duplicate="Crisis already exists for given details...";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "Location", LocationRequired },
