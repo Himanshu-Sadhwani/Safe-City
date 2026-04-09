@@ -8,7 +8,7 @@ using SafeCity.Services.Dispatch;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Crisis;
-using SafeCity.Repository.IncidentRepository;
+//using SafeCity.Repository.IncidentRepository;
 using SafeCity.Repository.Patrol;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;

@@ -9,7 +9,7 @@ namespace SafeCity.Controllers
     /// Handles patrol management operations.
     /// All endpoints require Admin authorization.
     /// </summary>
-    [Route("api/v1/patrols")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class PatrolController : ControllerBase
