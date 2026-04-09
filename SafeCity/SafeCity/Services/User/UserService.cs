@@ -184,32 +184,45 @@ public class UserService : IUserService
         }
 
         // Validate required fields
-        if (string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.PasswordHash))
+        if (string.IsNullOrWhiteSpace(request.Email))
+        {
+            throw new ArgumentException(ErrorMessages.User.Field["Email"]);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            throw new ArgumentException(ErrorMessages.User.Field["Password"]);
+        }
+
+        // Confirm password validation
+        if (string.IsNullOrWhiteSpace(request.ConfirmPassword))
+        {
+            throw new ArgumentException("Confirm Password is required.");
+        }
+
+        if (request.Password != request.ConfirmPassword)
         {
             throw new ArgumentException(
-                ErrorMessages.User.RequiredFields);
+                ErrorMessages.ForgotPassword.PasswordMismatch);
         }
 
         // Validate email format
         var emailResult = EmailHelper.ValidateEmail(request.Email);
         if (!emailResult.IsValid)
         {
-            throw new Exception(
+            throw new ArgumentException(
                 ErrorMessages.Validation.InvalidEmailFormat);
         }
 
         // Validate password strength
         var passwordResult =
-            PasswordHelper.ValidatePassword(request.PasswordHash);
+            PasswordHelper.ValidatePassword(request.Password);
         if (!passwordResult.IsValid)
         {
-            throw new Exception(
+            throw new ArgumentException(
                 ErrorMessages.Validation.WeakPassword);
         }
-
-        // Hash the new password
-        request.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
+        request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
         // Update password in database
         return await _userRepository.ForgotPassword(request);
     }
