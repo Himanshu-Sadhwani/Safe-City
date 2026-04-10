@@ -33,7 +33,7 @@ namespace SafeCity.Repository
                 var incidentDetails = request.ToEntity();
 
                 // duplicate Incident Check
-                var isDuplicate = await _context.Incidents.AnyAsync(i => i.CitizenID == request.CitizenID && i.Location.ToLower() == request.Location.ToLower() && i.Type == request.Type && i.Date.Date == request.Date.Date);
+                var isDuplicate = await _context.Incidents.AnyAsync(i => i.CitizenID == request.CitizenID && i.Location.ToLower() == request.Location.ToLower() && i.Type == request.Type && i.Date == request.Date);
 
                 if (isDuplicate)
                 {
@@ -109,10 +109,10 @@ namespace SafeCity.Repository
                     }
                     if (date.HasValue)
                     {
-                        incidents = incidents.Where(temp => temp.Date.Date == date.Value.Date).ToList();
+                        incidents = incidents.Where(temp => temp.Date == date.Value).ToList();
                     }
-
-                    // returning the Incident Response DTO
+                    // latest incident will be visible at top
+                    incidents = incidents.OrderByDescending(temp => temp.IncidentID).ToList();
                     return incidents.Select(temp => IncidentResponseExtension.ToIncidentResponse(temp)).ToList();
                 }
                 else
@@ -135,9 +135,10 @@ namespace SafeCity.Repository
                     }
                     if (date.HasValue)
                     {
-                        incidents = incidents.Where(temp => temp.Date.Date == date.Value.Date).ToList();
+                        incidents = incidents.Where(temp => temp.Date == date.Value).ToList();
                     }
-
+                    // latest incident will be visible at top
+                    incidents = incidents.OrderByDescending(temp => temp.IncidentID).ToList();
                     return incidents.Select(temp => IncidentResponseExtension.ToIncidentResponse(temp)).ToList();
                 }
             }
