@@ -182,6 +182,7 @@ namespace SafeCity.Services.Dispatch
         /// </summary>
         /// <param name="id">The dispatch identifier.</param>
         /// <param name="request">Request containing the updated dispatch status.</param>
+
          public async Task UpdateDispatchStatusAsync(int id,DispatchUpdateByStatusRequestDto request)
         {
             var errorList = new List<string>();
@@ -209,6 +210,7 @@ namespace SafeCity.Services.Dispatch
         /// Validates whether the dispatch status can be changed
         /// from the current status to the requested next status.
         /// </summary>
+/// 
         private void ValidateStatusTransition( DispatchStatusOption current,DispatchStatusOption next)
         {
             if (current == DispatchStatusOption.Resolved)
