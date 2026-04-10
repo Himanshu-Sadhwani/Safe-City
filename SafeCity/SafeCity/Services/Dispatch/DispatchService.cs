@@ -175,5 +175,47 @@ namespace SafeCity.Services.Dispatch
                 _ => throw new Exception()
             };
         }
+        
+        /// <summary>
+        /// Updates the status of an existing dispatch.
+        /// Ensures the dispatch exists and validates the status change.
+        /// </summary>
+        /// <param name="id">The dispatch identifier.</param>
+        /// <param name="request">Request containing the updated dispatch status.</param>
+         public async Task UpdateDispatchStatusAsync(int id,DispatchUpdateByStatusRequestDto request)
+        {
+            var errorList = new List<string>();
+            var dispatch = await _dispatchRepository.GetByIdAsync(id);
+            if (dispatch == null)
+                throw new KeyNotFoundException(ErrorMessages.Dispatch.DispatchNotFound);
+            
+            if (request == null)
+                errorList.Add(ErrorMessages.Dispatch.UpdateDispatchRequestNull);
+            if(request.Status==null)
+                errorList.Add(ErrorMessages.Dispatch.StatusRequired);
+
+            if(request.Status<=0 || request.Status > DispatchStatusOption.Cancelled)
+                errorList.Add(ErrorMessages.Dispatch.InvalidStatus);
+            
+            if (errorList.Any())
+                throw new ArgumentException(string.Join(" | ", errorList));
+
+            ValidateStatusTransition(dispatch.Status, request.Status);
+            dispatch.Status = request.Status;
+             await _dispatchRepository.UpdateAsync(id,dispatch);
+        }
+        
+        /// <summary>
+        /// Validates whether the dispatch status can be changed
+        /// from the current status to the requested next status.
+        /// </summary>
+        private void ValidateStatusTransition( DispatchStatusOption current,DispatchStatusOption next)
+        {
+            if (current == DispatchStatusOption.Resolved)
+                throw new Exception(ErrorMessages.Dispatch.CompletedDispatch);
+
+            if (current == next)
+                throw new Exception(ErrorMessages.Dispatch.CurrentStatus);
+        }
     }
 }

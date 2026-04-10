@@ -115,7 +115,14 @@
             public const string DispatchCreationFailed = "Failed to create dispatch record.";
             public const string ResourceUpdateFailed = "Failed to update resource availability.";
             public const string IncidentUpdateFailed = "Failed to update incident status.";
-            public const string InternalError = "An internal error occurred while assigning the dispatch.";        }
+            public const string InternalError = "An internal error occurred while assigning the dispatch.";
+            public const string DispatchNotFound = "Dispatch record not found.";
+            public const string UpdateDispatchRequestNull = "Update dispatch request cannot be null.";
+            public const string InvalidStatus="Invalid status value provided for dispatchId";
+            public const string CompletedDispatch="Cant update Completed dispatch";
+            public const string CurrentStatus="Already in the same status";
+            public const string StatusRequired="Status is required to update dispatch";
+            }
             
         public static class UserDelete
         {

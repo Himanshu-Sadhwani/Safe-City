@@ -20,13 +20,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="DTOs\Dispatch\" />
 		<Folder Include="Repository\Incident\" />
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\CrisisDtos\" />
 		<Folder Include="Repository\CrisisRepo\" />
 		<Folder Include="Services\Crisis\" />
-		<Folder Include="DTOs\" />
 		<Folder Include="DTOs\Audit\" />
 		<Folder Include="Services\Audit\" />
 		<Folder Include="Repository\Patrol\" />

@@ -7,5 +7,7 @@ namespace SafeCity.Repository
     {
         Task AddAsync(Dispatch dispatch);
         Task<List<Dispatch>> GetByIncidentIdAsync(int incidentId);
+        Task<Dispatch> GetByIdAsync(int dispatchId);
+        Task UpdateAsync(int id,Dispatch dispatch);
     }
 }
