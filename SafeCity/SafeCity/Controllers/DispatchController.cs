@@ -66,6 +66,7 @@ namespace SafeCity.Controllers
         /// </returns>
         /// <response code="200">Dispatch status updated successfully.</response>
         /// <response code="400">Invalid request data or update failure.</response>
+        [Authorize(Roles = "Emergency_Dispatcher , Admin")]
         [HttpPatch("status/{id}")]
         public async Task<IActionResult> UpdateStatus(
            [FromRoute] int id, [FromBody] DispatchUpdateByStatusRequestDto request)
