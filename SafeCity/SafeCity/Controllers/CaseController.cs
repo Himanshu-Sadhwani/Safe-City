@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace SafeCity.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CaseController : ControllerBase
     {
@@ -24,8 +24,8 @@ namespace SafeCity.Controllers
         /// <param name="resolutionDate">based on the resolution date </param>
         /// <returns>return a list of Case Reported and verified by the authorities after filteration wherever applicable</returns>
         [Authorize(Roles = "Citizen, Admin")]
-        [HttpGet("list")]
-        public async Task<IActionResult> ViewCase([FromQuery] CaseStatusCheck? status, [FromQuery] int? incidentId, [FromQuery] DateTime? resolutionDate)
+        [HttpGet("list-case")]
+        public async Task<IActionResult> GetCases([FromQuery] CaseStatusCheck? status, [FromQuery] int? incidentId, [FromQuery] DateTime? resolutionDate)
         {
             try
             {
