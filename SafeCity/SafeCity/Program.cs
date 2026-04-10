@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SafeCity.Repository;
+using SafeCity.Repository.Case;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Repository.Patrol;
 using SafeCity.Services.Auth;
+using SafeCity.Services.Case;
 using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
@@ -35,14 +37,16 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
             .Values
             .SelectMany(v => v.Errors)
             .FirstOrDefault()?.ErrorMessage;
- 
+
         return new BadRequestObjectResult(new
         {
             message = error
         });
     };
 });
-
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddScoped<ICaseRepository, CaseRepository>();
+builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
 builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService, SafeCity.Services.Auth.AuthService>();
