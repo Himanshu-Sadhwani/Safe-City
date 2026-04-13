@@ -87,6 +87,7 @@
         {
             public const string SaveFailed = "An error occurred while saving the audit record.";
             public const string RequestNull = "Audit request cannot be null.";
+            public const string OfficerIDRequired = "Officer ID is required.";
             public const string InvalidOfficerID = "Officer ID must be a valid positive number.";
             public const string FindingsRequired = "Findings are required and cannot be empty.";
             public const string InternalError = "An internal server error occurred.";
