@@ -54,5 +54,35 @@ namespace SafeCity.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        
+        /// <summary>
+        /// Updates the status of an existing dispatch.
+        /// </summary>
+        /// <param name="id">The unique identifier of the dispatch.</param>
+        /// <param name="request">Request containing the updated dispatch status.</param>
+        /// <returns>
+        /// Returns <see cref="OkObjectResult"/> if the update is successful,
+        /// or <see cref="BadRequestObjectResult"/> if the update fails.
+        /// </returns>
+        /// <response code="200">Dispatch status updated successfully.</response>
+        /// <response code="400">Invalid request data or update failure.</response>
+        [Authorize(Roles = "Emergency_Dispatcher , Admin")]
+        [HttpPatch("status/{id}")]
+        public async Task<IActionResult> UpdateStatus(
+           [FromRoute] int id, [FromBody] DispatchUpdateByStatusRequestDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                await _dispatchService.UpdateDispatchStatusAsync(id,request);
+                return Ok(new { message = "Dispatch status updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
