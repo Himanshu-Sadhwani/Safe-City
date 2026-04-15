@@ -35,7 +35,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
         var error = context.ModelState
             .Values
             .SelectMany(v => v.Errors)
-            .FirstOrDefault()?.ErrorMessage;
+            .Select(e => e.ErrorMessage)
+            .ToList();
  
         return new BadRequestObjectResult(new
         {
