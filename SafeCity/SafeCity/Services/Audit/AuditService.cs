@@ -29,7 +29,9 @@ public class AuditService : IAuditService
 
         var errors = new List<string>();
 
-        if(request.OfficerID <= 0)
+        if(request.OfficerID == 0)
+            errors.Add(ErrorMessages.Audit.OfficerIDRequired);
+        else if(request.OfficerID < 0)
             errors.Add(ErrorMessages.Audit.InvalidOfficerID);
         else if (!await _repo.IsValidOfficerAsync(request.OfficerID))
             errors.Add(ErrorMessages.Audit.OfficerNotFound);

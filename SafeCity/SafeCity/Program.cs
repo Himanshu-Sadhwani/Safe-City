@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SafeCity.Repository;
+using SafeCity.Repository.Case;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Repository.Patrol;
 using SafeCity.Services.Auth;
+using SafeCity.Services.Case;
 using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
@@ -16,7 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -28,29 +29,15 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-    options.InvalidModelStateResponseFactory = context =>
-    {
-        var error = context.ModelState
-            .Values
-            .SelectMany(v => v.Errors)
-            .Select(e => e.ErrorMessage)
-            .ToList();
- 
-        return new BadRequestObjectResult(new
-        {
-            message = error
-        });
-    };
-});
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddScoped<ICaseRepository, CaseRepository>();
+builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
 builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService, SafeCity.Services.Auth.AuthService>();
 builder.Services.AddScoped<SafeCity.Services.Audit.IAuditService, SafeCity.Services.Audit.AuditService>();
 builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.Repository.Audit.AuditRepository>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDispatchService, DispatchService>();
 builder.Services.AddScoped<IDispatchRepository, DispatchRepository>();
