@@ -84,6 +84,23 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var error = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        return new BadRequestObjectResult(new
+        {
+            message = error
+        });
+    };
+});
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
