@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.Domain.Enum;
+using SafeCity.DTOs.Case;
 using SafeCity.Services.Case;
 using System.Security.Claims;
 
@@ -50,6 +51,33 @@ namespace SafeCity.Controllers
             {
                 // throws errror if any present
                 return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            }
+        }
+        /// <summary>
+        /// An api endpoint to create a case for the respective incident id.
+        /// </summary>
+        /// <param name="request">it will take the CaseDetails parameters as a dto body</param>
+        /// <returns>return a success message for case creation and error message when case creation fails</returns>
+        [Authorize(Roles = "Emergency_Dispatcher, Admin")]
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateCase(CaseCreation request)
+        {
+            try
+            {
+                // validate model state.
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                await _service.CreateCase(request);
+                return Created("", new { message = "Case Created Successfully" });
+            }
+            catch (Exception ex)
+            {
+
+                var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return BadRequest(new { error = msg });
+
             }
         }
     }
