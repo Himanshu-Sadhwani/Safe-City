@@ -176,31 +176,48 @@ namespace SafeCity.Services.Dispatch
                 _ => throw new Exception()
             };
         }
-        public async Task UpdateDispatchStatusAsync(UpdateDispatchStatusRequestDto request)
+        /// <summary>
+        /// Updates the status of an existing dispatch.
+        /// Ensures the dispatch exists and validates the status change.
+        /// </summary>
+        /// <param name="id">The dispatch identifier.</param>
+        /// <param name="request">Request containing the updated dispatch status.</param>
+
+         public async Task UpdateDispatchStatusAsync(int id,DispatchUpdateByStatusRequestDto request)
         {
-            var dispatch = await _dispatchRepository.GetByIdAsync(request.DispatchId);
+            var errorList = new List<string>();
+            var dispatch = await _dispatchRepository.GetByIdAsync(id);
             if (dispatch == null)
-                throw new Exception("Dispatch not found");
-            if(request.Status<0 || request.Status > DispatchStatusOption.Cancelled)
-                throw new Exception("Invalid status value");
+                throw new KeyNotFoundException(ErrorMessages.Dispatch.DispatchNotFound);
+            
+            if (request == null)
+                errorList.Add(ErrorMessages.Dispatch.UpdateDispatchRequestNull);
+            if(request.Status==null)
+                errorList.Add(ErrorMessages.Dispatch.StatusRequired);
 
-            // Optional: Validate workflow transition
+            if(request.Status<=0 || request.Status > DispatchStatusOption.Cancelled)
+                errorList.Add(ErrorMessages.Dispatch.InvalidStatus);
+            
+            if (errorList.Any())
+                throw new ArgumentException(string.Join(" | ", errorList));
+
             ValidateStatusTransition(dispatch.Status, request.Status);
-
             dispatch.Status = request.Status;
-          //  dispatch.LastUpdated = DateTime.UtcNow;
-
-            await _dispatchRepository.UpdateAsync(dispatch);
+             await _dispatchRepository.UpdateAsync(id,dispatch);
         }
+        
+        /// <summary>
+        /// Validates whether the dispatch status can be changed
+        /// from the current status to the requested next status.
+        /// </summary>
         private void ValidateStatusTransition( DispatchStatusOption current,DispatchStatusOption next)
         {
             if (current == DispatchStatusOption.Resolved)
-                throw new Exception("Cannot update a completed dispatch");
+                throw new Exception(ErrorMessages.Dispatch.CompletedDispatch);
 
             if (current == next)
-                throw new Exception("Status is already set");
+                throw new Exception(ErrorMessages.Dispatch.CurrentStatus);
         }
-
         public async Task<List<GetResponseDto>> ViewDispatch(int? incidentId, bool IsAdmin, int? resourceId, int? dispatcherId, DispatchStatusOption? status, DateTime? date,string? sortOrder)
         {
             try

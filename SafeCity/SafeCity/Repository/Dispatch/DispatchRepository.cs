@@ -49,13 +49,28 @@ namespace SafeCity.Repository
                 .Where(d => d.IncidentID == incidentId)
                 .ToListAsync();
         }
-        public async Task<Domain.Entity.Dispatch?> GetByIdAsync(int dispatchId)
+        
+        /// <summary>
+        /// Retrieves a dispatch record by its unique identifier.
+        /// </summary>
+        /// <param name="dispatchId">The unique identifier of the dispatch.</param>
+        /// <returns>
+        /// A task that returns the dispatch entity if found;
+        /// otherwise, null.
+        /// </returns>
+        public async Task<Dispatch?> GetByIdAsync(int dispatchId)
         {
             return await _context.Dispatches
                 .FirstOrDefaultAsync(d => d.DispatchID == dispatchId);
         }
-
-        public async Task UpdateAsync(Dispatch dispatch)
+        
+        /// <summary>
+        /// Updates an existing dispatch record in the database.
+        /// </summary>
+        /// <param name="id">The unique identifier of the dispatch.</param>
+        /// <param name="dispatch">The dispatch entity with updated values.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns
+        public async Task UpdateAsync(int id,Dispatch dispatch)
         {
             _context.Dispatches.Update(dispatch);
             await _context.SaveChangesAsync();

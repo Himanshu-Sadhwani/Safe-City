@@ -62,16 +62,17 @@ namespace SafeCity.Controllers
         /// Updates the real-time status of a dispatched unit.
         /// </summary>
         /// <param name="request">Dispatch status update request.</param>
-        [HttpPatch("status")]
+        [Authorize(Roles = "Emergency_Dispatcher , Admin")]
+        [HttpPatch("status/{id}")]
         public async Task<IActionResult> UpdateStatus(
-            [FromBody] UpdateDispatchStatusRequestDto request)
+           [FromRoute] int id, [FromBody] DispatchUpdateByStatusRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                await _dispatchService.UpdateDispatchStatusAsync(request);
+                await _dispatchService.UpdateDispatchStatusAsync(id,request);
                 return Ok(new { message = "Dispatch status updated successfully" });
             }
             catch (Exception ex)

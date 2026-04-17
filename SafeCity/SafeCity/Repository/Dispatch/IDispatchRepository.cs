@@ -10,7 +10,7 @@ namespace SafeCity.Repository
         Task AddAsync(Dispatch dispatch);
         Task<List<Dispatch>> GetByIncidentIdAsync(int incidentId);
         Task<Dispatch> GetByIdAsync(int dispatchId);
-        Task UpdateAsync(Dispatch dispatch);
+        Task UpdateAsync(int id,Dispatch dispatch);
         Task<List<GetResponseDto>> ViewDispatch(int? incidentId, bool IsAdmin, int? resourceId, int? dispatcherId,  DispatchStatusOption? status, DateTime? date,string? sortOrder );
 
     }
