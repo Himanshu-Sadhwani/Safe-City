@@ -17,7 +17,7 @@ public class ComplianceController : ControllerBase
         _service = service;
     }
 
-    // [Authorize(Roles = "Compliance_Officer")]
+    [Authorize(Roles = "Compliance_Officer")]
     [HttpPost]
     public async Task<IActionResult> CreateCompliance([FromBody] CreateComplianceRequestDto request)
     {
