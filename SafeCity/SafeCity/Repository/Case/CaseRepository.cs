@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs.Case;
-
 namespace SafeCity.Repository.Case;
 
 public class CaseRepository : ICaseRepository
@@ -16,7 +15,61 @@ public class CaseRepository : ICaseRepository
         _context = context;
         _mapper = mapper;
     }
-    // view case repository loigc goes here
+
+    // case creation repository logic goes here
+    public async Task CreateCase(CaseCreation request)
+    {
+        try
+        {
+            // check for the request is null or not
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            //check the incident id is valid or not 
+            int incidentId = request.IncidentID;
+            var checkIncident = await _context.Incidents.FindAsync(incidentId);
+            if (checkIncident == null)
+            {
+                throw new Exception("No Incident Found.");
+            }
+
+            // check for duplicate case
+            var existingCase = await _context.Cases.FirstOrDefaultAsync(c => c.IncidentID == request.IncidentID);
+            if (existingCase != null)
+            {
+                throw new Exception("A case for this incident already exists.");
+            }
+
+            //check for the assigned officer id is a police officer or not.
+            int assignedOfficerId = request.AssignedOfficerID;
+            var checkForOfficer = await _context.Users.FindAsync(assignedOfficerId);
+            if (checkForOfficer == null)
+            {
+                throw new Exception("No Officer Found.");
+            }
+            if (checkForOfficer != null)
+            {
+                int roleId = checkForOfficer.RoleID;
+                if (roleId != 2)
+                {
+                    throw new Exception("Assigned Officer Id is not a valid Police officer Id");
+                }
+            }
+            // try to save the case details to the database for further investigation
+            request.Status = CaseStatusCheck.Open;
+            var caseDetails = _mapper.Map<SafeCity.Domain.Entity.Case>(request);
+            await _context.Cases.AddAsync(caseDetails);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    // view case repository logic goes here
     public async Task<List<CaseResponse>> ViewCase(int userId, bool isAdmin, CaseStatusCheck? status, int? incidentId, DateTime? resolutionDate)
     {
         try
