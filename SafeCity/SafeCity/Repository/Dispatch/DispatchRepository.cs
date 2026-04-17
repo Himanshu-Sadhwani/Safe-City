@@ -2,6 +2,8 @@ using System;
 using SafeCity.Domain.Data;
 using SafeCity.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
+using SafeCity.DTOs.Dispatch;
+using SafeCity.Domain.Enum;
 
 namespace SafeCity.Repository
 {
@@ -46,6 +48,155 @@ namespace SafeCity.Repository
             return await _context.Dispatches
                 .Where(d => d.IncidentID == incidentId)
                 .ToListAsync();
+        }
+        public async Task<Domain.Entity.Dispatch?> GetByIdAsync(int dispatchId)
+        {
+            return await _context.Dispatches
+                .FirstOrDefaultAsync(d => d.DispatchID == dispatchId);
+        }
+
+        public async Task UpdateAsync(Dispatch dispatch)
+        {
+            _context.Dispatches.Update(dispatch);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<GetResponseDto>> ViewDispatch(
+            int? incidentId,
+            bool isAdmin,
+            int? resourceId,
+            int? dispatcherId,
+            DispatchStatusOption? status,
+            DateTime? date,
+            string? sortOrder)
+        {
+            try
+            {
+                // if request is NOT made by admin
+                if (isAdmin == false)
+                {
+                    // non-admin can see only their dispatches
+                    var dispatches = await _context.Dispatches
+                        .Include(d => d.User)
+                        .Include(d => d.Resource)
+                        .Include(d => d.Incident)
+                        .Where(d => d.DispatcherID == dispatcherId)
+                        .ToListAsync();
+
+                    // Apply filters
+                    if (incidentId.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.IncidentID == incidentId.Value)
+                            .ToList();
+                    }
+
+                    if (resourceId.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.ResourceID == resourceId.Value)
+                            .ToList();
+                    }
+
+                    if (status.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.Status == status.Value)
+                            .ToList();
+                    }
+
+                    if (date.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.Date.Date == date.Value.Date)
+                            .ToList();
+                    }
+
+                    // Latest dispatch first
+                    dispatches = dispatches
+                        .OrderBy(d => d.DispatchID)
+                        .ToList();
+
+                    return dispatches.Select(d => new GetResponseDto
+                    {
+                        DispatchID = d.DispatchID,
+                        IncidentId = d.IncidentID,
+                        DispatcherId = d.DispatcherID,
+                        DispatcherName = d.User != null ? d.User.Name : string.Empty,
+                        ResourceId =d.ResourceID,
+                        Date = d.Date,
+                        Status = d.Status
+                    }).ToList();
+                }
+                else
+                {
+                    // if request is made by admin
+                    var dispatches = await _context.Dispatches
+                        .Include(d => d.User)
+                        .Include(d => d.Resource)
+                        .Include(d => d.Incident)
+                        .ToListAsync();
+
+                    // Apply filters
+                    if (incidentId.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.IncidentID == incidentId.Value)
+                            .ToList();
+                    }
+
+                    if (resourceId.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.ResourceID == resourceId.Value)
+                            .ToList();
+                    }
+
+                    if (dispatcherId.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.DispatcherID == dispatcherId.Value)
+                            .ToList();
+                    }
+
+                    if (status.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.Status == status.Value)
+                            .ToList();
+                    }
+
+                    if (date.HasValue)
+                    {
+                        dispatches = dispatches
+                            .Where(d => d.Date.Date == date.Value.Date)
+                            .ToList();
+                    }
+
+                    // Latest dispatch first
+                    
+                    
+                    dispatches = string.Equals(sortOrder, "desc", StringComparison.OrdinalIgnoreCase)
+                        ? dispatches.OrderByDescending(d => d.DispatchID).ToList()
+                        : dispatches.OrderBy(d => d.DispatchID).ToList();
+
+
+                    return dispatches.Select(d => new GetResponseDto
+                    {
+                        DispatchID = d.DispatchID,
+                        IncidentId = d.IncidentID,
+                        DispatcherId = d.DispatcherID,
+                        DispatcherName = d.User != null ? d.User.Name : string.Empty,
+                        ResourceId = d.ResourceID,
+                        Date = d.Date,
+                        Status = d.Status
+                    }).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                // throws errors if any present
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

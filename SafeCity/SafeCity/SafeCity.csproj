@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<Folder Include="DTOs\Case\" />
-		<Folder Include="DTOs\Dispatch\" />
+		<Folder Include="DTOs\Resource\" />
 		<Folder Include="Mapper\" />
 		<Folder Include="Repository\Case\" />
 		<Folder Include="Repository\Incident\" />

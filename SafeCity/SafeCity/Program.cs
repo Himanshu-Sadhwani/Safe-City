@@ -13,6 +13,8 @@ using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
+using SafeCity.Services.Resource;
+using System.ComponentModel.Design;
 using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {

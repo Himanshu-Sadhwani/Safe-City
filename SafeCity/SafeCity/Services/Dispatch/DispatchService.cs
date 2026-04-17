@@ -3,6 +3,7 @@ using SafeCity.DTOs;
 using SafeCity.Repository;
 using SafeCity.Domain.Entity;
 using SafeCity.Utility;
+using SafeCity.DTOs.Dispatch;
 
 namespace SafeCity.Services.Dispatch
 {
@@ -41,7 +42,7 @@ namespace SafeCity.Services.Dispatch
         /// <exception cref="Exception">
         /// Thrown when validation fails or resources are unavailable.
         /// </exception>
-        public async Task<DispatchResponseDto> AssignUnitAsync(DispatchRequestDto request)
+        public async Task<DispatchResponseDto> AssignUnitAsync(int DispatcherId,DispatchRequestDto request)
         {
             var errorList = new List<string>();
 
@@ -52,13 +53,13 @@ namespace SafeCity.Services.Dispatch
                 if(request.IncidentId==0)
                     errorList.Add(ErrorMessages.Dispatch.IncidentIdRequired);
 
-                if(request.DispatcherId==0)
+                if(DispatcherId==0)
                     errorList.Add(ErrorMessages.Dispatch.DispatcherIdRequired);
 
                 if (request.IncidentId <0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidIncidentId);
 
-                if (request.DispatcherId <0)
+                if (DispatcherId <0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidDispatcherId);
             }
 
@@ -70,7 +71,7 @@ namespace SafeCity.Services.Dispatch
             if (incident == null)
                 errorList.Add(ErrorMessages.Dispatch.IncidentNotFound);
 
-            var dispatcher = await _userRepository.GetUserByIdAsync(request.DispatcherId);
+            var dispatcher = await _userRepository.GetUserByIdAsync(DispatcherId);
 
             if (dispatcher == null)
                 errorList.Add(ErrorMessages.Dispatch.DispatcherNotFound);
@@ -175,5 +176,51 @@ namespace SafeCity.Services.Dispatch
                 _ => throw new Exception()
             };
         }
+        public async Task UpdateDispatchStatusAsync(UpdateDispatchStatusRequestDto request)
+        {
+            var dispatch = await _dispatchRepository.GetByIdAsync(request.DispatchId);
+            if (dispatch == null)
+                throw new Exception("Dispatch not found");
+            if(request.Status<0 || request.Status > DispatchStatusOption.Cancelled)
+                throw new Exception("Invalid status value");
+
+            // Optional: Validate workflow transition
+            ValidateStatusTransition(dispatch.Status, request.Status);
+
+            dispatch.Status = request.Status;
+          //  dispatch.LastUpdated = DateTime.UtcNow;
+
+            await _dispatchRepository.UpdateAsync(dispatch);
+        }
+        private void ValidateStatusTransition( DispatchStatusOption current,DispatchStatusOption next)
+        {
+            if (current == DispatchStatusOption.Resolved)
+                throw new Exception("Cannot update a completed dispatch");
+
+            if (current == next)
+                throw new Exception("Status is already set");
+        }
+
+        public async Task<List<GetResponseDto>> ViewDispatch(int? incidentId, bool IsAdmin, int? resourceId, int? dispatcherId, DispatchStatusOption? status, DateTime? date,string? sortOrder)
+        {
+            try
+            {
+                // Service delegates filtering responsibility to repository
+                return await _dispatchRepository.ViewDispatch(
+                    incidentId,
+                    IsAdmin,
+                    resourceId,
+                    dispatcherId,
+                    status,
+                    date,
+                    sortOrder
+                );
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching dispatch details", ex);
+            }
+        }
+
     }
 }
