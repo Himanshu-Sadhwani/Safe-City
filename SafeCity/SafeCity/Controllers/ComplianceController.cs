@@ -7,7 +7,7 @@ using SafeCity.Utility;
 
 namespace SafeCity.Controllers;
 
-// [Route("api/v1/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class ComplianceController : ControllerBase
 {
@@ -17,7 +17,7 @@ public class ComplianceController : ControllerBase
         _service = service;
     }
 
-    [Authorize(Roles = "Compliance_Officer")]
+    // [Authorize(Roles = "Compliance_Officer")]
     [HttpPost]
     public async Task<IActionResult> CreateCompliance([FromBody] CreateComplianceRequestDto request)
     {

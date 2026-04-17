@@ -150,12 +150,16 @@
 
         public static class Compliance
         {
-            public const string SaveFailed = "An error occurred while saving the audit record.";
-            public const string InvalidEntityID = "invalid entity id entered";
-            public const string EntityNotFound = "entity not found";
-            public const string RequestNull = "Audit request cannot be null.";
-            public const string InvalidType = "invalid Type";
-            public const string InvalidResult = "invalid Result";
+            public const string SaveFailed = "An error occurred while saving the compliance record.";
+            public const string EntityIdRequired = "Field 'EntityId' is required.";
+            public const string InvalidEntityID = "Entity ID must be a valid positive number.";
+            public const string EntityNotFound = "The referenced entity does not exist.";
+            public const string RequestNull = "Compliance request cannot be null.";
+            public const string TypeRequired = "Compliance type is required.";
+            public const string InvalidType = "The provided compliance type is not valid.";
+            public const string ResultRequired = "Compliance result is required.";
+            public const string InvalidResult = "The provided compliance result is not valid.";
+            public const string NotesRequired = "Field 'Notes' is required.";
             public const string InternalError = "An internal server error occurred.";
         }
     }

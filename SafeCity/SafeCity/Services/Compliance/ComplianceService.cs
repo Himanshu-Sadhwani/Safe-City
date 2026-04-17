@@ -24,13 +24,19 @@ public class ComplianceService : IComplianceService
 
         if(!Enum.IsDefined(typeof(ComplianceType), request.Type))
             errors.Add(ErrorMessages.Compliance.InvalidType);
-        else if(request.EntityId <= 0)
+
+        if(request.EntityId == 0)
+            errors.Add(ErrorMessages.Compliance.EntityIdRequired);
+        else if(request.EntityId < 0)
             errors.Add(ErrorMessages.Compliance.InvalidEntityID);
         else if(!await _repo.IsValidEntityAsync(request.EntityId, request.Type))
             errors.Add(ErrorMessages.Compliance.EntityNotFound);
         
         if(!Enum.IsDefined(typeof(ComplianceResult), request.Result))
             errors.Add(ErrorMessages.Compliance.InvalidResult);
+
+        if(string.IsNullOrWhiteSpace(request.Notes))
+            errors.Add(ErrorMessages.Compliance.NotesRequired);
 
         if(errors.Any())
             throw new ArgumentException(string.Join(" | ", errors));

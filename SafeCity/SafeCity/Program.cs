@@ -12,10 +12,13 @@ using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
+using SafeCity.Services.Audit;
+using SafeCity.Repository.Audit;
+using SafeCity.Repository.Compliance;
+using SafeCity.Services.Compliance;
 using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
@@ -34,15 +37,13 @@ builder.Services.AddScoped<ICaseRepository, CaseRepository>();
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
-builder.Services.AddScoped<SafeCity.Services.Auth.IAuthService, SafeCity.Services.Auth.AuthService>();
-builder.Services.AddScoped<SafeCity.Services.Audit.IAuditService, SafeCity.Services.Audit.AuditService>();
-builder.Services.AddScoped<SafeCity.Repository.Audit.IAuditRepository, SafeCity.Repository.Audit.AuditRepository>();
-builder.Services.AddScoped<SafeCity.Repository.Compliance.IComplianceRepository, SafeCity.Repository.Compliance.ComplianceRepository>();
-builder.Services.AddScoped<SafeCity.Services.Compliance.IComplianceService,SafeCity.Services.Compliance.ComplianceService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
+builder.Services.AddScoped<IComplianceService, ComplianceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDispatchService, DispatchService>();
 builder.Services.AddScoped<IDispatchRepository, DispatchRepository>();
-builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 builder.Services.AddScoped<ICrisisRepository, CrisisRepository>();
 builder.Services.AddScoped<ICrisisService, CrisisService>();
