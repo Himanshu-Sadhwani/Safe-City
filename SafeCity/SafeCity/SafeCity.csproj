@@ -7,6 +7,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0-preview.1.25120.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0-preview.1.25120.3" />
@@ -20,8 +22,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="DTOs\Dispatch\" />
+		<Folder Include="Mapper\" />
+		<Folder Include="Repository\Case\" />
+		<Folder Include="Repository\Incident\" />
 		<Folder Include="Controllers\" />
-		<Folder Include="DTOs\" />
+		<Folder Include="DTOs\CrisisDtos\" />
+		<Folder Include="Repository\CrisisRepo\" />
+		<Folder Include="Services\Case\" />
+		<Folder Include="Services\Crisis\" />
 		<Folder Include="DTOs\Audit\" />
 		<Folder Include="DTOs\Compliance\" />
 		<Folder Include="Repository\Compliance\" />

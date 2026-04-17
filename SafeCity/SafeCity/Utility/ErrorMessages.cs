@@ -23,11 +23,38 @@
             };
         }
 
+        public static class Crisis
+        {
+            // General
+            public const string RequestNull = "Crisis request cannot be null.";
+            public const string CrisisNotFound = "Crisis not found.";
+            public const string DateRequired = " Date is required";
+            public const string InvalidType = "Invalid crisis type";
+            public const string TypeRequired = "Crisis type is required";
+            public const string SeverityRequired = "Crisis severity is required";
+            public const string DeclarationFailed = "Failed to declare crisis.";
+            public const string LocationRequired = "Crisis location is required.";
+            public const string InvalidDate = "A valid crisis date is required.";
+            public const string InvalidSeverity = "Invalid crisis severity.";
+            public const string InvalidStatus = "Invalid crisis status.";
+            public const string Duplicate="Crisis already exists for given details...";
+            public static readonly Dictionary<string, string> Field = new()
+            {
+                { "Location", LocationRequired },
+                { "Date", InvalidDate },
+                { "Severity", InvalidSeverity },
+                { "Status", InvalidStatus },
+                { "Type", InvalidType }
+            };
+        }
+
         public static class ForgotPassword
         {
             public const string UserNotFound = "No user found with the provided email address.";
             public const string ProcessingFailed = "An error occurred while processing the forgot password request.";
             public const string SameAsOldPassword = "The new password must be different from the old password.";
+            public const string PasswordMismatch = "Password and Confirm Password do not match.";
+
         }
         public static class UserUpdate
         {
@@ -60,6 +87,7 @@
         {
             public const string SaveFailed = "An error occurred while saving the audit record.";
             public const string RequestNull = "Audit request cannot be null.";
+            public const string OfficerIDRequired = "Officer ID is required.";
             public const string InvalidOfficerID = "Officer ID must be a valid positive number.";
             public const string FindingsRequired = "Findings are required and cannot be empty.";
             public const string InternalError = "An internal server error occurred.";
@@ -73,7 +101,34 @@
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
         }
-
+        
+        public static class Dispatch
+        {
+            public const string IncidentIdRequired = "Incident ID is required.";
+            public const string DispatcherIdRequired = "Dispatcher ID is required.";
+            public const string RequestNull = "Dispatch request cannot be null.";
+            public const string InvalidIncidentId = "Invalid Incident ID provided.";
+            public const string InvalidDispatcherId = "Invalid Dispatcher ID provided.";
+            public const string IncidentNotFound = "Incident not found.";
+            public const string DispatcherNotFound = "Dispatcher not found.";
+            public const string DispatcherInactive = "Dispatcher is not active.";
+            public const string ResourceAlreadyAssigned ="This resource is already assigned to the incident.";
+            public const string IncidentAlreadyDispatched = "Incident has already been dispatched.";
+            public const string InvalidIncidentType = "Unsupported or invalid incident type.";
+            public const string NoAvailableResources = "No available resources for this incident.";
+            public const string ResourceSelectionFailed = "Failed to select a suitable resource.";
+            public const string DispatchCreationFailed = "Failed to create dispatch record.";
+            public const string ResourceUpdateFailed = "Failed to update resource availability.";
+            public const string IncidentUpdateFailed = "Failed to update incident status.";
+            public const string InternalError = "An internal error occurred while assigning the dispatch.";
+            public const string DispatchNotFound = "Dispatch record not found.";
+            public const string UpdateDispatchRequestNull = "Update dispatch request cannot be null.";
+            public const string InvalidStatus="Invalid status value provided for dispatchId";
+            public const string CompletedDispatch="Cant update Completed dispatch";
+            public const string CurrentStatus="Already in the same status";
+            public const string StatusRequired="Status is required to update dispatch";
+            }
+            
         public static class UserDelete
         {
             public const string InvalidUserId = "User ID must be a positive number.";
@@ -81,7 +136,7 @@
             public const string DeleteSuccess = "User has been successfully deleted.";
             public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
-
+        
         public static class Patrol
         {
             public const string OfficerNotFound = "Officer not found.";
