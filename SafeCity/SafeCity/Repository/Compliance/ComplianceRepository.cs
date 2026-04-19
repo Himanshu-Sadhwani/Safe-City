@@ -1,18 +1,22 @@
 using SafeCity.Domain.Data;
+using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Utility;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace SafeCity.Repository.Compliance;
 
 public class ComplianceRepository : IComplianceRepository
 {
     private readonly SafeCityDbContext _context;
+    private readonly IMapper _mapper;
 
-    public ComplianceRepository(SafeCityDbContext context)
+    public ComplianceRepository(SafeCityDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     /// <summary>
@@ -25,20 +29,12 @@ public class ComplianceRepository : IComplianceRepository
     {
         try
         {
-            var compliance = request.ToComplianceEntity();
+            var compliance = _mapper.Map<ComplianceRecord>(request);
 
             await _context.ComplianceRecords.AddAsync(compliance);
             await _context.SaveChangesAsync();
 
-            return new CreateComplianceResponseDto
-            {
-                ComplianceID = compliance.ComplianceID,
-                EntityID = compliance.EntityID,
-                Type = compliance.Type,
-                Result = compliance.Result,
-                Date = compliance.Date,
-                Notes = compliance.Notes
-            };
+            return _mapper.Map<CreateComplianceResponseDto>(compliance);
         }
         catch (Exception ex)
         {

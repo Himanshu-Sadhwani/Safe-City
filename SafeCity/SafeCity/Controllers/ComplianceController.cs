@@ -24,7 +24,7 @@ public class ComplianceController : ControllerBase
         try
         {
             var response = await _service.CreateComplianceAsync(request);
-            return Created($"/api/v1/compliance/{response.ComplianceID}", new { message = "Compliance recorded successfully.", data = response });
+            return Ok(new { message = "Compliance recorded successfully.", data = response });
         }
         catch (ArgumentException ex)
         {

@@ -1,6 +1,7 @@
 using AutoMapper;
 using SafeCity.Domain.Entity;
 using SafeCity.DTOs.Case;
+using SafeCity.DTOs;
 public class MappingProfile : Profile
 {
     public MappingProfile()
@@ -13,5 +14,12 @@ public class MappingProfile : Profile
 
         CreateMap<CaseCreation, Case>().ForMember(dest => dest.ResolutionDate, opt => opt.MapFrom(src => DateTime.Now)).ForMember(dest => dest.CaseID, opt => opt.Ignore());
 
+        // compliance mappings
+        CreateMap<CreateComplianceRequestDto, ComplianceRecord>()
+            .ForMember(dest => dest.EntityID, opt => opt.MapFrom(src => src.EntityId))
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.ComplianceID, opt => opt.Ignore());
+
+        CreateMap<ComplianceRecord, CreateComplianceResponseDto>();
     }
 }
