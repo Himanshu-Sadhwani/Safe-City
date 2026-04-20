@@ -5,7 +5,7 @@ using SafeCity.Services.Response;
 namespace SafeCity.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ResponseController : ControllerBase
     {
         private readonly IResponseService _service;
