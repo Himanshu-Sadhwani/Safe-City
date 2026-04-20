@@ -69,22 +69,19 @@ public class CaseRepository : ICaseRepository
         }
     }
 
-    // view case repository logic goes here
-    public async Task<List<CaseResponse>> ViewCase(int userId, bool isAdmin, CaseStatusCheck? status, int? incidentId, DateTime? resolutionDate)
+    public async Task<List<CaseResponse>> ViewCase(int userId, bool isAdmin, CaseStatusCheck? status, int? incidentId, DateTime? resolutionDate, string? sort)
     {
         try
-        {   // find all the case list with its incident details
+        {
             var casesList = await _context.Cases
                 .Include(c => c.Incident)
                 .ToListAsync();
 
-            // check if the user is admin or not
             if (!isAdmin)
             {
                 casesList = casesList.Where(temp => temp.Incident.CitizenID == userId).ToList();
             }
 
-            // filteration logic goes here
             if (status.HasValue)
             {
                 casesList = casesList.Where(temp => temp.Status == status.Value).ToList();
@@ -95,16 +92,29 @@ public class CaseRepository : ICaseRepository
             }
             if (resolutionDate.HasValue)
             {
-                casesList = casesList.Where(temp => temp.ResolutionDate.Date == resolutionDate.Value.Date).ToList();
+                if (resolutionDate.Value.Hour == 0 && resolutionDate.Value.Minute == 0 && resolutionDate.Value.Second == 0)
+                {
+                    casesList = casesList.Where(temp => temp.ResolutionDate.Date == resolutionDate.Value.Date).ToList();
+                }
+                else
+                {
+                    casesList = casesList.Where(temp => temp.ResolutionDate == resolutionDate.Value).ToList();
+                }
             }
-            // displaying the latest Case Details at the top
-            casesList = casesList.OrderByDescending(temp => temp.CaseID).ToList();
+
+            if (sort?.ToLower() == "asc")
+            {
+                casesList = casesList.OrderBy(temp => temp.CaseID).ToList();
+            }
+            else
+            {
+                casesList = casesList.OrderByDescending(temp => temp.CaseID).ToList();
+            }
 
             return _mapper.Map<List<CaseResponse>>(casesList);
         }
         catch (Exception ex)
         {
-            // throws the error if any present
             throw new Exception(ex.Message);
         }
     }

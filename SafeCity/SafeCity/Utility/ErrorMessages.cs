@@ -162,5 +162,12 @@
             public const string NotesRequired = "Field 'Notes' is required.";
             public const string InternalError = "An internal server error occurred.";
         }
+        public static class Response
+        {
+            public const string Duplicate="Response team already assigned to this crisis";
+            public const string CrisisNotFound="Crisis not found";
+            public const string TeamNotFound="Team not found";
+        }
+
     }
 }

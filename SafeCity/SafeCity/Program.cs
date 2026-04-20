@@ -17,6 +17,9 @@ using SafeCity.Repository.Audit;
 using SafeCity.Repository.Compliance;
 using SafeCity.Services.Compliance;
 using System.Text;
+using SafeCity.Repository.Response;
+using SafeCity.Services.Response;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -29,6 +32,18 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
+        var errors = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e=>e.ErrorMessage)
+            .ToList();
+ 
+        return new BadRequestObjectResult(new
+        {
+            messages = errors
+        });
+    };
+});
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
@@ -52,6 +67,8 @@ builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
 
+builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
+builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
