@@ -85,19 +85,3 @@ namespace SafeCity.Controllers
         }
     }
 }
-
-/*
- * ── Program.cs registrations required ──────────────────────────────────────
- *
- * 1. MediatR (scan this assembly for handlers):
- *    builder.Services.AddMediatR(cfg =>
- *        cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
- *
- * 2. Field-report repository and service:
- *    builder.Services.AddScoped<IFieldReportRepository, FieldReportRepository>();
- *    builder.Services.AddScoped<IFieldReportService, FieldReportService>();
- *
- * 3. Notification service (register your concrete implementation):
- *    builder.Services.AddScoped<INotificationService, StubNotificationService>();
- * ───────────────────────────────────────────────────────────────────────────
- */
