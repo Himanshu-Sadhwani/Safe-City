@@ -28,5 +28,4 @@ public class CreateCrisisRequestDto
             Status = Status ?? CrisisStatus.Pending
         };
     }
-
 }
