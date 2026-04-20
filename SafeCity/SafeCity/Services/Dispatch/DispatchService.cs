@@ -3,6 +3,7 @@ using SafeCity.DTOs;
 using SafeCity.Repository;
 using SafeCity.Domain.Entity;
 using SafeCity.Utility;
+using SafeCity.DTOs.Dispatch;
 
 namespace SafeCity.Services.Dispatch
 {
@@ -41,7 +42,7 @@ namespace SafeCity.Services.Dispatch
         /// <exception cref="Exception">
         /// Thrown when validation fails or resources are unavailable.
         /// </exception>
-        public async Task<DispatchResponseDto> AssignUnitAsync(DispatchRequestDto request)
+        public async Task<DispatchResponseDto> AssignUnitAsync(int DispatcherId,DispatchRequestDto request)
         {
             var errorList = new List<string>();
 
@@ -52,13 +53,13 @@ namespace SafeCity.Services.Dispatch
                 if(request.IncidentId==0)
                     errorList.Add(ErrorMessages.Dispatch.IncidentIdRequired);
 
-                if(request.DispatcherId==0)
+                if(DispatcherId==0)
                     errorList.Add(ErrorMessages.Dispatch.DispatcherIdRequired);
 
                 if (request.IncidentId <0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidIncidentId);
 
-                if (request.DispatcherId <0)
+                if (DispatcherId <0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidDispatcherId);
             }
 
@@ -70,7 +71,7 @@ namespace SafeCity.Services.Dispatch
             if (incident == null)
                 errorList.Add(ErrorMessages.Dispatch.IncidentNotFound);
 
-            var dispatcher = await _userRepository.GetUserByIdAsync(request.DispatcherId);
+            var dispatcher = await _userRepository.GetUserByIdAsync(DispatcherId);
 
             if (dispatcher == null)
                 errorList.Add(ErrorMessages.Dispatch.DispatcherNotFound);
@@ -175,7 +176,6 @@ namespace SafeCity.Services.Dispatch
                 _ => throw new Exception()
             };
         }
-        
         /// <summary>
         /// Updates the status of an existing dispatch.
         /// Ensures the dispatch exists and validates the status change.
@@ -210,7 +210,6 @@ namespace SafeCity.Services.Dispatch
         /// Validates whether the dispatch status can be changed
         /// from the current status to the requested next status.
         /// </summary>
-/// 
         private void ValidateStatusTransition( DispatchStatusOption current,DispatchStatusOption next)
         {
             if (current == DispatchStatusOption.Resolved)
@@ -219,5 +218,26 @@ namespace SafeCity.Services.Dispatch
             if (current == next)
                 throw new Exception(ErrorMessages.Dispatch.CurrentStatus);
         }
+        public async Task<List<GetResponseDto>> ViewDispatch(int? incidentId, bool IsAdmin, int? resourceId, int? dispatcherId, DispatchStatusOption? status, DateTime? date,string? sortOrder)
+        {
+            try
+            {
+                // Service delegates filtering responsibility to repository
+                return await _dispatchRepository.ViewDispatch(
+                    incidentId,
+                    IsAdmin,
+                    resourceId,
+                    dispatcherId,
+                    status,
+                    date,
+                    sortOrder
+                );
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching dispatch details", ex);
+            }
+        }
+
     }
 }
