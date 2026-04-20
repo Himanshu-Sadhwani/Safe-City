@@ -10,7 +10,7 @@ namespace SafeCity.Controllers
     /// <summary>
     /// Exposes field report endpoints. Accessible by Police officers and Admins only.
     /// </summary>
-    [Route("api/field-reports")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(Roles = "Police, Admin")]
     public class FieldReportController : ControllerBase
