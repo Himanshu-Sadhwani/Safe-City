@@ -148,5 +148,12 @@
             public const string NoOfficersAvailable = "No officers available for the selected date.";
         }
 
+        public static class Response
+        {
+            public const string Duplicate="Response team already assigned to this crisis";
+            public const string CrisisNotFound="Crisis not found";
+            public const string TeamNotFound="Team not found";
+        }
+
     }
 }
