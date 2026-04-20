@@ -33,8 +33,11 @@
 		<Folder Include="Services\Case\" />
 		<Folder Include="Services\Crisis\" />
 		<Folder Include="DTOs\Audit\" />
+		<Folder Include="DTOs\Compliance\" />
+		<Folder Include="Repository\Compliance\" />
 		<Folder Include="Services\Audit\" />
 		<Folder Include="Repository\Patrol\" />
+		<Folder Include="Services\Compliance\" />
 		<Folder Include="Services\PatrolService\" />
 		<Folder Include="Services\Response\" />
 		<Folder Include="Utility\" />
