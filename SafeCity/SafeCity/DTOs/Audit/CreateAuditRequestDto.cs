@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
 
@@ -7,6 +8,7 @@ public class CreateAuditRequestDto
 {
     public int OfficerID {get; set;}
     public AuditScope Scope {get; set;}
+    [ValidateNever]
     public string Findings {get; set;}
     public AuditStatus Status {get; set;}
 
