@@ -23,10 +23,11 @@ namespace SafeCity.Controllers
         /// <param name="status">it will check Case Status enum and will apply filteration on it</param>
         /// <param name="incidentId">based on the incident id we can fetch data</param>
         /// <param name="resolutionDate">based on the resolution date </param>
+        /// <param name="sort">sort order: asc for ascending or desc for descending</param>
         /// <returns>return a list of Case Reported and verified by the authorities after filteration wherever applicable</returns>
         [Authorize(Roles = "Citizen, Admin")]
         [HttpGet("list-case")]
-        public async Task<IActionResult> GetCases([FromQuery] CaseStatusCheck? status, [FromQuery] int? incidentId, [FromQuery] DateTime? resolutionDate)
+        public async Task<IActionResult> GetCases([FromQuery] CaseStatusCheck? status, [FromQuery] int? incidentId, [FromQuery] DateTime? resolutionDate, [FromQuery] string? sort)
         {
             try
             {
@@ -38,7 +39,7 @@ namespace SafeCity.Controllers
                 // check if the user id  is admin or not
                 bool isAdmin = User.IsInRole("Admin");
 
-                var response = await _service.ViewCase(userId, isAdmin, status, incidentId, resolutionDate);
+                var response = await _service.ViewCase(userId, isAdmin, status, incidentId, resolutionDate, sort);
                 // if no case is found then
                 if (response == null || response.Count == 0)
                 {

@@ -68,18 +68,16 @@ namespace SafeCity.Services.IncidentService
         }
 
         // View Incident Service and it will perform all the filter and validation to give the required response from the database
-        public async Task<List<IncidentResponse>> ViewIncident(int userId, bool isAdmin, IncidentStatusOption? status, string? location, IncidentOption? type, DateTime? date)
+        public async Task<List<IncidentResponse>> ViewIncident(int userId, bool isAdmin, IncidentStatusOption? status, string? location, IncidentOption? type, DateTime? date, string? sort)
         {
             try
             {
-                // calling the next repository layer to handle all the filteration at the database level
-                var response = await _incidentRepository.ViewIncident(userId, isAdmin, status, location, type, date);
+                var response = await _incidentRepository.ViewIncident(userId, isAdmin, status, location, type, date, sort);
 
                 return response;
             }
             catch (Exception ex)
             {
-                // throws errors if any present
                 throw new Exception(ex.Message);
             }
         }
