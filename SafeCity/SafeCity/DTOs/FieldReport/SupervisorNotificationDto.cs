@@ -6,16 +6,9 @@ namespace SafeCity.DTOs.FieldReport
     /// </summary>
     public class SupervisorNotificationDto
     {
-        /// <summary>Gets or sets the unique identifier of the created field report.</summary>
         public int ReportId { get; set; }
-
-        /// <summary>Gets or sets the patrol identifier the report is linked to.</summary>
         public int PatrolId { get; set; }
-
-        /// <summary>Gets or sets the UTC timestamp when the event occurred.</summary>
         public DateTime OccurredAt { get; set; }
-
-        /// <summary>Gets or sets the human-readable notification message.</summary>
         public string Message { get; set; } = string.Empty;
     }
 }

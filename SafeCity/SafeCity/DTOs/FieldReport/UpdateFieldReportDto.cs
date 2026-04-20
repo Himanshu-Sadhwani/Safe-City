@@ -10,16 +10,10 @@ namespace SafeCity.DTOs.FieldReport
     /// </summary>
     public class UpdateFieldReportDto
     {
-        /// <summary>
-        /// Gets or sets the updated notes. Must be between 50 and 100 characters if provided.
-        /// </summary>
         [MinLength(50, ErrorMessage = ErrorMessages.FieldReport.NotesTooShort)]
         [MaxLength(100, ErrorMessage = ErrorMessages.FieldReport.NotesTooLong)]
         public string? Notes { get; set; }
 
-        /// <summary>
-        /// Gets or sets the updated report status. Must be a valid <see cref="FieldReportStatus"/> value if provided.
-        /// </summary>
         public FieldReportStatus? Status { get; set; }
     }
 }
