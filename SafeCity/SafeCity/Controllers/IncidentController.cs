@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SafeCity.Domain.Enum;
 using SafeCity.DTOs.Incidents;
 using SafeCity.Services.IncidentService;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace SafeCity.Controllers
 {
@@ -52,10 +55,15 @@ namespace SafeCity.Controllers
                 return Created("", new { message = "Incident Submitted Succesfully" });
 
             }
-            catch (ArgumentException ex)
+            catch (ValidationException ex)
             {
                 // if some field validation failes
                 return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Returns a 400 Bad Request with your specific message
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -64,5 +72,43 @@ namespace SafeCity.Controllers
             }
         }
 
+        /// ViewIncident Api that takes incidentStatusOption, Location, Type, and Date from query parameters.
+        /// it will apply the filter based on each filter type we give in the parameter
+        /// </summary>
+        /// <param name="status">Take the IncidentStatus Option like pending , inprogess and resolved and it will apply the filter</param>
+        /// <param name="location">Take the location and apply filtered based on the location</param>
+        /// <param name="type">Take the type of incident like crime ,fire, Accident</param>
+        /// <param name="date"></param>
+        /// <returns>returns the Filtered List based on the Roles and the Filters we Applied</returns>
+        [Authorize(Roles = "Citizen, Admin")]
+        [HttpGet("list")]
+        public async Task<IActionResult> ViewIncident(
+            [FromQuery] IncidentStatusOption? status,
+            [FromQuery] string? location,
+            [FromQuery] IncidentOption? type,
+            [FromQuery] DateTime? date)
+        {
+            try
+            {
+                // Extracting the user information from the token
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                bool isAdmin = User.IsInRole("Admin");
+
+                // Calling the service layer 
+                var response = await _incidentService.ViewIncident(userId, isAdmin, status, location, type, date);
+
+                if (response == null || response.Count == 0)
+                {
+                    return NotFound("No incidents found.");
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                // throws errors if any present while handling the request
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

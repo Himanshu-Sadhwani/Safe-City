@@ -6,6 +6,10 @@ using PatrolEntity = SafeCity.Domain.Entity.Patrol;
 
 namespace SafeCity.Repository.Patrol
 {
+    /// <summary>
+    /// Handles all database operations for patrol management, including checking for duplicate schedules,
+    /// saving new patrol records, and retrieving active police officers who are available on a given date.
+    /// </summary>
     public class PatrolRepository : IPatrolRepository
     {
         private readonly SafeCityDbContext _context;

@@ -38,7 +38,7 @@ namespace SafeCity.Services.PatrolService
 
         public async Task<CreatePatrolResponseDto> CreatePatrolAsync(CreatePatrolRequestDto requestDto)
         {
-            var officer = await _userRepository.GetUserByIdAsync(requestDto.OfficerId);
+            var officer = await _userRepository.GetUserByIdAsync(requestDto.OfficerId!.Value);
 
             if (officer == null)
                 throw new KeyNotFoundException(ErrorMessages.Patrol.OfficerNotFound);
@@ -49,18 +49,18 @@ namespace SafeCity.Services.PatrolService
             if (officer.Status != UserStatus.Active)
                 throw new InvalidOperationException(ErrorMessages.Patrol.OfficerNotActive);
 
-            if (requestDto.Date.Date < DateTime.Today)
+            if (requestDto.Date!.Value.Date < DateTime.Today)
                 throw new ArgumentException(ErrorMessages.Patrol.PastDate);
 
-            var exists = await _patrolRepository.ExistsAsync(requestDto.OfficerId, requestDto.Date);
+            var exists = await _patrolRepository.ExistsAsync(requestDto.OfficerId.Value, requestDto.Date.Value);
             if (exists)
                 throw new InvalidOperationException(ErrorMessages.Patrol.AlreadyScheduled);
 
             var patrol = new Domain.Entity.Patrol
             {
-                OfficerId = requestDto.OfficerId,
+                OfficerId = requestDto.OfficerId.Value,
                 Area = requestDto.Area,
-                Date = requestDto.Date,
+                Date = requestDto.Date.Value,
                 Status = PatrolStatus.Active
             };
 
