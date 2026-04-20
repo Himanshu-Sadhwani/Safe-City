@@ -8,19 +8,21 @@
 
 	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0-preview.1.25120.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0-preview.1.25120.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.6" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.9" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.6">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.5" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.7" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="DTOs\Dispatch\" />
+		<Folder Include="Hubs\" />
 		<Folder Include="Repository\Incident\" />
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\CrisisDtos\" />
@@ -29,8 +31,10 @@
 		<Folder Include="DTOs\Audit\" />
 		<Folder Include="Services\Audit\" />
 		<Folder Include="Repository\Patrol\" />
+		<Folder Include="Services\DispatchNotification\" />
 		<Folder Include="Services\PatrolService\" />
 		<Folder Include="Utility\" />
+		<Folder Include="wwwroot\" />
 	</ItemGroup>
 
   <ItemGroup>

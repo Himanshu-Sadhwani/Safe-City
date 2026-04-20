@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SafeCity.Hubs;
 using SafeCity.Repository;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Repository.Patrol;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
+using SafeCity.Services.DispatchNotification;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using System.Text;
@@ -16,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -59,6 +62,7 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+builder.Services.AddScoped<IDispatchNotificationService, DispatchNotificationService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
@@ -107,6 +111,10 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<DispatchHub>("/hubs/dispatch");
+
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();
