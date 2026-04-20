@@ -37,7 +37,7 @@
             public const string InvalidDate = "A valid crisis date is required.";
             public const string InvalidSeverity = "Invalid crisis severity.";
             public const string InvalidStatus = "Invalid crisis status.";
-            public const string Duplicate="Crisis already exists for given details...";
+            public const string Duplicate = "Crisis already exists for given details...";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "Location", LocationRequired },
@@ -95,13 +95,13 @@
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
         }
-        
+
         public static class Login
         {
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
         }
-        
+
         public static class Dispatch
         {
             public const string IncidentIdRequired = "Incident ID is required.";
@@ -112,7 +112,7 @@
             public const string IncidentNotFound = "Incident not found.";
             public const string DispatcherNotFound = "Dispatcher not found.";
             public const string DispatcherInactive = "Dispatcher is not active.";
-            public const string ResourceAlreadyAssigned ="This resource is already assigned to the incident.";
+            public const string ResourceAlreadyAssigned = "This resource is already assigned to the incident.";
             public const string IncidentAlreadyDispatched = "Incident has already been dispatched.";
             public const string InvalidIncidentType = "Unsupported or invalid incident type.";
             public const string NoAvailableResources = "No available resources for this incident.";
@@ -123,12 +123,12 @@
             public const string InternalError = "An internal error occurred while assigning the dispatch.";
             public const string DispatchNotFound = "Dispatch record not found.";
             public const string UpdateDispatchRequestNull = "Update dispatch request cannot be null.";
-            public const string InvalidStatus="Invalid status value provided for dispatchId";
-            public const string CompletedDispatch="Cant update Completed dispatch";
-            public const string CurrentStatus="Already in the same status";
-            public const string StatusRequired="Status is required to update dispatch";
-            }
-            
+            public const string InvalidStatus = "Invalid status value provided for dispatchId";
+            public const string CompletedDispatch = "Cant update Completed dispatch";
+            public const string CurrentStatus = "Already in the same status";
+            public const string StatusRequired = "Status is required to update dispatch";
+        }
+
         public static class UserDelete
         {
             public const string InvalidUserId = "User ID must be a positive number.";
@@ -136,7 +136,7 @@
             public const string DeleteSuccess = "User has been successfully deleted.";
             public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
-        
+
         public static class Patrol
         {
             public const string OfficerNotFound = "Officer not found.";
@@ -146,6 +146,22 @@
             public const string AlreadyScheduled = "Officer already has a patrol scheduled on this date.";
             public const string InvalidDate = "Date cannot be in the past. Please provide a valid future date.";
             public const string NoOfficersAvailable = "No officers available for the selected date.";
+        }
+
+        public static class FieldReport
+        {
+            public const string PatrolIdRequired = "Enter Patrol Id";
+            public const string InvalidPatrolId = "Enter valid Patrol Id";
+            public const string PatrolNotFound = "Patrol not found.";
+            public const string ReportNotFound = "Field report not found.";
+            public const string NotesRequired = "Notes are required";
+            public const string NotesTooShort = "Notes must be at least 50 characters";
+            public const string NotesTooLong = "Notes cannot exceed 100 characters";
+            public const string DateRequired = "Date is required";
+            public const string PastDate = "Date cannot be in the past";
+            public const string FutureDate = "Date cannot be in the future";
+            public const string DuplicateReport = "An identical field report already exists for this patrol.";
+            public const string UnauthorizedOfficer = "You are not authorized to perform this action on the report.";
         }
 
     }

@@ -10,5 +10,10 @@ namespace SafeCity.Repository.Patrol
         Task<PatrolEntity> AddAsync(PatrolEntity patrol);
 
         Task<List<User>> GetAvailableOfficersAsync(DateTime date);
+
+        /// <summary>
+        /// Retrieves a patrol by its unique identifier.
+        /// </summary>
+        Task<PatrolEntity?> GetByIdAsync(int patrolId);
     }
 }

@@ -45,5 +45,13 @@ namespace SafeCity.Repository.Patrol
                          && !assignedOfficerIds.Contains(u.UserID))
                 .ToListAsync();
         }
+
+        /// <summary>
+        /// Retrieves a patrol by its unique identifier, or <c>null</c> if not found.
+        /// </summary>
+        public async Task<PatrolEntity?> GetByIdAsync(int patrolId)
+        {
+            return await _context.Patrols.FindAsync(patrolId);
+        }
     }
 }
