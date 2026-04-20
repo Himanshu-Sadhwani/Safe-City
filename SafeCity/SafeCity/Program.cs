@@ -11,6 +11,8 @@ using SafeCity.Repository.Patrol;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using System.Text;
+using SafeCity.Repository.Response;
+using SafeCity.Services.Response;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,22 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
         b => b.MigrationsAssembly("SafeCity")
     )
 );
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e=>e.ErrorMessage)
+            .ToList();
+ 
+        return new BadRequestObjectResult(new
+        {
+            messages = errors
+        });
+    };
+});
 
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
 builder.Services.AddScoped<SafeCity.Services.IUserService, SafeCity.Services.UserService>();
@@ -37,6 +55,8 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
+builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
