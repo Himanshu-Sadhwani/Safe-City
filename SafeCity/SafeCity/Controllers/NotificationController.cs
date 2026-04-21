@@ -28,7 +28,7 @@ namespace SafeCity.Controllers
         /// Manually sends a notification to a target group. 
         /// Useful for admin broadcasts or crisis alerts.
         /// </summary>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRoleOption.Admin))]
         [HttpPost("send")]
         public async Task<IActionResult> Send([FromBody] NotificationDto notification)
         {

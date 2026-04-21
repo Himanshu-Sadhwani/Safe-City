@@ -5,5 +5,5 @@ namespace SafeCity.Services.Compliance;
 
 public interface IComplianceService
 {
-    public Task<CreateComplianceResponseDto> CreateComplianceAsync(CreateComplianceRequestDto request);
+    public Task CreateComplianceAsync(CreateComplianceRequestDto request);
 }

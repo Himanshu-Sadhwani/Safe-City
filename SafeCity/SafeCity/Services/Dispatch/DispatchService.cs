@@ -1,12 +1,10 @@
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Repository;
-using SafeCity.Domain.Entity;
 using SafeCity.Utility;
 using SafeCity.DTOs.Dispatch;
-using SafeCity.Services.Notification;
 using SafeCity.DTOs.Notification;
-
+using SafeCity.Services.Notification;
 namespace SafeCity.Services.Dispatch
 {
     /// <summary>
