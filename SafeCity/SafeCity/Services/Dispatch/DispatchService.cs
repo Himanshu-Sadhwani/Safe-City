@@ -1,10 +1,10 @@
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Repository;
-using SafeCity.Domain.Entity;
 using SafeCity.Utility;
 using SafeCity.DTOs.Dispatch;
-
+using SafeCity.DTOs.Notification;
+using SafeCity.Services.Notification;
 namespace SafeCity.Services.Dispatch
 {
     /// <summary>
@@ -17,6 +17,7 @@ namespace SafeCity.Services.Dispatch
         private readonly IResourceRepository _resourceRepository;
         private readonly IDispatchRepository _dispatchRepository;
         private readonly IUserRepository _userRepository;
+        private readonly INotificationService _notificationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DispatchService"/> class.
@@ -25,12 +26,14 @@ namespace SafeCity.Services.Dispatch
             IIncidentRepository incidentRepository,
             IResourceRepository resourceRepository,
             IDispatchRepository dispatchRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            INotificationService notificationService)
         {
             _incidentRepository = incidentRepository;
             _resourceRepository = resourceRepository;
             _dispatchRepository = dispatchRepository;
             _userRepository = userRepository;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace SafeCity.Services.Dispatch
         /// <exception cref="Exception">
         /// Thrown when validation fails or resources are unavailable.
         /// </exception>
-        public async Task<DispatchResponseDto> AssignUnitAsync(int DispatcherId,DispatchRequestDto request)
+        public async Task<DispatchResponseDto> AssignUnitAsync(int DispatcherId, DispatchRequestDto request)
         {
             var errorList = new List<string>();
 
@@ -50,16 +53,16 @@ namespace SafeCity.Services.Dispatch
                 errorList.Add(ErrorMessages.Dispatch.RequestNull);
             else
             {
-                if(request.IncidentId==0)
+                if (request.IncidentId == 0)
                     errorList.Add(ErrorMessages.Dispatch.IncidentIdRequired);
 
-                if(DispatcherId==0)
+                if (DispatcherId == 0)
                     errorList.Add(ErrorMessages.Dispatch.DispatcherIdRequired);
 
-                if (request.IncidentId <0)
+                if (request.IncidentId < 0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidIncidentId);
 
-                if (DispatcherId <0)
+                if (DispatcherId < 0)
                     errorList.Add(ErrorMessages.Dispatch.InvalidDispatcherId);
             }
 
@@ -150,6 +153,34 @@ namespace SafeCity.Services.Dispatch
                 }
             }
 
+            // Notify assigned unit via SignalR — fire and forget, 
+            // failure should not affect dispatch result
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _notificationService.SendAsync(new NotificationDto
+                    {
+                        Event = "DispatchAssigned",
+                        TargetGroup = $"unit_{selectedResource.UnitName}",
+                        Payload = new DispatchResponseDto
+                        {
+                            DispatchId = dispatch.DispatchID,
+                            IncidentId = incident.IncidentID,
+                            ResourceId = selectedResource.ResourceID,
+                            UnitName = selectedResource.UnitName,
+                            Status = dispatch.Status,
+                            DispatchDateTime = dispatch.Date
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // Notification failure is non-critical — log only
+                    Console.WriteLine($"[SignalR] Notification failed: {ex.Message}");
+                }
+            });
+            
             return new DispatchResponseDto
             {
                 DispatchId = dispatch.DispatchID,
@@ -169,10 +200,10 @@ namespace SafeCity.Services.Dispatch
         {
             return incidentType switch
             {
-                IncidentOption.Crime    => ResourceTypeOption.Vehicle,
-                IncidentOption.Fire     => ResourceTypeOption.FireTruck,
+                IncidentOption.Crime => ResourceTypeOption.Vehicle,
+                IncidentOption.Fire => ResourceTypeOption.FireTruck,
                 IncidentOption.Accident => ResourceTypeOption.Ambulance,
-                IncidentOption.Other    => ResourceTypeOption.Equipment,
+                IncidentOption.Other => ResourceTypeOption.Equipment,
                 _ => throw new Exception()
             };
         }
@@ -183,34 +214,34 @@ namespace SafeCity.Services.Dispatch
         /// <param name="id">The dispatch identifier.</param>
         /// <param name="request">Request containing the updated dispatch status.</param>
 
-         public async Task UpdateDispatchStatusAsync(int id,DispatchUpdateByStatusRequestDto request)
+        public async Task UpdateDispatchStatusAsync(int id, DispatchUpdateByStatusRequestDto request)
         {
             var errorList = new List<string>();
             var dispatch = await _dispatchRepository.GetByIdAsync(id);
             if (dispatch == null)
                 throw new KeyNotFoundException(ErrorMessages.Dispatch.DispatchNotFound);
-            
+
             if (request == null)
                 errorList.Add(ErrorMessages.Dispatch.UpdateDispatchRequestNull);
-            if(request.Status==null)
+            if (request.Status == null)
                 errorList.Add(ErrorMessages.Dispatch.StatusRequired);
 
-            if(request.Status<=0 || request.Status > DispatchStatusOption.Cancelled)
+            if (request.Status <= 0 || request.Status > DispatchStatusOption.Cancelled)
                 errorList.Add(ErrorMessages.Dispatch.InvalidStatus);
-            
+
             if (errorList.Any())
                 throw new ArgumentException(string.Join(" | ", errorList));
 
             ValidateStatusTransition(dispatch.Status, request.Status);
             dispatch.Status = request.Status;
-             await _dispatchRepository.UpdateAsync(id,dispatch);
+            await _dispatchRepository.UpdateAsync(id, dispatch);
         }
-        
+
         /// <summary>
         /// Validates whether the dispatch status can be changed
         /// from the current status to the requested next status.
         /// </summary>
-        private void ValidateStatusTransition( DispatchStatusOption current,DispatchStatusOption next)
+        private void ValidateStatusTransition(DispatchStatusOption current, DispatchStatusOption next)
         {
             if (current == DispatchStatusOption.Resolved)
                 throw new Exception(ErrorMessages.Dispatch.CompletedDispatch);
@@ -218,7 +249,7 @@ namespace SafeCity.Services.Dispatch
             if (current == next)
                 throw new Exception(ErrorMessages.Dispatch.CurrentStatus);
         }
-        public async Task<List<GetResponseDto>> ViewDispatch(int? incidentId, bool IsAdmin, int? resourceId, int? dispatcherId, DispatchStatusOption? status, DateTime? date,string? sortOrder)
+        public async Task<List<GetResponseDto>> ViewDispatch(int? incidentId, bool IsAdmin, int? resourceId, int? dispatcherId, DispatchStatusOption? status, DateTime? date, string? sortOrder)
         {
             try
             {
