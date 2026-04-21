@@ -58,7 +58,6 @@ public class CaseRepository : ICaseRepository
                 }
             }
             // try to save the case details to the database for further investigation
-            request.Status = CaseStatusCheck.Open;
             var caseDetails = _mapper.Map<SafeCity.Domain.Entity.Case>(request);
             await _context.Cases.AddAsync(caseDetails);
             await _context.SaveChangesAsync();
