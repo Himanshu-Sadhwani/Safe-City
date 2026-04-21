@@ -1,26 +1,29 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Polly;
 using SafeCity.Repository;
+using SafeCity.Repository.Audit;
 using SafeCity.Repository.Case;
+using SafeCity.Repository.Compliance;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Repository.Patrol;
+using SafeCity.Repository.Response;
+using SafeCity.Services.Audit;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Case;
+using SafeCity.Services.Compliance;
 using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using SafeCity.Services.Resource;
-using System.ComponentModel.Design;
-using SafeCity.Services.Audit;
-using SafeCity.Repository.Audit;
-using SafeCity.Repository.Compliance;
-using SafeCity.Services.Compliance;
-using System.Text;
-using SafeCity.Repository.Response;
 using SafeCity.Services.Response;
+using System.ComponentModel.Design;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,24 +34,12 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
         b => b.MigrationsAssembly("SafeCity")
     )
 );
+builder.Services.AddControllers();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        var errors = context.ModelState
-            .Values
-            .SelectMany(v => v.Errors)
-            .Select(e=>e.ErrorMessage)
-            .ToList();
- 
-        return new BadRequestObjectResult(new
-        {
-            messages = errors
-        });
-    };
-});
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ICaseRepository, CaseRepository>();
 builder.Services.AddScoped<ICaseService, CaseService>();
@@ -68,7 +59,7 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
-builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
+builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
 
 builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
