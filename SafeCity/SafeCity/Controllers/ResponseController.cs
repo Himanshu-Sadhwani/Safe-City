@@ -24,7 +24,7 @@ namespace SafeCity.Controllers
                 return Ok(new
                 {
                     success = true,
-                    data = result
+                    message="Response team assigned successfully...."
                 });
             }
             catch (InvalidOperationException ex)

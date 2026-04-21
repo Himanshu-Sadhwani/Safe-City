@@ -15,6 +15,7 @@ using SafeCity.Services.PatrolService;
 using System.Text;
 using SafeCity.Repository.Response;
 using SafeCity.Services.Response;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,23 +27,32 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
         b => b.MigrationsAssembly("SafeCity")
     )
 );
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter()
+        );
+    });
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
     {
         var errors = context.ModelState
             .Values
             .SelectMany(v => v.Errors)
-            .Select(e=>e.ErrorMessage)
+            .Select(e => e.ErrorMessage)
             .ToList();
- 
+
         return new BadRequestObjectResult(new
         {
             messages = errors
         });
     };
 });
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-    });
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ICaseRepository, CaseRepository>();
