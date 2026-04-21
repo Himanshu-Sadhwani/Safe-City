@@ -20,6 +20,5 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.ComplianceID, opt => opt.Ignore());
 
-        CreateMap<ComplianceRecord, CreateComplianceResponseDto>();
     }
 }

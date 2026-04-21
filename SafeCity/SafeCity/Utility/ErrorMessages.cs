@@ -1,4 +1,6 @@
-﻿namespace SafeCity.Utility
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+
+namespace SafeCity.Utility
 {
     public static class ErrorMessages
     {
@@ -161,6 +163,7 @@
             public const string InvalidResult = "The provided compliance result is not valid.";
             public const string NotesRequired = "Field 'Notes' is required.";
             public const string InternalError = "An internal server error occurred.";
+            public const string DuplicateRecord = "A compliance record already exists for this entity";
         }
         public static class Response
         {
