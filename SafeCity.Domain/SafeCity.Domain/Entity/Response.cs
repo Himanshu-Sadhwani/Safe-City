@@ -18,8 +18,8 @@ namespace SafeCity.Domain.Entity;
         [Required]
         public ResponseStatus Status { get; set; } = ResponseStatus.Pending;
         [ForeignKey(nameof(CrisisID))]
-        public virtual required Crisis CrisisIdNavigation { get; set; }
+        public virtual Crisis? CrisisIdNavigation { get; set; }
         [ForeignKey(nameof(TeamID))]
-        public virtual required Team TeamIdNavigation { get; set; }
+        public virtual Team? TeamIdNavigation { get; set; }
 }
 

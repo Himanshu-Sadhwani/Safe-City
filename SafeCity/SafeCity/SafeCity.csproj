@@ -23,6 +23,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="DTOs\Case\" />
+		<Folder Include="DTOs\Notification\" />
+		<Folder Include="DTOs\Resource\" />
 		<Folder Include="DTOs\Dispatch\" />
 		<Folder Include="Hubs\" />
 		<Folder Include="Mapper\" />
@@ -31,13 +34,18 @@
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\CrisisDtos\" />
 		<Folder Include="Repository\CrisisRepo\" />
+		<Folder Include="Repository\Response\" />
 		<Folder Include="Services\Case\" />
 		<Folder Include="Services\Crisis\" />
 		<Folder Include="DTOs\Audit\" />
+		<Folder Include="DTOs\Compliance\" />
+		<Folder Include="Repository\Compliance\" />
 		<Folder Include="Services\Audit\" />
 		<Folder Include="Repository\Patrol\" />
-		<Folder Include="Services\DispatchNotification\" />
+		<Folder Include="Services\Compliance\" />
+		<Folder Include="Services\Notification\" />
 		<Folder Include="Services\PatrolService\" />
+		<Folder Include="Services\Response\" />
 		<Folder Include="Utility\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>

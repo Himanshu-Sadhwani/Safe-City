@@ -79,6 +79,7 @@ namespace SafeCity.Controllers
         /// <param name="location">Take the location and apply filtered based on the location</param>
         /// <param name="type">Take the type of incident like crime ,fire, Accident</param>
         /// <param name="date"></param>
+        /// <param name="sort">sort order: asc for ascending or desc for descending</param>
         /// <returns>returns the Filtered List based on the Roles and the Filters we Applied</returns>
         [Authorize(Roles = "Citizen, Admin")]
         [HttpGet("list")]
@@ -86,7 +87,8 @@ namespace SafeCity.Controllers
             [FromQuery] IncidentStatusOption? status,
             [FromQuery] string? location,
             [FromQuery] IncidentOption? type,
-            [FromQuery] DateTime? date)
+            [FromQuery] DateTime? date,
+            [FromQuery] string? sort)
         {
             try
             {
@@ -95,7 +97,7 @@ namespace SafeCity.Controllers
                 bool isAdmin = User.IsInRole("Admin");
 
                 // Calling the service layer 
-                var response = await _incidentService.ViewIncident(userId, isAdmin, status, location, type, date);
+                var response = await _incidentService.ViewIncident(userId, isAdmin, status, location, type, date, sort);
 
                 if (response == null || response.Count == 0)
                 {
