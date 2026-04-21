@@ -81,20 +81,16 @@ namespace SafeCity.Repository
         }
 
 
-        // Repository layer logic to filter and fetch the Incident Details to perform the next Action by the Authorities
-        public async Task<List<IncidentResponse>> ViewIncident(int userId, bool isAdmin, IncidentStatusOption? status, string? location, IncidentOption? type, DateTime? date)
+        public async Task<List<IncidentResponse>> ViewIncident(int userId, bool isAdmin, IncidentStatusOption? status, string? location, IncidentOption? type, DateTime? date, string? sort)
         {
             try
             {
-                // if request made by citizen
                 if (isAdmin == false)
                 {
-                    // list all the incident logged by the logged in citizen
                     var incidents = await _context.Incidents
                         .Where(temp => temp.CitizenID == userId)
                         .ToListAsync();
 
-                    // Filteration for the logged in user incident list
                     if (status.HasValue)
                     {
                         incidents = incidents.Where(temp => temp.Status == status.Value).ToList();
@@ -109,18 +105,31 @@ namespace SafeCity.Repository
                     }
                     if (date.HasValue)
                     {
-                        incidents = incidents.Where(temp => temp.Date == date.Value).ToList();
+                        if (date.Value.Hour == 0 && date.Value.Minute == 0 && date.Value.Second == 0)
+                        {
+                            incidents = incidents.Where(temp => temp.Date.Date == date.Value.Date).ToList();
+                        }
+                        else
+                        {
+                            incidents = incidents.Where(temp => temp.Date == date.Value).ToList();
+                        }
                     }
-                    // latest incident will be visible at top
-                    incidents = incidents.OrderByDescending(temp => temp.IncidentID).ToList();
+
+                    if (sort?.ToLower() == "asc")
+                    {
+                        incidents = incidents.OrderBy(temp => temp.IncidentID).ToList();
+                    }
+                    else
+                    {
+                        incidents = incidents.OrderByDescending(temp => temp.IncidentID).ToList();
+                    }
+
                     return incidents.Select(temp => IncidentResponseExtension.ToIncidentResponse(temp)).ToList();
                 }
                 else
                 {
-                    // if the request is made by the admin
                     var incidents = await _context.Incidents.ToListAsync();
 
-                    // admin can apply all the filteration on the incident that is logged by the incident
                     if (status.HasValue)
                     {
                         incidents = incidents.Where(temp => temp.Status == status.Value).ToList();
@@ -135,16 +144,30 @@ namespace SafeCity.Repository
                     }
                     if (date.HasValue)
                     {
-                        incidents = incidents.Where(temp => temp.Date == date.Value).ToList();
+                        if (date.Value.Hour == 0 && date.Value.Minute == 0 && date.Value.Second == 0)
+                        {
+                            incidents = incidents.Where(temp => temp.Date.Date == date.Value.Date).ToList();
+                        }
+                        else
+                        {
+                            incidents = incidents.Where(temp => temp.Date == date.Value).ToList();
+                        }
                     }
-                    // latest incident will be visible at top
-                    incidents = incidents.OrderByDescending(temp => temp.IncidentID).ToList();
+
+                    if (sort?.ToLower() == "asc")
+                    {
+                        incidents = incidents.OrderBy(temp => temp.IncidentID).ToList();
+                    }
+                    else
+                    {
+                        incidents = incidents.OrderByDescending(temp => temp.IncidentID).ToList();
+                    }
+
                     return incidents.Select(temp => IncidentResponseExtension.ToIncidentResponse(temp)).ToList();
                 }
             }
             catch (Exception ex)
             {
-                // throws errrors if any present
                 throw new Exception(ex.Message);
             }
         }

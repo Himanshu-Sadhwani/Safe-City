@@ -15,7 +15,7 @@ namespace SafeCity.Domain.Entity
         [Required(ErrorMessage = "Dispatcher id is required")]
         public int DispatcherID { get; set; }
 
-        public int? ResourceID { get; set; }
+        public int ResourceID { get; set; }
 
         [Required(ErrorMessage = "Dispatch status is required")]
         [Column(TypeName = "varchar(20)")]

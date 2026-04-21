@@ -148,6 +148,27 @@
             public const string NoOfficersAvailable = "No officers available for the selected date.";
         }
 
+        public static class Compliance
+        {
+            public const string SaveFailed = "An error occurred while saving the compliance record.";
+            public const string EntityIdRequired = "Field 'EntityId' is required.";
+            public const string InvalidEntityID = "Entity ID must be a valid positive number.";
+            public const string EntityNotFound = "The referenced entity does not exist.";
+            public const string RequestNull = "Compliance request cannot be null.";
+            public const string TypeRequired = "Compliance type is required.";
+            public const string InvalidType = "The provided compliance type is not valid.";
+            public const string ResultRequired = "Compliance result is required.";
+            public const string InvalidResult = "The provided compliance result is not valid.";
+            public const string NotesRequired = "Field 'Notes' is required.";
+            public const string InternalError = "An internal server error occurred.";
+        }
+        public static class Response
+        {
+            public const string Duplicate="Response team already assigned to this crisis";
+            public const string CrisisNotFound="Crisis not found";
+            public const string TeamNotFound="Team not found";
+        }
+
         public static class FieldReport
         {
             public const string PatrolIdRequired = "Enter Patrol Id";
@@ -163,6 +184,5 @@
             public const string DuplicateReport = "An identical field report already exists for this patrol.";
             public const string UnauthorizedOfficer = "You are not authorized to perform this action on the report.";
         }
-
     }
 }
