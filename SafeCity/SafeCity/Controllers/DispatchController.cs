@@ -15,6 +15,7 @@ namespace SafeCity.Controllers
     {
         private readonly IDispatchService _dispatchService;
         private readonly IDispatchNotificationService _notificationService;
+        private readonly ILogger<DispatchController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DispatchController"/> class.
@@ -27,10 +28,12 @@ namespace SafeCity.Controllers
         /// </param>
         public DispatchController(
             IDispatchService dispatchService,
-            IDispatchNotificationService notificationService)
+            IDispatchNotificationService notificationService,
+            ILogger<DispatchController> logger)
         {
             _dispatchService = dispatchService;
             _notificationService = notificationService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -73,7 +76,7 @@ namespace SafeCity.Controllers
             {
                 // Dispatch succeeded — do not return 400.
                 // Log the notification failure and return 200 with a warning.
-                Console.WriteLine($"[SignalR ERROR] {notifyEx.Message}");
+                _logger.LogError(notifyEx, "SignalR notification failed for unit {UnitName}", result.UnitName);
                 return Ok(new
                 {
                     message = "Successfully Dispatched Resource (notification failed)",
