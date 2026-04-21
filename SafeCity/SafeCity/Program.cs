@@ -1,27 +1,29 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Polly;
 using SafeCity.Repository;
+using SafeCity.Repository.Audit;
 using SafeCity.Repository.Case;
+using SafeCity.Repository.Compliance;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Repository.Patrol;
+using SafeCity.Repository.Response;
+using SafeCity.Services.Audit;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Case;
+using SafeCity.Services.Compliance;
 using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using SafeCity.Services.Resource;
-using System.ComponentModel.Design;
-using SafeCity.Services.Audit;
-using SafeCity.Repository.Audit;
-using SafeCity.Repository.Compliance;
-using SafeCity.Services.Compliance;
-using System.Text;
-using SafeCity.Repository.Response;
 using SafeCity.Services.Response;
+using System.ComponentModel.Design;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,7 @@ builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
         b => b.MigrationsAssembly("SafeCity")
     )
 );
+builder.Services.AddControllers();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -62,6 +65,7 @@ builder.Services.AddScoped<SafeCity.Services.FieldReport.IFieldReportService, Sa
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddScoped<SafeCity.Services.INotificationService, SafeCity.Services.StubNotificationService>();
 builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
+builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
 builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

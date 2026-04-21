@@ -19,7 +19,7 @@ namespace SafeCity.Domain.Entity
         [Required(ErrorMessage = "Please fill some description to know more about the case")]
         public string Description { get; set; }
 
-        public CaseStatusCheck Status { get; set; }
+        public CaseStatusCheck Status { get; set; } = CaseStatusCheck.Open;
 
         [Column(TypeName = "DATETIME")]
         public DateTime ResolutionDate { get; set; }
