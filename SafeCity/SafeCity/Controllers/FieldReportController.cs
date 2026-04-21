@@ -12,7 +12,7 @@ namespace SafeCity.Controllers
     /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Police, Admin")]
+    [Authorize(Roles = nameof(UserRoleOption.Police) + ", " + nameof(UserRoleOption.Admin))]
     public class FieldReportController : ControllerBase
     {
         private readonly IFieldReportService _fieldReportService;

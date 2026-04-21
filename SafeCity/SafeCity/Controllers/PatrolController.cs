@@ -11,7 +11,7 @@ namespace SafeCity.Controllers
     /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRoleOption.Admin))]
     public class PatrolController : ControllerBase
     {
         private readonly IPatrolService _patrolService;
