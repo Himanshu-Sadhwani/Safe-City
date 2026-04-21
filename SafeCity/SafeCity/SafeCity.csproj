@@ -7,9 +7,9 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="12.0.1" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="AutoMapper" Version="16.1.1" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0-preview.1.25120.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0-preview.1.25120.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
@@ -26,8 +26,10 @@
 		<Folder Include="DTOs\Case\" />
 		<Folder Include="DTOs\Resource\" />
 		<Folder Include="DTOs\Dispatch\" />
+		<Folder Include="DTOs\FieldReport\" />
 		<Folder Include="Mapper\" />
 		<Folder Include="Repository\Case\" />
+		<Folder Include="Repository\FieldReport\" />
 		<Folder Include="Repository\Incident\" />
 		<Folder Include="Controllers\" />
 		<Folder Include="DTOs\CrisisDtos\" />
@@ -40,6 +42,7 @@
 		<Folder Include="Repository\Compliance\" />
 		<Folder Include="Services\Audit\" />
 		<Folder Include="Repository\Patrol\" />
+		<Folder Include="Services\FieldReport\" />
 		<Folder Include="Services\Compliance\" />
 		<Folder Include="Services\PatrolService\" />
 		<Folder Include="Services\Response\" />

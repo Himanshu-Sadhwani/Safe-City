@@ -59,7 +59,7 @@ namespace SafeCity.Services.PatrolService
             var patrol = new Domain.Entity.Patrol
             {
                 OfficerId = requestDto.OfficerId.Value,
-                Area = requestDto.Area,
+                Area = requestDto.Area!,
                 Date = requestDto.Date.Value,
                 Status = PatrolStatus.Active
             };

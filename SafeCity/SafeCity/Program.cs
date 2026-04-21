@@ -40,7 +40,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
 builder.Services.AddScoped<ICaseRepository, CaseRepository>();
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
@@ -59,8 +60,12 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+builder.Services.AddScoped<SafeCity.Repository.FieldReport.IFieldReportRepository, SafeCity.Repository.FieldReport.FieldReportRepository>();
+builder.Services.AddScoped<SafeCity.Services.FieldReport.IFieldReportService, SafeCity.Services.FieldReport.FieldReportService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddScoped<SafeCity.Services.INotificationService, SafeCity.Services.StubNotificationService>();
+builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
 builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
-
 builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -96,6 +101,23 @@ builder.Services.AddSwaggerGen(options =>
     {
         { new OpenApiSecuritySchemeReference("Bearer", doc), new List<string>() }
     });
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var error = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        return new BadRequestObjectResult(new
+        {
+            message = error
+        });
+    };
 });
 
 var app = builder.Build();
