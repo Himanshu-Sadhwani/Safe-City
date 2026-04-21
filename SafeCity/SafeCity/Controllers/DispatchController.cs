@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
 using SafeCity.Services.Dispatch;
 
@@ -43,7 +45,9 @@ namespace SafeCity.Controllers
 
             try
             {
-                var result = await _dispatchService.AssignUnitAsync(request);
+                var DispatcherID=User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int DispatcherId=int.Parse(DispatcherID);
+                var result = await _dispatchService.AssignUnitAsync(DispatcherId,request);
                 return Ok(new
                 {
                     message = "Successfully Dispatched Resource",
@@ -54,18 +58,10 @@ namespace SafeCity.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        
-        /// <summary>
-        /// Updates the status of an existing dispatch.
+         // <summary>
+        /// Updates the real-time status of a dispatched unit.
         /// </summary>
-        /// <param name="id">The unique identifier of the dispatch.</param>
-        /// <param name="request">Request containing the updated dispatch status.</param>
-        /// <returns>
-        /// Returns <see cref="OkObjectResult"/> if the update is successful,
-        /// or <see cref="BadRequestObjectResult"/> if the update fails.
-        /// </returns>
-        /// <response code="200">Dispatch status updated successfully.</response>
-        /// <response code="400">Invalid request data or update failure.</response>
+        /// <param name="request">Dispatch status update request.</param>
         [Authorize(Roles = "Emergency_Dispatcher , Admin")]
         [HttpPatch("status/{id}")]
         public async Task<IActionResult> UpdateStatus(
@@ -84,5 +80,52 @@ namespace SafeCity.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [Authorize(Roles = "Emergency_Dispatcher , Admin")]
+        [HttpGet("list")]
+        public async Task<IActionResult> ViewDispatch(
+            [FromQuery] int? incidentId,
+            [FromQuery] int? resourceId,
+            [FromQuery] int? dispatcherId,
+            [FromQuery] DispatchStatusOption? status,
+            [FromQuery] DateTime? date,
+            [FromQuery] string? sortOrder)
+        {
+            try
+            {
+                // Extracting user information from token
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                bool isAdmin = User.IsInRole("Admin");
+
+                // If not admin, force dispatcherId from token
+                if (!isAdmin)
+                {
+                    dispatcherId = userId;
+                }
+
+                // Calling service layer
+                var response = await _dispatchService.ViewDispatch(
+                    incidentId,
+                    isAdmin,
+                    resourceId,
+                    dispatcherId,
+                    status,
+                    date,
+                    sortOrder
+                );
+
+                if (response == null || response.Count == 0)
+                {
+                    return NotFound("No dispatch records found.");
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                // throws errors if any present while handling the request
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
