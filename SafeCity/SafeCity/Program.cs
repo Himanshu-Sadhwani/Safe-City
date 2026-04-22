@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Polly;
+using SafeCity.Hubs;
 using SafeCity.Repository;
 using SafeCity.Repository.Audit;
 using SafeCity.Repository.Case;
@@ -22,12 +22,15 @@ using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using SafeCity.Services.Resource;
 using SafeCity.Services.Response;
+using SafeCity.Services.Notification;
+using System.Text;
 using System.ComponentModel.Design;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -60,6 +63,7 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<SafeCity.Repository.FieldReport.IFieldReportRepository, SafeCity.Repository.FieldReport.FieldReportRepository>();
 builder.Services.AddScoped<SafeCity.Services.FieldReport.IFieldReportService, SafeCity.Services.FieldReport.FieldReportService>();
 builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
@@ -131,6 +135,10 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<NotificationHub>("/hubs/notifications");
+
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();

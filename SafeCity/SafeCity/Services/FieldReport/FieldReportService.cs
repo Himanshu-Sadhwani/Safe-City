@@ -12,10 +12,10 @@ namespace SafeCity.Services.FieldReport
     {
         private readonly IFieldReportRepository _fieldReportRepository;
         private readonly IPatrolRepository _patrolRepository;
-
         public FieldReportService(
             IFieldReportRepository fieldReportRepository,
-            IPatrolRepository patrolRepository)
+            IPatrolRepository patrolRepository
+            )
         {
             _fieldReportRepository = fieldReportRepository;
             _patrolRepository      = patrolRepository;

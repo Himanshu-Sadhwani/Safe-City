@@ -17,14 +17,23 @@ public class ComplianceController : ControllerBase
         _service = service;
     }
 
+    /// <summary>
+    /// Records a new compliance entry submitted by a Compliance Officer.
+    /// </summary>
+    /// <param name="request">The compliance request containing entity ID, type, result, and notes.</param>
+    /// <returns>
+    /// Returns <c>201 Created</c> with a success message on success;
+    /// <c>400 Bad Request</c> if validation fails;
+    /// <c>500 Internal Server Error</c> if an unexpected error occurs.
+    /// </returns>
     [Authorize(Roles = "Compliance_Officer")]
     [HttpPost]
     public async Task<IActionResult> CreateCompliance([FromBody] CreateComplianceRequestDto request)
     {
         try
         {
-            var response = await _service.CreateComplianceAsync(request);
-            return Ok(new { message = "Compliance recorded successfully.", data = response });
+            await _service.CreateComplianceAsync(request);
+            return StatusCode(201, new { message = "Compliance recorded successfully." });
         }
         catch (ArgumentException ex)
         {
