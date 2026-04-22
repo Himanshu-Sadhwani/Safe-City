@@ -1,7 +1,5 @@
-using MediatR;
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs.FieldReport;
-using SafeCity.Events.FieldReport;
 using SafeCity.Repository.Patrol;
 using SafeCity.Utility;
 using FieldReportEntity = SafeCity.Domain.Entity.FieldReport;
@@ -14,16 +12,13 @@ namespace SafeCity.Services.FieldReport
     {
         private readonly IFieldReportRepository _fieldReportRepository;
         private readonly IPatrolRepository _patrolRepository;
-        private readonly IMediator _mediator;
 
         public FieldReportService(
             IFieldReportRepository fieldReportRepository,
-            IPatrolRepository patrolRepository,
-            IMediator mediator)
+            IPatrolRepository patrolRepository)
         {
             _fieldReportRepository = fieldReportRepository;
             _patrolRepository      = patrolRepository;
-            _mediator              = mediator;
         }
 
         public async Task<FieldReportResponseDto> CreateAsync(CreateFieldReportDto dto, int officerId)
@@ -51,8 +46,6 @@ namespace SafeCity.Services.FieldReport
             };
 
             await _fieldReportRepository.SaveAsync(entity);
-
-            await _mediator.Publish(new FieldReportCreatedEvent(entity.ReportId, entity.PatrolId, entity.Date));
 
             return MapToResponse(entity);
         }

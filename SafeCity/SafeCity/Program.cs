@@ -62,8 +62,6 @@ builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
 builder.Services.AddScoped<SafeCity.Repository.FieldReport.IFieldReportRepository, SafeCity.Repository.FieldReport.FieldReportRepository>();
 builder.Services.AddScoped<SafeCity.Services.FieldReport.IFieldReportService, SafeCity.Services.FieldReport.FieldReportService>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-builder.Services.AddScoped<SafeCity.Services.INotificationService, SafeCity.Services.StubNotificationService>();
 builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
 builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
 builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
