@@ -174,7 +174,7 @@ namespace SafeCity.Utility
 
         public static class FieldReport
         {
-            public const string PatrolIdRequired = "Enter Patrol Id";
+            public const string PatrolIdRequired = "Patrol Id is missing";
             public const string InvalidPatrolId = "Enter valid Patrol Id";
             public const string PatrolNotFound = "Patrol not found.";
             public const string ReportNotFound = "Field report not found.";

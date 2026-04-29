@@ -53,11 +53,25 @@ namespace SafeCity.Controllers
         }
 
         /// <summary>
-        /// Creates a new patrol assignment for a police officer.
-        /// Validates the request, checks officer eligibility, and prevents duplicate scheduling.
+        /// Retrieves all patrols with optional filters for PatrolId, OfficerId, and Date.
         /// </summary>
-        /// <param name="requestDto">The patrol details including officer ID, area, and date.</param>
-        /// <returns>The created patrol details on success, or an appropriate error response.</returns>
+        /// <param name="filter">Optional query filters.</param>
+        /// <returns>List of patrols matching the filters.</returns>
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoleOption.Admin))]
+        public async Task<IActionResult> GetAllPatrols([FromQuery] PatrolFilterDto filter)
+        {
+            try
+            {
+                var result = await _patrolService.GetAllAsync(filter);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePatrol([FromBody] CreatePatrolRequestDto requestDto)
         {

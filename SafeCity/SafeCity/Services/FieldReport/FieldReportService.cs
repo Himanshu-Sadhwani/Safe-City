@@ -24,12 +24,12 @@ namespace SafeCity.Services.FieldReport
         public async Task<FieldReportResponseDto> CreateAsync(CreateFieldReportDto dto, int officerId)
         {
             bool isDuplicate = await _fieldReportRepository.ExistsAsync(
-                dto.PatrolId, dto.Notes, dto.Date!.Value);
+                dto.PatrolId!.Value, dto.Notes, dto.Date!.Value);
 
             if (isDuplicate)
                 throw new ConflictException(ErrorMessages.FieldReport.DuplicateReport);
 
-            var patrol = await _patrolRepository.GetByIdAsync(dto.PatrolId);
+            var patrol = await _patrolRepository.GetByIdAsync(dto.PatrolId!.Value);
 
             if (patrol is null)
                 throw new NotFoundException(ErrorMessages.FieldReport.PatrolNotFound);
@@ -39,7 +39,7 @@ namespace SafeCity.Services.FieldReport
 
             var entity = new FieldReportEntity
             {
-                PatrolId = dto.PatrolId,
+                PatrolId = dto.PatrolId!.Value,
                 Notes    = dto.Notes,
                 Date     = dto.Date.Value,
                 Status   = FieldReportStatus.Draft
@@ -47,7 +47,14 @@ namespace SafeCity.Services.FieldReport
 
             await _fieldReportRepository.SaveAsync(entity);
 
-            return MapToResponse(entity);
+            return new FieldReportResponseDto
+            {
+                ReportId = entity.ReportId,
+                PatrolId = entity.PatrolId,
+                Notes    = entity.Notes,
+                Date     = entity.Date,
+                Status   = entity.Status.ToString()
+            };
         }
         
         public async Task<FieldReportResponseDto> UpdateAsync(int reportId, UpdateFieldReportDto dto, int officerId)
@@ -70,17 +77,28 @@ namespace SafeCity.Services.FieldReport
 
             await _fieldReportRepository.UpdateAsync(report);
 
-            return MapToResponse(report);
+            return new FieldReportResponseDto
+            {
+                ReportId = report.ReportId,
+                PatrolId = report.PatrolId,
+                Notes    = report.Notes,
+                Date     = report.Date,
+                Status   = report.Status.ToString()
+            };
         }
 
-        private static FieldReportResponseDto MapToResponse(FieldReportEntity entity) =>
-            new FieldReportResponseDto
+        public async Task<IEnumerable<FieldReportResponseDto>> GetAllAsync(FieldReportFilterDto filter)
+        {
+            var reports = await _fieldReportRepository.GetAllAsync(filter);
+
+            return reports.Select(f => new FieldReportResponseDto
             {
-                ReportId = entity.ReportId,
-                PatrolId = entity.PatrolId,
-                Notes    = entity.Notes,
-                Date     = entity.Date,
-                Status   = entity.Status.ToString()
-            };
+                ReportId = f.ReportId,
+                PatrolId = f.PatrolId,
+                Notes    = f.Notes,
+                Date     = f.Date,
+                Status   = f.Status.ToString()
+            });
+        }
     }
 }

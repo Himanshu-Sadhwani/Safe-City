@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
+using SafeCity.DTOs.FieldReport;
 using FieldReportEntity = SafeCity.Domain.Entity.FieldReport;
 
 namespace SafeCity.Repository.FieldReport
@@ -39,6 +40,25 @@ namespace SafeCity.Repository.FieldReport
         {
             _context.FieldReports.Update(entity);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<FieldReportEntity>> GetAllAsync(FieldReportFilterDto filter)
+        {
+            var query = _context.FieldReports.AsQueryable();
+
+            if (filter.ReportId.HasValue)
+                query = query.Where(f => f.ReportId == filter.ReportId.Value);
+
+            if (filter.PatrolId.HasValue)
+                query = query.Where(f => f.PatrolId == filter.PatrolId.Value);
+
+            if (filter.Date.HasValue)
+                query = query.Where(f => f.Date.Date == filter.Date.Value.Date);
+
+            if (filter.Status.HasValue)
+                query = query.Where(f => f.Status == filter.Status.Value);
+
+            return await query.OrderByDescending(f => f.Date).ToListAsync();
         }
     }
 }

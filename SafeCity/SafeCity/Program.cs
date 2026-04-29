@@ -107,19 +107,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    options.InvalidModelStateResponseFactory = context =>
-    {
-        var error = context.ModelState
-            .Values
-            .SelectMany(v => v.Errors)
-            .Select(e => e.ErrorMessage)
-            .ToList();
-
-        return new BadRequestObjectResult(new
+    options.InvalidModelStateResponseFactory = _ =>
+        new BadRequestObjectResult(new
         {
-            message = error
+            message = "Please enter all the required fields"
         });
-    };
 });
 
 var app = builder.Build();

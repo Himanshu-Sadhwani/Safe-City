@@ -1,3 +1,4 @@
+using SafeCity.DTOs.FieldReport;
 using FieldReportEntity = SafeCity.Domain.Entity.FieldReport;
 
 namespace SafeCity.Repository.FieldReport
@@ -11,5 +12,6 @@ namespace SafeCity.Repository.FieldReport
         Task SaveAsync(FieldReportEntity entity);
         Task<bool> ExistsAsync(int patrolId, string notes, DateTime date);
         Task UpdateAsync(FieldReportEntity entity);
+        Task<IEnumerable<FieldReportEntity>> GetAllAsync(FieldReportFilterDto filter);
     }
 }

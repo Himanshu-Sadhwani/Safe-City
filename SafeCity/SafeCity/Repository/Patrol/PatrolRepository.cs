@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Data;
 using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
+using SafeCity.DTOs.Patrol;
 using PatrolEntity = SafeCity.Domain.Entity.Patrol;
 
 namespace SafeCity.Repository.Patrol
@@ -52,6 +53,22 @@ namespace SafeCity.Repository.Patrol
         public async Task<PatrolEntity?> GetByIdAsync(int patrolId)
         {
             return await _context.Patrols.FindAsync(patrolId);
+        }
+
+        public async Task<IEnumerable<PatrolEntity>> GetAllAsync(PatrolFilterDto filter)
+        {
+            var query = _context.Patrols.AsQueryable();
+
+            if (filter.PatrolId.HasValue)
+                query = query.Where(p => p.PatrolId == filter.PatrolId.Value);
+
+            if (filter.OfficerId.HasValue)
+                query = query.Where(p => p.OfficerId == filter.OfficerId.Value);
+
+            if (filter.Date.HasValue)
+                query = query.Where(p => p.Date.Date == filter.Date.Value.Date);
+
+            return await query.ToListAsync();
         }
     }
 }

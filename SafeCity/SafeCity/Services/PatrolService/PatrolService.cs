@@ -75,5 +75,21 @@ namespace SafeCity.Services.PatrolService
                 Status = saved.Status.ToString()
             };
         }
+
+        public async Task<IEnumerable<PatrolResponseDto>> GetAllAsync(PatrolFilterDto filter)
+        {
+            var patrols = await _patrolRepository.GetAllAsync(filter);
+
+            return patrols.Select(p => new PatrolResponseDto
+            {
+                PatrolId = p.PatrolId,
+                OfficerId = p.OfficerId,
+                Area = p.Area,
+                Date = p.Date,
+                Status = p.Date.Date == DateTime.Today ? "Active"
+                       : p.Date.Date < DateTime.Today ? "Completed"
+                       : "Upcoming"
+            });
+        }
     }
 }

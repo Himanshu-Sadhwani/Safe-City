@@ -1,7 +1,7 @@
 namespace SafeCity.DTOs.FieldReport
 {
     /// <summary>
-    /// Data transfer object representing a field report returned to the caller after creation.
+    /// Data transfer object representing a field report returned to the caller.
     /// </summary>
     public class FieldReportResponseDto
     {
