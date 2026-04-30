@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SafeCity.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -107,11 +108,20 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    options.InvalidModelStateResponseFactory = _ =>
-        new BadRequestObjectResult(new
-        {
-            message = "Please enter all the required fields"
-        });
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        var message = errors.Contains(ErrorMessages.FieldReport.InvalidPatrolId)
+            ? ErrorMessages.FieldReport.InvalidPatrolId
+            : "Please enter all the required fields";
+
+        return new BadRequestObjectResult(new { message });
+    };
 });
 
 var app = builder.Build();
