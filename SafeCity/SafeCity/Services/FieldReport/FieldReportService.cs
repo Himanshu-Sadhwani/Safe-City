@@ -73,7 +73,12 @@ namespace SafeCity.Services.FieldReport
                 report.Notes = dto.Notes;
 
             if (dto.Status.HasValue)
+            {
+                if (!Enum.IsDefined(typeof(FieldReportStatus), dto.Status.Value))
+                    throw new ArgumentException(ErrorMessages.FieldReport.NosuchStatus);
+
                 report.Status = dto.Status.Value;
+            }
 
             await _fieldReportRepository.UpdateAsync(report);
 
@@ -89,7 +94,32 @@ namespace SafeCity.Services.FieldReport
 
         public async Task<IEnumerable<FieldReportResponseDto>> GetAllAsync(FieldReportFilterDto filter)
         {
+            // Validate ReportId if provided
+            if (filter.ReportId.HasValue)
+            {
+                var reportExists = await _fieldReportRepository.GetByIdAsync(filter.ReportId.Value);
+                if (reportExists is null)
+                    throw new NotFoundException("no such Report Id");
+            }
+
+            // Validate PatrolId if provided
+            if (filter.PatrolId.HasValue)
+            {
+                var patrolExists = await _patrolRepository.GetByIdAsync(filter.PatrolId.Value);
+                if (patrolExists is null)
+                    throw new NotFoundException("no such Patrol Id");
+            }
+
             var reports = await _fieldReportRepository.GetAllAsync(filter);
+
+            if (!reports.Any())
+            {
+                if (filter.Status.HasValue)
+                    throw new NotFoundException("no Field report under required status");
+
+                if (filter.ReportId.HasValue || filter.PatrolId.HasValue || filter.Date.HasValue)
+                    throw new NotFoundException("Field Report does not exist for required fields");
+            }
 
             return reports.Select(f => new FieldReportResponseDto
             {

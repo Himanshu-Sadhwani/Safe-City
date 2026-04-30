@@ -14,6 +14,7 @@ namespace SafeCity.DTOs.FieldReport
         [MaxLength(100, ErrorMessage = ErrorMessages.FieldReport.NotesTooLong)]
         public string? Notes { get; set; }
 
+        [EnumDataType(typeof(FieldReportStatus), ErrorMessage = ErrorMessages.FieldReport.NosuchStatus)]
         public FieldReportStatus? Status { get; set; }
     }
 }

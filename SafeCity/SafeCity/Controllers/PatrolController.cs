@@ -61,10 +61,17 @@ namespace SafeCity.Controllers
         [Authorize(Roles = nameof(UserRoleOption.Admin))]
         public async Task<IActionResult> GetAllPatrols([FromQuery] PatrolFilterDto filter)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var result = await _patrolService.GetAllAsync(filter);
                 return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {

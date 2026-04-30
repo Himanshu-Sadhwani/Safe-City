@@ -29,10 +29,17 @@ namespace SafeCity.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllFieldReports([FromQuery] FieldReportFilterDto filter)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var result = await _fieldReportService.GetAllAsync(filter);
                 return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -88,6 +95,10 @@ namespace SafeCity.Controllers
             {
                 var response = await _fieldReportService.UpdateAsync(id, dto, officerId);
                 return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (NotFoundException ex)
             {

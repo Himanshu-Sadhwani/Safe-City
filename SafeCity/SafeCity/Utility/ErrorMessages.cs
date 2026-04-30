@@ -186,6 +186,7 @@ namespace SafeCity.Utility
             public const string FutureDate = "Date cannot be in the future";
             public const string DuplicateReport = "An identical field report already exists for this patrol.";
             public const string UnauthorizedOfficer = "You are not authorized to perform this action on the report.";
+            public const string NosuchStatus = "Invalid status value";
         }
     }
 }

@@ -68,7 +68,7 @@ namespace SafeCity.Repository.Patrol
             if (filter.Date.HasValue)
                 query = query.Where(p => p.Date.Date == filter.Date.Value.Date);
 
-            return await query.ToListAsync();
+            return await query.OrderByDescending(p => p.Date).ToListAsync();
         }
     }
 }

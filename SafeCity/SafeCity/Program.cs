@@ -116,9 +116,16 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
             .Select(e => e.ErrorMessage)
             .ToList();
 
-        var message = errors.Contains(ErrorMessages.FieldReport.InvalidPatrolId)
-            ? ErrorMessages.FieldReport.InvalidPatrolId
-            : "Please enter all the required fields";
+        var requiredMessages = new HashSet<string>
+        {
+            ErrorMessages.FieldReport.PatrolIdRequired,
+            ErrorMessages.FieldReport.NotesRequired,
+            ErrorMessages.FieldReport.DateRequired
+        };
+
+        var message = errors.Any(e => requiredMessages.Contains(e))
+            ? "Please enter all the required fields"
+            : errors.FirstOrDefault() ?? "Please enter all the required fields";
 
         return new BadRequestObjectResult(new { message });
     };

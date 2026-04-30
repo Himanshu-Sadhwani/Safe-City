@@ -78,7 +78,26 @@ namespace SafeCity.Services.PatrolService
 
         public async Task<IEnumerable<PatrolResponseDto>> GetAllAsync(PatrolFilterDto filter)
         {
+            // Validate PatrolId if provided
+            if (filter.PatrolId.HasValue)
+            {
+                var patrolExists = await _patrolRepository.GetByIdAsync(filter.PatrolId.Value);
+                if (patrolExists is null)
+                    throw new KeyNotFoundException("no such Patrol Id");
+            }
+
+            // Validate OfficerId if provided
+            if (filter.OfficerId.HasValue)
+            {
+                var officer = await _userRepository.GetUserByIdAsync(filter.OfficerId.Value);
+                if (officer is null)
+                    throw new KeyNotFoundException("no such Officer Id");
+            }
+
             var patrols = await _patrolRepository.GetAllAsync(filter);
+
+            if (!patrols.Any() && (filter.PatrolId.HasValue || filter.OfficerId.HasValue || filter.Date.HasValue))
+                throw new KeyNotFoundException("Patrol does not exist for required fields");
 
             return patrols.Select(p => new PatrolResponseDto
             {
