@@ -62,7 +62,7 @@ namespace SafeCity.Controllers
             try
             {
                 var response = await _fieldReportService.CreateAsync(dto, officerId);
-                return Created(string.Empty, response);;
+                return Created(string.Empty, new { message = "Field Report Generated" });
             }
             catch (ConflictException ex)
             {
