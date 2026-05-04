@@ -26,7 +26,7 @@ namespace SafeCity.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRoleOption.Admin))]
         public async Task<IActionResult> GetAllFieldReports([FromQuery] FieldReportFilterDto filter)
         {
             if (!ModelState.IsValid)
