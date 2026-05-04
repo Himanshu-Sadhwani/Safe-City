@@ -52,4 +52,16 @@ public class ComplianceService : IComplianceService
 
         await _repo.CreateComplianceAsync(request);
     }
+
+    /// <summary>
+    /// Retrieves all compliance records with optional filters and sort order.
+    /// </summary>
+    /// <param name="type">Optional filter by compliance type (Incident or Dispatch).</param>
+    /// <param name="result">Optional filter by compliance result (Pass or Fail).</param>
+    /// <param name="sort">Sort order: "asc" for ascending, defaults to descending.</param>
+    /// <returns>A filtered and sorted list of compliance records.</returns>
+    public async Task<List<GetComplianceResponseDto>> GetAllAsync(ComplianceType? type, ComplianceResult? result, string? sort)
+    {
+        return await _repo.GetAllAsync(type, result, sort);
+    }
 }

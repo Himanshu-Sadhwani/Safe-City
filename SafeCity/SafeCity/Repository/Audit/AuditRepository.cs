@@ -2,6 +2,7 @@ using System;
 using SafeCity.Utility;
 using SafeCity.DTOs;
 using SafeCity.Domain.Data;
+using SafeCity.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace SafeCity.Repository.Audit;
@@ -43,6 +44,50 @@ public class AuditRepository : IAuditRepository
         catch (Exception ex)
         {
             throw new Exception(ErrorMessages.Audit.SaveFailed, ex);
+        }
+    }
+
+    /// <summary>
+    /// Retrieves all audit records with optional filters for scope, status, officer, and sort order.
+    /// </summary>
+    /// <param name="scope">Optional filter by audit scope.</param>
+    /// <param name="status">Optional filter by audit status.</param>
+    /// <param name="officerId">Optional filter by officer ID.</param>
+    /// <param name="sort">Sort order: "asc" for ascending, defaults to descending.</param>
+    /// <returns>A filtered and sorted list of audit records.</returns>
+    public async Task<List<CreateAuditResponseDto>> GetAllAsync(AuditScope? scope, AuditStatus? status, int? officerId, string? sort)
+    {
+        try
+        {
+            var audits = await _context.Audits.ToListAsync();
+
+            if (scope.HasValue)
+                audits = audits.Where(a => a.Scope == scope.Value).ToList();
+
+            if (status.HasValue)
+                audits = audits.Where(a => a.Status == status.Value).ToList();
+
+            if (officerId.HasValue)
+                audits = audits.Where(a => a.OfficerID == officerId.Value).ToList();
+
+            if (sort?.ToLower() == "asc")
+                audits = audits.OrderBy(a => a.AuditID).ToList();
+            else
+                audits = audits.OrderByDescending(a => a.AuditID).ToList();
+
+            return audits.Select(a => new CreateAuditResponseDto
+            {
+                AuditID = a.AuditID,
+                OfficerID = a.OfficerID,
+                Scope = a.Scope.ToString(),
+                Findings = a.Findings,
+                Date = a.Date,
+                Status = a.Status.ToString()
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ErrorMessages.Audit.FetchFailed, ex);
         }
     }
 
