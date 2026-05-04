@@ -96,6 +96,7 @@ namespace SafeCity.Utility
             public const string InvalidScope = "The provided audit scope is not valid.";
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
+            public const string FetchFailed = "An error occurred while retrieving audit records.";
         }
 
         public static class Login
@@ -153,6 +154,7 @@ namespace SafeCity.Utility
         public static class Compliance
         {
             public const string SaveFailed = "An error occurred while saving the compliance record.";
+            public const string FetchFailed = "An error occurred while retrieving compliance records.";
             public const string EntityIdRequired = "Field 'EntityId' is required.";
             public const string InvalidEntityID = "Entity ID must be a valid positive number.";
             public const string EntityNotFound = "The referenced entity does not exist.";
