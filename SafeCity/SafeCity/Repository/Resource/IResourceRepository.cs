@@ -8,5 +8,6 @@ public interface IResourceRepository
     Task<IEnumerable<Resource>> GetAvailableResourcesAsync(ResourceTypeOption type);
     Task UpdateAsync(Resource resource);
     Task<List<GetResourceResponseDto>> ViewResources(int? resourceId, ResourceTypeOption? type, ResourceAvailabilityOption? availability, string? location, string? sortOrder);
+    Task<bool> UnitExistsAsync(string unitName);
 
 }
