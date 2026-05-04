@@ -6,5 +6,6 @@ namespace SafeCity.Services.PatrolService
     {
         Task<List<AvailableOfficerDto>> GetAvailableOfficersAsync(DateTime date);
         Task<CreatePatrolResponseDto> CreatePatrolAsync(CreatePatrolRequestDto requestDto);
+        Task<IEnumerable<PatrolResponseDto>> GetAllAsync(PatrolFilterDto filter);
     }
 }

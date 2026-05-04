@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SafeCity.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -122,16 +123,24 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
     {
-        var error = context.ModelState
+        var errors = context.ModelState
             .Values
             .SelectMany(v => v.Errors)
             .Select(e => e.ErrorMessage)
             .ToList();
 
-        return new BadRequestObjectResult(new
+        var requiredMessages = new HashSet<string>
         {
-            message = error
-        });
+            ErrorMessages.FieldReport.PatrolIdRequired,
+            ErrorMessages.FieldReport.NotesRequired,
+            ErrorMessages.FieldReport.DateRequired
+        };
+
+        var message = errors.Any(e => requiredMessages.Contains(e))
+            ? "Please enter all the required fields"
+            : errors.FirstOrDefault() ?? "Please enter all the required fields";
+
+        return new BadRequestObjectResult(new { message });
     };
 });
 

@@ -176,7 +176,7 @@ namespace SafeCity.Utility
 
         public static class FieldReport
         {
-            public const string PatrolIdRequired = "Enter Patrol Id";
+            public const string PatrolIdRequired = "Patrol Id is missing";
             public const string InvalidPatrolId = "Enter valid Patrol Id";
             public const string PatrolNotFound = "Patrol not found.";
             public const string ReportNotFound = "Field report not found.";
@@ -188,6 +188,7 @@ namespace SafeCity.Utility
             public const string FutureDate = "Date cannot be in the future";
             public const string DuplicateReport = "An identical field report already exists for this patrol.";
             public const string UnauthorizedOfficer = "You are not authorized to perform this action on the report.";
+            public const string NosuchStatus = "Invalid status value";
         }
     }
 }

@@ -10,7 +10,7 @@ namespace SafeCity.DTOs.FieldReport
     {
         [Required(ErrorMessage = ErrorMessages.FieldReport.PatrolIdRequired)]
         [Range(1, int.MaxValue, ErrorMessage = ErrorMessages.FieldReport.InvalidPatrolId)]
-        public int PatrolId { get; set; }
+        public int? PatrolId { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.FieldReport.NotesRequired)]
         [MinLength(50, ErrorMessage = ErrorMessages.FieldReport.NotesTooShort)]

@@ -25,6 +25,28 @@ namespace SafeCity.Controllers
             _fieldReportService = fieldReportService;
         }
 
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRoleOption.Admin))]
+        public async Task<IActionResult> GetAllFieldReports([FromQuery] FieldReportFilterDto filter)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var result = await _fieldReportService.GetAllAsync(filter);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         /// <summary>
         /// Submits a new field activity report for the authenticated officer's patrol.
         /// Returns 201 Created, 400 Bad Request, 403 Forbidden, 404 Not Found, or 409 Conflict.
@@ -33,14 +55,14 @@ namespace SafeCity.Controllers
         public async Task<IActionResult> CreateFieldReport([FromBody] CreateFieldReportDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Please enter all the required fields" });
 
             int officerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             try
             {
                 var response = await _fieldReportService.CreateAsync(dto, officerId);
-                return CreatedAtAction(nameof(CreateFieldReport), new { id = response.ReportId }, response);
+                return Created(string.Empty, new { message = "Field Report Generated" });
             }
             catch (ConflictException ex)
             {
@@ -73,6 +95,10 @@ namespace SafeCity.Controllers
             {
                 var response = await _fieldReportService.UpdateAsync(id, dto, officerId);
                 return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (NotFoundException ex)
             {
