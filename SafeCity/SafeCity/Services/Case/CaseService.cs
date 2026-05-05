@@ -54,9 +54,9 @@ public class CaseService : ICaseService
     }
 
     // service layer logic to view the case for admin and citizen
-    public async Task<List<CaseResponse>> ViewCase(int userId, bool isAdmin, CaseStatusCheck? status, int? incidentId, DateTime? resolutionDate)
+    public async Task<List<CaseResponse>> ViewCase(int userId, bool isAdmin, CaseStatusCheck? status, int? incidentId, DateTime? resolutionDate, string? sort)
     {
-        var response = await _repository.ViewCase(userId, isAdmin, status, incidentId, resolutionDate);
+        var response = await _repository.ViewCase(userId, isAdmin, status, incidentId, resolutionDate, sort);
         return response;
     }
 }

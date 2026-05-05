@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SafeCity.Domain.Entity;
 using SafeCity.Domain.Enum;
 using SafeCity.Domain.Data;
+using SafeCity.DTOs.Resource;
 
 namespace SafeCity.Repository
 {
@@ -52,5 +53,49 @@ namespace SafeCity.Repository
 
             await _context.SaveChangesAsync();
         }
+        
+public async Task<List<GetResourceResponseDto>> ViewResources(
+            int? resourceId,
+            ResourceTypeOption? type,
+            ResourceAvailabilityOption? availability,
+            string? location,
+            string? sortOrder)
+        {
+            try
+            {
+                var query = _context.Resources.AsQueryable();
+
+                if (resourceId.HasValue)
+                    query = query.Where(r => r.ResourceID == resourceId.Value);
+
+                if (type.HasValue)
+                    query = query.Where(r => r.Type == type.Value);
+
+                if (availability.HasValue)
+                    query = query.Where(r => r.Availability == availability.Value);
+
+                if (!string.IsNullOrWhiteSpace(location))
+                    query = query.Where(r =>
+                        r.Location.Contains(location));
+
+                query = string.Equals(sortOrder, "desc", StringComparison.OrdinalIgnoreCase)
+                    ? query.OrderByDescending(r => r.ResourceID)
+                    : query.OrderBy(r => r.ResourceID);
+
+                return await query.Select(r => new GetResourceResponseDto
+                {
+                    ResourceID = r.ResourceID,
+                    Type = r.Type,
+                    Availability = r.Availability,
+                    Location = r.Location,
+                    UnitName = r.UnitName
+                }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }
