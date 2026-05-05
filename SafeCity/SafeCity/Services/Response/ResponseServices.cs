@@ -53,5 +53,10 @@ namespace SafeCity.Services.Response
                 CreatedAt = result.Date
             };
         }
+
+        public async Task<List<GetCrisisResponseDto>> GetCrisisWithResponseAsync(GetCrisisResponseRequestDto request)
+        {
+            return await _repository.GetCrisisWithResponseAsync(request);
+        }
     }
 }

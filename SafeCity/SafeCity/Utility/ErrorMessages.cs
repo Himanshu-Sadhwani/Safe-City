@@ -40,6 +40,8 @@ namespace SafeCity.Utility
             public const string InvalidSeverity = "Invalid crisis severity.";
             public const string InvalidStatus = "Invalid crisis status.";
             public const string Duplicate = "Crisis already exists for given details...";
+            public const string FetchSuccess = "Crisis response fetched successfully";
+            public const string FetchFailed = "Failed to fetch crisis response";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "Location", LocationRequired },
@@ -169,9 +171,9 @@ namespace SafeCity.Utility
         }
         public static class Response
         {
-            public const string Duplicate="Response team already assigned to this crisis";
-            public const string CrisisNotFound="Crisis not found";
-            public const string TeamNotFound="Team not found";
+            public const string Duplicate = "Response team already assigned to this crisis";
+            public const string CrisisNotFound = "Crisis not found";
+            public const string TeamNotFound = "Team not found";
         }
 
         public static class FieldReport
