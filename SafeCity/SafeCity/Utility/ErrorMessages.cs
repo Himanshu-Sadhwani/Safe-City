@@ -37,7 +37,9 @@
             public const string InvalidDate = "A valid crisis date is required.";
             public const string InvalidSeverity = "Invalid crisis severity.";
             public const string InvalidStatus = "Invalid crisis status.";
-            public const string Duplicate="Crisis already exists for given details...";
+            public const string Duplicate = "Crisis already exists for given details...";
+            public const string FetchSuccess = "Crisis response fetched successfully";
+            public const string FetchFailed = "Failed to fetch crisis response";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "Location", LocationRequired },
@@ -95,13 +97,13 @@
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
         }
-        
+
         public static class Login
         {
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
         }
-        
+
         public static class Dispatch
         {
             public const string IncidentIdRequired = "Incident ID is required.";
@@ -112,7 +114,7 @@
             public const string IncidentNotFound = "Incident not found.";
             public const string DispatcherNotFound = "Dispatcher not found.";
             public const string DispatcherInactive = "Dispatcher is not active.";
-            public const string ResourceAlreadyAssigned ="This resource is already assigned to the incident.";
+            public const string ResourceAlreadyAssigned = "This resource is already assigned to the incident.";
             public const string IncidentAlreadyDispatched = "Incident has already been dispatched.";
             public const string InvalidIncidentType = "Unsupported or invalid incident type.";
             public const string NoAvailableResources = "No available resources for this incident.";
@@ -123,12 +125,12 @@
             public const string InternalError = "An internal error occurred while assigning the dispatch.";
             public const string DispatchNotFound = "Dispatch record not found.";
             public const string UpdateDispatchRequestNull = "Update dispatch request cannot be null.";
-            public const string InvalidStatus="Invalid status value provided for dispatchId";
-            public const string CompletedDispatch="Cant update Completed dispatch";
-            public const string CurrentStatus="Already in the same status";
-            public const string StatusRequired="Status is required to update dispatch";
-            }
-            
+            public const string InvalidStatus = "Invalid status value provided for dispatchId";
+            public const string CompletedDispatch = "Cant update Completed dispatch";
+            public const string CurrentStatus = "Already in the same status";
+            public const string StatusRequired = "Status is required to update dispatch";
+        }
+
         public static class UserDelete
         {
             public const string InvalidUserId = "User ID must be a positive number.";
@@ -136,7 +138,7 @@
             public const string DeleteSuccess = "User has been successfully deleted.";
             public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
-        
+
         public static class Patrol
         {
             public const string OfficerNotFound = "Officer not found.";
@@ -150,9 +152,9 @@
 
         public static class Response
         {
-            public const string Duplicate="Response team already assigned to this crisis";
-            public const string CrisisNotFound="Crisis not found";
-            public const string TeamNotFound="Team not found";
+            public const string Duplicate = "Response team already assigned to this crisis";
+            public const string CrisisNotFound = "Crisis not found";
+            public const string TeamNotFound = "Team not found";
         }
 
     }

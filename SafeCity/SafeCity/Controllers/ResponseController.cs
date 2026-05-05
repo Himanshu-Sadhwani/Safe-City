@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs.Response;
 using SafeCity.Services.Response;
+using SafeCity.Utility;
 
 namespace SafeCity.Controllers
 {
@@ -24,7 +25,7 @@ namespace SafeCity.Controllers
                 return Ok(new
                 {
                     success = true,
-                    message="Response team assigned successfully...."
+                    message = "Response team assigned successfully...."
                 });
             }
             catch (InvalidOperationException ex)
@@ -52,5 +53,29 @@ namespace SafeCity.Controllers
                 });
             }
         }
+        [HttpGet("crisis-response")]
+        public async Task<IActionResult> GetCrisisResponse([FromQuery] GetCrisisResponseRequestDto request)
+        {
+            try
+            {
+                var result = await _service.GetCrisisWithResponseAsync(request);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = ErrorMessages.Crisis.FetchSuccess,
+                    data = result
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ErrorMessages.Crisis.FetchFailed
+                });
+            }
+        }
+
     }
 }
