@@ -59,7 +59,7 @@ namespace SafeCity.Services.PatrolService
             var patrol = new Domain.Entity.Patrol
             {
                 OfficerId = requestDto.OfficerId.Value,
-                Area = requestDto.Area,
+                Area = requestDto.Area!,
                 Date = requestDto.Date.Value,
                 Status = PatrolStatus.Active
             };
@@ -74,6 +74,41 @@ namespace SafeCity.Services.PatrolService
                 Date = saved.Date,
                 Status = saved.Status.ToString()
             };
+        }
+
+        public async Task<IEnumerable<PatrolResponseDto>> GetAllAsync(PatrolFilterDto filter)
+        {
+            // Validate PatrolId if provided
+            if (filter.PatrolId.HasValue)
+            {
+                var patrolExists = await _patrolRepository.GetByIdAsync(filter.PatrolId.Value);
+                if (patrolExists is null)
+                    throw new KeyNotFoundException("no such Patrol Id");
+            }
+
+            // Validate OfficerId if provided
+            if (filter.OfficerId.HasValue)
+            {
+                var officer = await _userRepository.GetUserByIdAsync(filter.OfficerId.Value);
+                if (officer is null)
+                    throw new KeyNotFoundException("no such Officer Id");
+            }
+
+            var patrols = await _patrolRepository.GetAllAsync(filter);
+
+            if (!patrols.Any() && (filter.PatrolId.HasValue || filter.OfficerId.HasValue || filter.Date.HasValue))
+                throw new KeyNotFoundException("Patrol does not exist for required fields");
+
+            return patrols.Select(p => new PatrolResponseDto
+            {
+                PatrolId = p.PatrolId,
+                OfficerId = p.OfficerId,
+                Area = p.Area,
+                Date = p.Date,
+                Status = p.Date.Date == DateTime.Today ? "Active"
+                       : p.Date.Date < DateTime.Today ? "Completed"
+                       : "Upcoming"
+            });
         }
     }
 }

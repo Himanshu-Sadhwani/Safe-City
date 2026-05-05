@@ -1,4 +1,6 @@
-﻿namespace SafeCity.Utility
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+
+namespace SafeCity.Utility
 {
     public static class ErrorMessages
     {
@@ -96,6 +98,7 @@
             public const string InvalidScope = "The provided audit scope is not valid.";
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
+            public const string FetchFailed = "An error occurred while retrieving audit records.";
         }
 
         public static class Login
@@ -153,6 +156,7 @@
         public static class Compliance
         {
             public const string SaveFailed = "An error occurred while saving the compliance record.";
+            public const string FetchFailed = "An error occurred while retrieving compliance records.";
             public const string EntityIdRequired = "Field 'EntityId' is required.";
             public const string InvalidEntityID = "Entity ID must be a valid positive number.";
             public const string EntityNotFound = "The referenced entity does not exist.";
@@ -163,6 +167,7 @@
             public const string InvalidResult = "The provided compliance result is not valid.";
             public const string NotesRequired = "Field 'Notes' is required.";
             public const string InternalError = "An internal server error occurred.";
+            public const string DuplicateRecord = "A compliance record already exists for this entity";
         }
         public static class Response
         {
@@ -171,5 +176,21 @@
             public const string TeamNotFound = "Team not found";
         }
 
+        public static class FieldReport
+        {
+            public const string PatrolIdRequired = "Patrol Id is missing";
+            public const string InvalidPatrolId = "Enter valid Patrol Id";
+            public const string PatrolNotFound = "Patrol not found.";
+            public const string ReportNotFound = "Field report not found.";
+            public const string NotesRequired = "Notes are required";
+            public const string NotesTooShort = "Notes must be at least 50 characters";
+            public const string NotesTooLong = "Notes cannot exceed 100 characters";
+            public const string DateRequired = "Date is required";
+            public const string PastDate = "Date cannot be in the past";
+            public const string FutureDate = "Date cannot be in the future";
+            public const string DuplicateReport = "An identical field report already exists for this patrol.";
+            public const string UnauthorizedOfficer = "You are not authorized to perform this action on the report.";
+            public const string NosuchStatus = "Invalid status value";
+        }
     }
 }

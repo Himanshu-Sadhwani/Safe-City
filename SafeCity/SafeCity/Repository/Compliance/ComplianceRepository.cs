@@ -25,7 +25,7 @@ public class ComplianceRepository : IComplianceRepository
     /// <param name="request">The compliance request containing entity ID, type, result, and notes.</param>
     /// <returns>A response DTO with the details of the stored compliance record.</returns>
     /// <exception cref="Exception">Thrown when a database error occurs while saving.</exception>
-    public async Task<CreateComplianceResponseDto> CreateComplianceAsync(CreateComplianceRequestDto request)
+    public async Task CreateComplianceAsync(CreateComplianceRequestDto request)
     {
         try
         {
@@ -33,8 +33,6 @@ public class ComplianceRepository : IComplianceRepository
 
             await _context.ComplianceRecords.AddAsync(compliance);
             await _context.SaveChangesAsync();
-
-            return _mapper.Map<CreateComplianceResponseDto>(compliance);
         }
         catch (Exception ex)
         {
@@ -57,5 +55,57 @@ public class ComplianceRepository : IComplianceRepository
             return await _context.Dispatches.AnyAsync(d => d.DispatchID == entityId);
 
         return false;
+    }
+
+    /// <summary>
+    /// Retrieves all compliance records with optional filters for type, result, and sort order.
+    /// </summary>
+    /// <param name="type">Optional filter by compliance type (Incident or Dispatch).</param>
+    /// <param name="result">Optional filter by compliance result (Pass or Fail).</param>
+    /// <param name="sort">Sort order: "asc" for ascending, defaults to descending.</param>
+    /// <returns>A filtered and sorted list of compliance records.</returns>
+    public async Task<List<GetComplianceResponseDto>> GetAllAsync(ComplianceType? type, ComplianceResult? result, string? sort)
+    {
+        try
+        {
+            var records = await _context.ComplianceRecords.ToListAsync();
+
+            if (type.HasValue)
+                records = records.Where(c => c.Type == type.Value).ToList();
+
+            if (result.HasValue)
+                records = records.Where(c => c.Result == result.Value).ToList();
+
+            if (sort?.ToLower() == "asc")
+                records = records.OrderBy(c => c.ComplianceID).ToList();
+            else
+                records = records.OrderByDescending(c => c.ComplianceID).ToList();
+
+            return records.Select(c => new GetComplianceResponseDto
+            {
+                ComplianceID = c.ComplianceID,
+                EntityID = c.EntityID,
+                Type = c.Type.ToString(),
+                Result = c.Result.ToString(),
+                Date = c.Date,
+                Notes = c.Notes
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ErrorMessages.Compliance.FetchFailed, ex);
+        }
+    }
+
+    /// <summary>
+    /// Checks whether a compliance record already exists for the given entity.
+    /// </summary>
+    /// <param name="entityId">The ID of the entity to check.</param>
+    /// <param name="type">The compliance type indicating which entity (Incident or Dispatch) to check against.</param>
+    /// <returns><c>true</c> if a compliance record already exists for this entity; otherwise, <c>false</c>.</returns>
+    public async Task<bool> AlreadyExistsAsync(int entityId, ComplianceType type)
+    {
+        return await _context.ComplianceRecords
+            .AnyAsync(c => c.EntityID == entityId && c.Type == type);
     }
 }

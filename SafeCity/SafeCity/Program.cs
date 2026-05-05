@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SafeCity.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Polly;
+using SafeCity.Hubs;
 using SafeCity.Repository;
 using SafeCity.Repository.Audit;
 using SafeCity.Repository.Case;
@@ -22,12 +23,14 @@ using SafeCity.Services.IncidentService;
 using SafeCity.Services.PatrolService;
 using SafeCity.Services.Resource;
 using SafeCity.Services.Response;
-using System.ComponentModel.Design;
+using SafeCity.Services.Notification;
 using System.Text;
+using System.ComponentModel.Design;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -40,7 +43,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
 builder.Services.AddScoped<ICaseRepository, CaseRepository>();
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
@@ -59,8 +63,11 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<SafeCity.Repository.FieldReport.IFieldReportRepository, SafeCity.Repository.FieldReport.FieldReportRepository>();
+builder.Services.AddScoped<SafeCity.Services.FieldReport.IFieldReportService, SafeCity.Services.FieldReport.FieldReportService>();
 builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
-
+builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
 builder.Services.AddScoped<IResponseRepository, ResponseRepository>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -76,6 +83,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
         )
+    };
+    options.Events = new JwtBearerEvents            // For SignalR authentication
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -98,7 +119,47 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        var requiredMessages = new HashSet<string>
+        {
+            ErrorMessages.FieldReport.PatrolIdRequired,
+            ErrorMessages.FieldReport.NotesRequired,
+            ErrorMessages.FieldReport.DateRequired
+        };
+
+        var message = errors.Any(e => requiredMessages.Contains(e))
+            ? "Please enter all the required fields"
+            : errors.FirstOrDefault() ?? "Please enter all the required fields";
+
+        return new BadRequestObjectResult(new { message });
+    };
+});
+
+// Base for frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
+
+// Base for frontend
+app.UseCors("AllowAngular");
 
 app.UseHttpsRedirection();
 
@@ -111,6 +172,10 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<NotificationHub>("/hubs/notifications");
+
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();

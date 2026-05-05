@@ -15,7 +15,13 @@ public class ComplianceService : IComplianceService
         _repo = repo;
     }
 
-    public async Task<CreateComplianceResponseDto> CreateComplianceAsync(CreateComplianceRequestDto request)
+    /// <summary>
+    /// Validates the compliance request and delegates the creation of a new compliance record to the repository.
+    /// </summary>
+    /// <param name="request">The compliance request containing entity ID, type, result, and notes.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the request object is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when validation fails, including invalid entity ID, duplicate record, or invalid type/result values.</exception>
+    public async Task CreateComplianceAsync(CreateComplianceRequestDto request)
     {
         if(request == null)
             throw new ArgumentNullException(nameof(request), ErrorMessages.Compliance.RequestNull);
@@ -31,7 +37,10 @@ public class ComplianceService : IComplianceService
             errors.Add(ErrorMessages.Compliance.InvalidEntityID);
         else if(!await _repo.IsValidEntityAsync(request.EntityId, request.Type))
             errors.Add(ErrorMessages.Compliance.EntityNotFound);
-        
+        else if(await _repo.AlreadyExistsAsync(request.EntityId, request.Type))
+            errors.Add(ErrorMessages.Compliance.DuplicateRecord);
+
+
         if(!Enum.IsDefined(typeof(ComplianceResult), request.Result))
             errors.Add(ErrorMessages.Compliance.InvalidResult);
 
@@ -41,6 +50,18 @@ public class ComplianceService : IComplianceService
         if(errors.Any())
             throw new ArgumentException(string.Join(" | ", errors));
 
-        return await _repo.CreateComplianceAsync(request);
+        await _repo.CreateComplianceAsync(request);
+    }
+
+    /// <summary>
+    /// Retrieves all compliance records with optional filters and sort order.
+    /// </summary>
+    /// <param name="type">Optional filter by compliance type (Incident or Dispatch).</param>
+    /// <param name="result">Optional filter by compliance result (Pass or Fail).</param>
+    /// <param name="sort">Sort order: "asc" for ascending, defaults to descending.</param>
+    /// <returns>A filtered and sorted list of compliance records.</returns>
+    public async Task<List<GetComplianceResponseDto>> GetAllAsync(ComplianceType? type, ComplianceResult? result, string? sort)
+    {
+        return await _repo.GetAllAsync(type, result, sort);
     }
 }

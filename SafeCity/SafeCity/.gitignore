@@ -71,3 +71,6 @@ Desktop.ini
 
 appsettings.json
 appsettings.Development.json
+
+# wwwroot
+**/wwwroot/
