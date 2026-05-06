@@ -174,6 +174,11 @@ namespace SafeCity.Utility
             public const string Duplicate = "Response team already assigned to this crisis";
             public const string CrisisNotFound = "Crisis not found";
             public const string TeamNotFound = "Team not found";
+            public const string FetchSuccess = "Disaster responses fetched successfully";
+            public const string FetchFailed = "Failed to fetch disaster responses";
+            public const string NoData = "No disaster responses found";
+            public const string InvalidStatus = "Invalid status filter";
+            public const string InvalidTeamId = "Invalid team id";
         }
 
         public static class FieldReport
