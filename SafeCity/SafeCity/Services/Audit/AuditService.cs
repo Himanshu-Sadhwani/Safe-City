@@ -50,4 +50,17 @@ public class AuditService : IAuditService
 
         return await _repo.CreateAuditAsync(request);
     }
+
+    /// <summary>
+    /// Retrieves all audit records with optional filters and sort order.
+    /// </summary>
+    /// <param name="scope">Optional filter by audit scope.</param>
+    /// <param name="status">Optional filter by audit status.</param>
+    /// <param name="officerId">Optional filter by officer ID.</param>
+    /// <param name="sort">Sort order: "asc" for ascending, defaults to descending.</param>
+    /// <returns>A filtered and sorted list of audit records.</returns>
+    public async Task<List<CreateAuditResponseDto>> GetAllAsync(AuditScope? scope, AuditStatus? status, int? officerId, string? sort)
+    {
+        return await _repo.GetAllAsync(scope, status, officerId, sort);
+    }
 }

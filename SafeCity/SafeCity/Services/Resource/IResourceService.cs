@@ -7,4 +7,5 @@ namespace SafeCity.Services.Resource;
 public interface IResourceService
 {   
     Task<List<GetResourceResponseDto>> ViewResources(int? resourceId, ResourceTypeOption? type, ResourceAvailabilityOption? availability, string? location, string? sortOrder);
+    Task<bool> UnitExistsAsync(string unitName);
 }
