@@ -1,8 +1,13 @@
+using SafeCity.Domain.Entity;
+
 namespace SafeCity.DTOs.Response
 {
     public class GetCrisisResponseRequestDto
     {
-        public string? Status { get; set; }
+        public CrisisStatus? Status { get; set; }
+        public CrisisSeverity? Severity { get; set; }
         public int? TeamId { get; set; }
+        public int? CrisisId { get; set; }
+        public string? Location { get; set; }
     }
 }

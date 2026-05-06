@@ -10,26 +10,26 @@ namespace SafeCity.Services.Response
     public class ResponseService : IResponseService
     {
         private readonly IResponseRepository _repository;
- 
+
         public ResponseService(IResponseRepository repository)
         {
             _repository = repository;
         }
- 
+
         public async Task<AssignResponseTeamResponseDto> AssignResponseTeamAsync(AssignResponseTeamRequestDto dto)
         {
             //Duplicate
-            if(await _repository.IsDuplicateAsync(dto.CrisisId,dto.TeamId))
+            if (await _repository.IsDuplicateAsync(dto.CrisisId, dto.TeamId))
                 throw new InvalidOperationException(ErrorMessages.Response.Duplicate);
 
             // Validate Crisis
             if (!await _repository.CrisisExistsAsync(dto.CrisisId))
                 throw new KeyNotFoundException(ErrorMessages.Response.CrisisNotFound);
- 
+
             // Validate Team
             if (!await _repository.TeamExistsAsync(dto.TeamId))
                 throw new KeyNotFoundException(ErrorMessages.Response.TeamNotFound);
- 
+
             // Create Response Entity
             var response = new ResponseEntity
             {
@@ -39,9 +39,9 @@ namespace SafeCity.Services.Response
                 Date = DateTime.UtcNow,
                 Status = ResponseStatus.Active
             };
- 
+
             var result = await _repository.AddAsync(response);
- 
+
             // Map to DTO
             return new AssignResponseTeamResponseDto
             {
@@ -56,7 +56,14 @@ namespace SafeCity.Services.Response
 
         public async Task<List<GetCrisisResponseDto>> GetCrisisWithResponseAsync(GetCrisisResponseRequestDto request)
         {
-            return await _repository.GetCrisisWithResponseAsync(request);
+            if (request.TeamId < 0)
+            {
+                throw new ArgumentException(
+                    ErrorMessages.Response.InvalidTeamId);
+            }
+
+            return await _repository
+                .GetCrisisWithResponseAsync(request);
         }
     }
 }

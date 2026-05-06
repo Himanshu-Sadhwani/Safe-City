@@ -54,28 +54,51 @@ namespace SafeCity.Controllers
             }
         }
         [HttpGet("crisis-response")]
-        public async Task<IActionResult> GetCrisisResponse([FromQuery] GetCrisisResponseRequestDto request)
+        public async Task<IActionResult>GetCrisisResponse([FromQuery] GetCrisisResponseRequestDto request)
         {
             try
             {
-                var result = await _service.GetCrisisWithResponseAsync(request);
+                var result =
+                    await _service
+                    .GetCrisisWithResponseAsync(request);
 
+                // Empty Response
+                if (result == null || !result.Any())
+                {
+                    return Ok(new
+                    {
+                        message = ErrorMessages.Response.NoData,
+                        data = new List<object>()
+                    });
+                }
+
+                // Success Response
                 return Ok(new
                 {
-                    success = true,
-                    message = ErrorMessages.Crisis.FetchSuccess,
+                    message = ErrorMessages.Response.FetchSuccess,
                     data = result
                 });
             }
-            catch (Exception)
+
+            // Validation Error
+            catch (ArgumentException ex)
             {
                 return BadRequest(new
                 {
                     success = false,
-                    message = ErrorMessages.Crisis.FetchFailed
+                    message = ex.Message
+                });
+            }
+
+            // Internal Server Error
+            catch (Exception)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ErrorMessages.Response.FetchFailed
                 });
             }
         }
-
     }
 }

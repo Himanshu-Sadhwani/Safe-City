@@ -43,35 +43,70 @@ namespace SafeCity.Repository.Response
             return await _context.Responses.AnyAsync(r => r.CrisisID == crisisId && r.TeamID == teamId);
         }
 
-        public async Task<List<GetCrisisResponseDto>> GetCrisisWithResponseAsync(GetCrisisResponseRequestDto request)
+        public async Task<List<GetCrisisResponseDto>>
+GetCrisisWithResponseAsync(
+    GetCrisisResponseRequestDto request)
         {
-            var query = from c in _context.Crises
-                        join r in _context.Responses
-                        on c.CrisisID equals r.CrisisID into responseGroup
-                        from r in responseGroup.DefaultIfEmpty()
-                        select new GetCrisisResponseDto
-                        {
-                            CrisisId = c.CrisisID,
-                            Location = c.Location,
-                            Severity = c.Severity.ToString(),
-                            Status = c.Status.ToString(),
+            var query =
+                from c in _context.Crises
 
-                            IsResponseAssigned = r != null,
-                            TeamId = r != null ? r.TeamID : null,
-                            Actions = r != null ? r.Actions : null
-                        };
+                join r in _context.Responses
+                on c.CrisisID equals r.CrisisID
+                into responseGroup
 
-            if (!string.IsNullOrWhiteSpace(request.Status))
+                from r in responseGroup.DefaultIfEmpty()
+
+                select new GetCrisisResponseDto
+                {
+                    CrisisId = c.CrisisID,
+
+                    Location = c.Location,
+
+                    Severity = c.Severity.ToString(),
+
+                    Status = c.Status.ToString(),
+
+                    IsResponseAssigned = r != null,
+
+                    TeamId = r != null ? r.TeamID : null,
+
+                    Actions = r != null ? r.Actions : null
+                };
+
+            // Filter by Status
+            if (request.Status.HasValue)
             {
-                query = query.Where(x => x.Status == request.Status);
+                query = query.Where(x => x.Status == request.Status.ToString());
             }
 
+            // Filter by Severity
+            if (request.Severity.HasValue)
+            {
+                query = query.Where(x => x.Severity == request.Severity.ToString());
+            }
+
+            // Filter by TeamId
             if (request.TeamId.HasValue)
             {
                 query = query.Where(x => x.TeamId == request.TeamId);
             }
 
-            return await query.AsNoTracking().ToListAsync();
+            // Filter by CrisisId
+            if (request.CrisisId.HasValue)
+            {
+                query = query.Where(x => x.CrisisId == request.CrisisId);
+            }
+
+            // Filter by Location
+            if (!string.IsNullOrWhiteSpace(request.Location))
+            {
+                query = query.Where(x => x.Location.ToLower()
+                    .Contains(request.Location.ToLower()));
+            }
+
+            return await query
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }
