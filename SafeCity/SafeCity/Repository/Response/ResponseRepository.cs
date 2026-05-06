@@ -49,30 +49,21 @@ GetCrisisWithResponseAsync(
         {
             var query =
                 from c in _context.Crises
-
                 join r in _context.Responses
                 on c.CrisisID equals r.CrisisID
                 into responseGroup
-
                 from r in responseGroup.DefaultIfEmpty()
-
                 select new GetCrisisResponseDto
                 {
                     CrisisId = c.CrisisID,
-
                     Location = c.Location,
-
                     Severity = c.Severity.ToString(),
-
                     Status = c.Status.ToString(),
-
                     IsResponseAssigned = r != null,
-
                     TeamId = r != null ? r.TeamID : null,
-
                     Actions = r != null ? r.Actions : null
                 };
-
+                
             // Filter by Status
             if (request.Status.HasValue)
             {
