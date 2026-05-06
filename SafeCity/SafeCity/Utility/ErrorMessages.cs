@@ -179,6 +179,11 @@ namespace SafeCity.Utility
             public const string NoData = "No disaster responses found";
             public const string InvalidStatus = "Invalid status filter";
             public const string InvalidTeamId = "Invalid team id";
+            public const string NoDataByLocation = "No crisis for the given location.";
+            public const string NoDataBySeverity = "No crisis for the given severity.";
+            public const string NoDataByStatus = "No crisis for the given status.";
+            public const string NoDataByTeam = "No crisis for the given team.";
+            public const string NoDataByCrisisId = "No crisis for the given crisis id.";
         }
 
         public static class FieldReport

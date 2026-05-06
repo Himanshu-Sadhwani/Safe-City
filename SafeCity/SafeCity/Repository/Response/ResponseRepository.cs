@@ -43,9 +43,7 @@ namespace SafeCity.Repository.Response
             return await _context.Responses.AnyAsync(r => r.CrisisID == crisisId && r.TeamID == teamId);
         }
 
-        public async Task<List<GetCrisisResponseDto>>
-GetCrisisWithResponseAsync(
-    GetCrisisResponseRequestDto request)
+        public async Task<List<GetCrisisResponseDto>>GetCrisisWithResponseAsync(GetCrisisResponseRequestDto request)
         {
             var query =
                 from c in _context.Crises
