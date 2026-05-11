@@ -145,14 +145,15 @@ namespace SafeCity.Repository
             {
                 user.RoleID = request.RoleID;
             }
-            if (request.Status != 0)
-            {
-                if (request.Status != UserStatus.Inactive)
-                {
-                    throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidStatus);
-                }
-                user.Status = request.Status;
-            }
+            user.Status = request.Status;
+            // if (request.Status != 0)
+            // {
+            //     if (request.Status != UserStatus.Inactive)
+            //     {
+            //         throw new ArgumentNullException(nameof(request), ErrorMessages.UserUpdate.InvalidStatus);
+            //     }
+            //     user.Status = request.Status;
+            // }
 
             await _context.SaveChangesAsync();
 
