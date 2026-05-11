@@ -15,6 +15,7 @@ using SafeCity.Services.PatrolService;
 using SafeCity.Services.Resource;
 using System.ComponentModel.Design;
 using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -30,6 +31,16 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ICaseRepository, CaseRepository>();
@@ -50,7 +61,8 @@ builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IPatrolRepository, PatrolRepository>();
 builder.Services.AddScoped<IPatrolService, PatrolService>();
-builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService,SafeCity.Services.Resource.ResourceService>();
+builder.Services.AddScoped<SafeCity.Services.Resource.IResourceService, SafeCity.Services.Resource.ResourceService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
@@ -95,6 +107,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();
