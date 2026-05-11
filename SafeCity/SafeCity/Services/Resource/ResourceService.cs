@@ -3,6 +3,7 @@ using SafeCity.Domain.Enum;
 using SafeCity.DTOs.Resource;
 using SafeCity.Repository;
 namespace SafeCity.Services.Resource;
+
 public class ResourceService : IResourceService
 {
     private readonly IResourceRepository _resourceRepository;
@@ -33,5 +34,9 @@ public class ResourceService : IResourceService
         {
             throw new Exception("Error while fetching resource details", ex);
         }
+    }
+    public async Task<bool> UnitExistsAsync(string unitName)
+    {
+        return await _resourceRepository.UnitExistsAsync(unitName);
     }
 }

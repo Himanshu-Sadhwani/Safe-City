@@ -1,4 +1,6 @@
-﻿namespace SafeCity.Utility
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+
+namespace SafeCity.Utility
 {
     public static class ErrorMessages
     {
@@ -37,7 +39,9 @@
             public const string InvalidDate = "A valid crisis date is required.";
             public const string InvalidSeverity = "Invalid crisis severity.";
             public const string InvalidStatus = "Invalid crisis status.";
-            public const string Duplicate="Crisis already exists for given details...";
+            public const string Duplicate = "Crisis already exists for given details...";
+            public const string FetchSuccess = "Crisis response fetched successfully";
+            public const string FetchFailed = "Failed to fetch crisis response";
             public static readonly Dictionary<string, string> Field = new()
             {
                 { "Location", LocationRequired },
@@ -94,6 +98,7 @@
             public const string InvalidScope = "The provided audit scope is not valid.";
             public const string InvalidStatus = "The provided audit status is not valid.";
             public const string OfficerNotFound = "The specified officer does not exist or does not have a valid officer role.";
+            public const string FetchFailed = "An error occurred while retrieving audit records.";
         }
 
         public static class Login
@@ -101,7 +106,7 @@
             public const string EmailRequired = "Email address is required.";
             public const string PasswordRequired = "Password is required.";
         }
-        
+
         public static class Dispatch
         {
             public const string IncidentIdRequired = "Incident ID is required.";
@@ -112,7 +117,7 @@
             public const string IncidentNotFound = "Incident not found.";
             public const string DispatcherNotFound = "Dispatcher not found.";
             public const string DispatcherInactive = "Dispatcher is not active.";
-            public const string ResourceAlreadyAssigned ="This resource is already assigned to the incident.";
+            public const string ResourceAlreadyAssigned = "This resource is already assigned to the incident.";
             public const string IncidentAlreadyDispatched = "Incident has already been dispatched.";
             public const string InvalidIncidentType = "Unsupported or invalid incident type.";
             public const string NoAvailableResources = "No available resources for this incident.";
@@ -123,12 +128,12 @@
             public const string InternalError = "An internal error occurred while assigning the dispatch.";
             public const string DispatchNotFound = "Dispatch record not found.";
             public const string UpdateDispatchRequestNull = "Update dispatch request cannot be null.";
-            public const string InvalidStatus="Invalid status value provided for dispatchId";
-            public const string CompletedDispatch="Cant update Completed dispatch";
-            public const string CurrentStatus="Already in the same status";
-            public const string StatusRequired="Status is required to update dispatch";
-            }
-            
+            public const string InvalidStatus = "Invalid status value provided for dispatchId";
+            public const string CompletedDispatch = "Cant update Completed dispatch";
+            public const string CurrentStatus = "Already in the same status";
+            public const string StatusRequired = "Status is required to update dispatch";
+        }
+
         public static class UserDelete
         {
             public const string InvalidUserId = "User ID must be a positive number.";
@@ -136,7 +141,7 @@
             public const string DeleteSuccess = "User has been successfully deleted.";
             public const string AdminCannotBeDeleted = "Admin users cannot be deleted directly. Please update the user's role, then retry the delete.";
         }
-        
+
         public static class Patrol
         {
             public const string OfficerNotFound = "Officer not found.";
@@ -151,6 +156,7 @@
         public static class Compliance
         {
             public const string SaveFailed = "An error occurred while saving the compliance record.";
+            public const string FetchFailed = "An error occurred while retrieving compliance records.";
             public const string EntityIdRequired = "Field 'EntityId' is required.";
             public const string InvalidEntityID = "Entity ID must be a valid positive number.";
             public const string EntityNotFound = "The referenced entity does not exist.";
@@ -161,13 +167,35 @@
             public const string InvalidResult = "The provided compliance result is not valid.";
             public const string NotesRequired = "Field 'Notes' is required.";
             public const string InternalError = "An internal server error occurred.";
+            public const string DuplicateRecord = "A compliance record already exists for this entity";
         }
         public static class Response
         {
-            public const string Duplicate="Response team already assigned to this crisis";
-            public const string CrisisNotFound="Crisis not found";
-            public const string TeamNotFound="Team not found";
+            public const string Duplicate = "Response team already assigned to this crisis";
+            public const string CrisisNotFound = "Crisis not found";
+            public const string TeamNotFound = "Team not found";
+            public const string FetchSuccess = "Disaster responses fetched successfully";
+            public const string FetchFailed = "Failed to fetch disaster responses";
+            public const string NoData = "No disaster responses found";
+            public const string InvalidStatus = "Invalid status filter";
+            public const string InvalidTeamId = "Invalid team id";
         }
 
+        public static class FieldReport
+        {
+            public const string PatrolIdRequired = "Patrol Id is missing";
+            public const string InvalidPatrolId = "Enter valid Patrol Id";
+            public const string PatrolNotFound = "Patrol not found.";
+            public const string ReportNotFound = "Field report not found.";
+            public const string NotesRequired = "Notes are required";
+            public const string NotesTooShort = "Notes must be at least 50 characters";
+            public const string NotesTooLong = "Notes cannot exceed 100 characters";
+            public const string DateRequired = "Date is required";
+            public const string PastDate = "Date cannot be in the past";
+            public const string FutureDate = "Date cannot be in the future";
+            public const string DuplicateReport = "An identical field report already exists for this patrol.";
+            public const string UnauthorizedOfficer = "You are not authorized to perform this action on the report.";
+            public const string NosuchStatus = "Invalid status value";
+        }
     }
 }

@@ -11,12 +11,11 @@ namespace SafeCity.DTOs.Patrol
     {
         [Required(ErrorMessage = "Officer Id is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Enter valid officer id")]
-        [JsonConverter(typeof(PatrolValidationHelper))]
-        public int? OfficerId { get; set; }
+        [JsonConverter(typeof(PatrolValidationHelper))]        public int? OfficerId { get; set; }
 
         [Required(ErrorMessage = "Area is required")]
         [MaxLength(100, ErrorMessage = "Area cannot exceed 100 characters")]
-        public string Area { get; set; } = string.Empty;
+        public string? Area { get; set; }
 
         [Required(ErrorMessage = "Date is required")]
         public DateTime? Date { get; set; }

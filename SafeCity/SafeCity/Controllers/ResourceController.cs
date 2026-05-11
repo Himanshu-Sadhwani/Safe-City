@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.Domain.Enum;
 using SafeCity.Services.Resource;
+using SafeCity.Repository;
 
 namespace SafeCity.Controllers
 {
@@ -43,6 +44,16 @@ namespace SafeCity.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+        [Authorize]
+        [HttpGet("exists")]
+        public async Task<IActionResult> UnitExists([FromQuery] string unitName)
+        {
+            if (string.IsNullOrWhiteSpace(unitName))
+                return BadRequest(new { message = "Unit name is required." });
+
+            var exists = await _resourceService.UnitExistsAsync(unitName);
+            return Ok(new { exists });
         }
     }
 }

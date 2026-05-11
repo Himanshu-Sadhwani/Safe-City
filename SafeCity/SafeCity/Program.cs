@@ -1,13 +1,22 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SafeCity.Utility;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SafeCity.Hubs;
 using SafeCity.Repository;
+using SafeCity.Repository.Audit;
 using SafeCity.Repository.Case;
+using SafeCity.Repository.Compliance;
 using SafeCity.Repository.CrisisRepo;
 using SafeCity.Repository.Patrol;
+using SafeCity.Repository.Response;
+using SafeCity.Services.Audit;
 using SafeCity.Services.Auth;
 using SafeCity.Services.Case;
+using SafeCity.Services.Compliance;
 using SafeCity.Services.Crisis;
 using SafeCity.Services.Dispatch;
 using SafeCity.Services.IncidentService;
@@ -15,17 +24,23 @@ using SafeCity.Services.PatrolService;
 using SafeCity.Services.Resource;
 using System.ComponentModel.Design;
 using System.Text;
+using SafeCity.Services.Response;
+using SafeCity.Services.Notification;
+using System.Text;
+using System.ComponentModel.Design;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<SafeCity.Domain.Data.SafeCityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("SafeCity")
     )
 );
+builder.Services.AddControllers();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -43,6 +58,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
 builder.Services.AddScoped<ICaseRepository, CaseRepository>();
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<SafeCity.Repository.IUserRepository, SafeCity.Repository.UserRepository>();
@@ -77,6 +93,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
         )
     };
+    options.Events = new JwtBearerEvents            // For SignalR authentication
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
@@ -98,7 +128,47 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        var requiredMessages = new HashSet<string>
+        {
+            ErrorMessages.FieldReport.PatrolIdRequired,
+            ErrorMessages.FieldReport.NotesRequired,
+            ErrorMessages.FieldReport.DateRequired
+        };
+
+        var message = errors.Any(e => requiredMessages.Contains(e))
+            ? "Please enter all the required fields"
+            : errors.FirstOrDefault() ?? "Please enter all the required fields";
+
+        return new BadRequestObjectResult(new { message });
+    };
+});
+
+// Base for frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
+
+// Base for frontend
+app.UseCors("AllowAngular");
 
 app.UseHttpsRedirection();
 
@@ -112,6 +182,10 @@ app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<NotificationHub>("/hubs/notifications");
+
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();

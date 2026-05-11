@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs.Response;
 using SafeCity.Services.Response;
+using SafeCity.Utility;
 
 namespace SafeCity.Controllers
 {
@@ -24,7 +25,7 @@ namespace SafeCity.Controllers
                 return Ok(new
                 {
                     success = true,
-                    data = result
+                    message = "Response team assigned successfully...."
                 });
             }
             catch (InvalidOperationException ex)
@@ -49,6 +50,53 @@ namespace SafeCity.Controllers
                 {
                     success = false,
                     message = ex.Message
+                });
+            }
+        }
+        [HttpGet("crisis-response")]
+        public async Task<IActionResult>GetCrisisResponse([FromQuery] GetCrisisResponseRequestDto request)
+        {
+            try
+            {
+                var result =
+                    await _service
+                    .GetCrisisWithResponseAsync(request);
+
+                // Empty Response
+                if (result == null || !result.Any())
+                {
+                    return Ok(new
+                    {
+                        message = ErrorMessages.Response.NoData,
+                        data = new List<object>()
+                    });
+                }
+
+                // Success Response
+                return Ok(new
+                {
+                    message = ErrorMessages.Response.FetchSuccess,
+                    data = result
+                });
+            }
+
+            // Validation Error
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+
+            // Internal Server Error
+            catch (Exception)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ErrorMessages.Response.FetchFailed
                 });
             }
         }

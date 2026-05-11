@@ -53,13 +53,13 @@ namespace SafeCity.Repository
 
             await _context.SaveChangesAsync();
         }
-        
-public async Task<List<GetResourceResponseDto>> ViewResources(
-            int? resourceId,
-            ResourceTypeOption? type,
-            ResourceAvailabilityOption? availability,
-            string? location,
-            string? sortOrder)
+
+        public async Task<List<GetResourceResponseDto>> ViewResources(
+                    int? resourceId,
+                    ResourceTypeOption? type,
+                    ResourceAvailabilityOption? availability,
+                    string? location,
+                    string? sortOrder)
         {
             try
             {
@@ -96,6 +96,10 @@ public async Task<List<GetResourceResponseDto>> ViewResources(
                 throw new Exception(ex.Message);
             }
         }
-
+        public async Task<bool> UnitExistsAsync(string unitName)
+        {
+            return await _context.Resources
+                .AnyAsync(r => r.UnitName == unitName);
+        }
     }
 }

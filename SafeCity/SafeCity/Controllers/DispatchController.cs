@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.Domain.Enum;
 using SafeCity.DTOs;
+using SafeCity.DTOs.Notification;
 using SafeCity.Services.Dispatch;
+using SafeCity.Services.Notification;
 
 namespace SafeCity.Controllers
 {
@@ -22,18 +24,26 @@ namespace SafeCity.Controllers
         /// <param name="dispatchService">
         /// The dispatch service that handles business logic for unit assignment.
         /// </param>
-        public DispatchController(IDispatchService dispatchService)
+        /// <param name="notificationService">
+        /// The notification service that handles real-time SignalR dispatch alerts.
+        /// </param>
+        public DispatchController(
+            IDispatchService dispatchService
+            )
         {
             _dispatchService = dispatchService;
         }
 
         /// <summary>
-        /// Assigns an available resource unit to an incident. </summary>
+        /// Assigns an available resource unit to an incident.
+        /// </summary>
         /// <param name="request">
-        /// The dispatch request containing incident and dispatcher information.</param>
+        /// The dispatch request containing incident and dispatcher information.
+        /// </param>
         /// <returns>
         /// Returns <see cref="OkObjectResult"/> with dispatch details if successful,
-        /// or <see cref="BadRequestObjectResult"/> if validation or processing fails.</returns>
+        /// or <see cref="BadRequestObjectResult"/> if validation or processing fails.
+        /// </returns>
         /// <response code="200">Resource successfully assigned to the incident.</response>
         /// <response code="400">Invalid request data or assignment failure.</response>
         [Authorize(Roles = "Emergency_Dispatcher , Admin")]
@@ -45,9 +55,9 @@ namespace SafeCity.Controllers
 
             try
             {
-                var DispatcherID=User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int DispatcherId=int.Parse(DispatcherID);
-                var result = await _dispatchService.AssignUnitAsync(DispatcherId,request);
+                var DispatcherID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int DispatcherId = int.Parse(DispatcherID);
+                var result = await _dispatchService.AssignUnitAsync(DispatcherId, request);
                 return Ok(new
                 {
                     message = "Successfully Dispatched Resource",
@@ -58,7 +68,8 @@ namespace SafeCity.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-         // <summary>
+
+        // <summary>
         /// Updates the real-time status of a dispatched unit.
         /// </summary>
         /// <param name="request">Dispatch status update request.</param>
@@ -72,7 +83,7 @@ namespace SafeCity.Controllers
 
             try
             {
-                await _dispatchService.UpdateDispatchStatusAsync(id,request);
+                await _dispatchService.UpdateDispatchStatusAsync(id, request);
                 return Ok(new { message = "Dispatch status updated successfully" });
             }
             catch (Exception ex)
@@ -126,6 +137,5 @@ namespace SafeCity.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
     }
 }
