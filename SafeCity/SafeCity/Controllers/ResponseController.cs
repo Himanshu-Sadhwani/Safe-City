@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SafeCity.DTOs.Response;
 using SafeCity.Services.Response;
@@ -7,6 +8,7 @@ namespace SafeCity.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
+    [Authorize(Roles = nameof(UserRoleOption.Admin) + "," + nameof(UserRoleOption.Police))]
     public class ResponseController : ControllerBase
     {
         private readonly IResponseService _service;
@@ -54,7 +56,7 @@ namespace SafeCity.Controllers
             }
         }
         [HttpGet("crisis-response")]
-        public async Task<IActionResult>GetCrisisResponse([FromQuery] GetCrisisResponseRequestDto request)
+        public async Task<IActionResult> GetCrisisResponse([FromQuery] GetCrisisResponseRequestDto request)
         {
             try
             {
@@ -62,12 +64,35 @@ namespace SafeCity.Controllers
                     await _service
                     .GetCrisisWithResponseAsync(request);
 
-                // Empty Response
                 if (result == null || !result.Any())
                 {
+                    string message = ErrorMessages.Response.NoData;
+
+                    if (!string.IsNullOrWhiteSpace(request.Location))
+                    {
+                        message = ErrorMessages.Response.NoDataByLocation;
+                    }
+                    else if (request.Status.HasValue)
+                    {
+                        message = ErrorMessages.Response.NoDataByStatus;
+                    }
+                    else if (request.Severity.HasValue)
+                    {
+                        message = ErrorMessages.Response.NoDataBySeverity;
+                    }
+                    else if (request.TeamId.HasValue)
+                    {
+                        message = ErrorMessages.Response.NoDataByTeam;
+                    }
+                    else if (request.CrisisId.HasValue)
+                    {
+                        message = ErrorMessages.Response.NoDataByCrisisId;
+                    }
+
                     return Ok(new
                     {
-                        message = ErrorMessages.Response.NoData,
+                        success = false,
+                        message = message,
                         data = new List<object>()
                     });
                 }
